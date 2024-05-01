@@ -34,7 +34,6 @@ class LineFormatter extends NormalizerFormatter
     protected ?int $maxLevelNameLength = null;
     protected string $indentStacktraces = '';
     protected Closure|null $stacktracesParser = null;
-    protected string $basePath = '';
 
     /**
      * @param string|null $format                The format of the message
@@ -50,21 +49,6 @@ class LineFormatter extends NormalizerFormatter
         $this->ignoreEmptyContextAndExtra = $ignoreEmptyContextAndExtra;
         $this->includeStacktraces($includeStacktraces);
         parent::__construct($dateFormat);
-    }
-
-    /**
-     * Setting a base path will hide the base path from exception and stack trace file names to shorten them
-     * @return $this
-     */
-    public function setBasePath(string $path = ''): self
-    {
-        if ($path !== '') {
-            $path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-        }
-
-        $this->basePath = $path;
-
-        return $this;
     }
 
     /**
@@ -274,13 +258,7 @@ class LineFormatter extends NormalizerFormatter
                 }
             }
         }
-
-        $file = $e->getFile();
-        if ($this->basePath !== '') {
-            $file = preg_replace('{^'.preg_quote($this->basePath).'}', '', $file);
-        }
-
-        $str .= '): ' . $e->getMessage() . ' at ' . $file . ':' . $e->getLine() . ')';
+        $str .= '): ' . $e->getMessage() . ' at ' . $e->getFile() . ':' . $e->getLine() . ')';
 
         if ($this->includeStacktraces) {
             $str .= $this->stacktracesParser($e);
@@ -292,10 +270,6 @@ class LineFormatter extends NormalizerFormatter
     private function stacktracesParser(\Throwable $e): string
     {
         $trace = $e->getTraceAsString();
-
-        if ($this->basePath !== '') {
-            $trace = preg_replace('{^(#\d+ )' . preg_quote($this->basePath) . '}m', '$1', $trace) ?? $trace;
-        }
 
         if ($this->stacktracesParser !== null) {
             $trace = $this->stacktracesParserCustom($trace);

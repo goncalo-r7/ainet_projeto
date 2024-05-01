@@ -505,9 +505,7 @@ class HasManyThrough extends Relation
             $models = $builder->eagerLoadRelations($models);
         }
 
-        return $this->query->applyAfterQueryCallbacks(
-            $this->related->newCollection($models)
-        );
+        return $this->related->newCollection($models);
     }
 
     /**

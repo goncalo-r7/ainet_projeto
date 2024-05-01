@@ -16,14 +16,13 @@ use Illuminate\Support\Reflector;
 use Illuminate\Support\Stringable;
 use Illuminate\Support\Traits\Macroable;
 use Illuminate\Support\Traits\ReflectsClosures;
-use Illuminate\Support\Traits\Tappable;
 use Psr\Http\Client\ClientExceptionInterface;
 use Symfony\Component\Process\Process;
 use Throwable;
 
 class Event
 {
-    use Macroable, ManagesFrequencies, ReflectsClosures, Tappable;
+    use Macroable, ManagesFrequencies, ReflectsClosures;
 
     /**
      * The command string.

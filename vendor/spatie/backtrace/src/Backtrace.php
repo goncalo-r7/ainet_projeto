@@ -3,7 +3,6 @@
 namespace Spatie\Backtrace;
 
 use Closure;
-use Laravel\SerializableClosure\Support\ClosureStream;
 use Spatie\Backtrace\Arguments\ArgumentReducers;
 use Spatie\Backtrace\Arguments\ReduceArgumentsAction;
 use Spatie\Backtrace\Arguments\Reducers\ArgumentReducer;
@@ -172,28 +171,14 @@ class Backtrace
         $reduceArgumentsAction = new ReduceArgumentsAction($this->resolveArgumentReducers());
 
         foreach ($rawFrames as $rawFrame) {
-            $textSnippet = null;
-
-            if (
-                class_exists(ClosureStream::class)
-                && substr($currentFile, 0, strlen(ClosureStream::STREAM_PROTO)) === ClosureStream::STREAM_PROTO
-            ) {
-                $textSnippet = $currentFile;
-                $currentFile = ClosureStream::STREAM_PROTO.'://function()';
-                $currentLine -= 1;
-            }
-
-            $frame = new Frame(
+            $frames[] = new Frame(
                 $currentFile,
                 $currentLine,
                 $arguments,
                 $rawFrame['function'] ?? null,
                 $rawFrame['class'] ?? null,
-                $this->isApplicationFrame($currentFile),
-                $textSnippet
+                $this->isApplicationFrame($currentFile)
             );
-
-            $frames[] = $frame;
 
             $arguments = $this->withArguments
                 ? $rawFrame['args'] ?? null

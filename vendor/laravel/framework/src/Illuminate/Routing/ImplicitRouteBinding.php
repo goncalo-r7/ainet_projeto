@@ -84,10 +84,6 @@ class ImplicitRouteBinding
 
             $parameterValue = $parameters[$parameterName];
 
-            if ($parameterValue === null) {
-                continue;
-            }
-
             $backedEnumClass = $parameter->getType()?->getName();
 
             $backedEnum = $backedEnumClass::tryFrom((string) $parameterValue);

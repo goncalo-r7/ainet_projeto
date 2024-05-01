@@ -1242,6 +1242,11 @@ interface CarbonInterface extends DateTimeInterface, JsonSerializable
      * Carbon::canBeCreatedFromFormat('11:12:45', 'h:i:s'); // true
      * Carbon::canBeCreatedFromFormat('13:12:45', 'h:i:s'); // false
      * ```
+     *
+     * @param string $date
+     * @param string $format
+     *
+     * @return bool
      */
     public static function canBeCreatedFromFormat(?string $date, string $format): bool;
 
@@ -2153,7 +2158,7 @@ interface CarbonInterface extends DateTimeInterface, JsonSerializable
      *
      * @throws UnknownGetterException
      *
-     * @return string|int|bool|DateTimeZone
+     * @return string|int|bool|DateTimeZone|null
      */
     public function get(Unit|string $name): mixed;
 

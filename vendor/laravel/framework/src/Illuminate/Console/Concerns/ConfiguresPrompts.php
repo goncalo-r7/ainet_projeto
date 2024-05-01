@@ -11,7 +11,6 @@ use Laravel\Prompts\Prompt;
 use Laravel\Prompts\SearchPrompt;
 use Laravel\Prompts\SelectPrompt;
 use Laravel\Prompts\SuggestPrompt;
-use Laravel\Prompts\TextareaPrompt;
 use Laravel\Prompts\TextPrompt;
 use stdClass;
 use Symfony\Component\Console\Input\InputInterface;
@@ -40,12 +39,6 @@ trait ConfiguresPrompts
             $prompt->validate
         ));
 
-        TextareaPrompt::fallbackUsing(fn (TextareaPrompt $prompt) => $this->promptUntilValid(
-            fn () => $this->components->ask($prompt->label, $prompt->default ?: null, multiline: true) ?? '',
-            $prompt->required,
-            $prompt->validate
-        ));
-
         PasswordPrompt::fallbackUsing(fn (PasswordPrompt $prompt) => $this->promptUntilValid(
             fn () => $this->components->secret($prompt->label) ?? '',
             $prompt->required,
@@ -59,16 +52,28 @@ trait ConfiguresPrompts
         ));
 
         SelectPrompt::fallbackUsing(fn (SelectPrompt $prompt) => $this->promptUntilValid(
-            fn () => $this->selectFallback($prompt->label, $prompt->options, $prompt->default),
+            fn () => $this->components->choice($prompt->label, $prompt->options, $prompt->default),
             false,
             $prompt->validate
         ));
 
-        MultiSelectPrompt::fallbackUsing(fn (MultiSelectPrompt $prompt) => $this->promptUntilValid(
-            fn () => $this->multiselectFallback($prompt->label, $prompt->options, $prompt->default, $prompt->required),
-            $prompt->required,
-            $prompt->validate
-        ));
+        MultiSelectPrompt::fallbackUsing(function (MultiSelectPrompt $prompt) {
+            if ($prompt->default !== []) {
+                return $this->promptUntilValid(
+                    fn () => $this->components->choice($prompt->label, $prompt->options, implode(',', $prompt->default), multiple: true),
+                    $prompt->required,
+                    $prompt->validate
+                );
+            }
+
+            return $this->promptUntilValid(
+                fn () => collect($this->components->choice($prompt->label, ['' => 'None', ...$prompt->options], 'None', multiple: true))
+                    ->reject('')
+                    ->all(),
+                $prompt->required,
+                $prompt->validate
+            );
+        });
 
         SuggestPrompt::fallbackUsing(fn (SuggestPrompt $prompt) => $this->promptUntilValid(
             fn () => $this->components->askWithCompletion($prompt->label, $prompt->options, $prompt->default ?: null) ?? '',
@@ -82,7 +87,7 @@ trait ConfiguresPrompts
 
                 $options = ($prompt->options)($query);
 
-                return $this->selectFallback($prompt->label, $options);
+                return $this->components->choice($prompt->label, $options);
             },
             false,
             $prompt->validate
@@ -94,7 +99,21 @@ trait ConfiguresPrompts
 
                 $options = ($prompt->options)($query);
 
-                return $this->multiselectFallback($prompt->label, $options, required: $prompt->required);
+                if ($prompt->required === false) {
+                    if (array_is_list($options)) {
+                        return collect($this->components->choice($prompt->label, ['None', ...$options], 'None', multiple: true))
+                            ->reject('None')
+                            ->values()
+                            ->all();
+                    }
+
+                    return collect($this->components->choice($prompt->label, ['' => 'None', ...$options], '', multiple: true))
+                        ->reject('')
+                        ->values()
+                        ->all();
+                }
+
+                return $this->components->choice($prompt->label, $options, multiple: true);
             },
             $prompt->required,
             $prompt->validate
@@ -173,7 +192,7 @@ trait ConfiguresPrompts
     /**
      * Get the validator instance that should be used to validate prompts.
      *
-     * @param  mixed  $field
+     * @param  string  $value
      * @param  mixed  $value
      * @param  mixed  $rules
      * @param  array  $messages
@@ -218,62 +237,5 @@ trait ConfiguresPrompts
     protected function restorePrompts()
     {
         Prompt::setOutput($this->output);
-    }
-
-    /**
-     * Select fallback.
-     *
-     * @param  string  $label
-     * @param  array  $options
-     * @param  string|int|null  $default
-     * @return string|int
-     */
-    private function selectFallback($label, $options, $default = null)
-    {
-        $answer = $this->components->choice($label, $options, $default);
-
-        if (! array_is_list($options) && $answer === (string) (int) $answer) {
-            return (int) $answer;
-        }
-
-        return $answer;
-    }
-
-    /**
-     * Multi-select fallback.
-     *
-     * @param  string  $label
-     * @param  array  $options
-     * @param  array  $default
-     * @param  bool|string  $required
-     * @return array
-     */
-    private function multiselectFallback($label, $options, $default = [], $required = false)
-    {
-        $default = $default !== [] ? implode(',', $default) : null;
-
-        if ($required === false && ! $this->laravel->runningUnitTests()) {
-            $options = array_is_list($options)
-                ? ['None', ...$options]
-                : ['' => 'None'] + $options;
-
-            if ($default === null) {
-                $default = 'None';
-            }
-        }
-
-        $answers = $this->components->choice($label, $options, $default, null, true);
-
-        if (! array_is_list($options)) {
-            $answers = array_map(fn ($value) => $value === (string) (int) $value ? (int) $value : $value, $answers);
-        }
-
-        if ($required === false) {
-            return array_is_list($options)
-                ? array_values(array_filter($answers, fn ($value) => $value !== 'None'))
-                : array_filter($answers, fn ($value) => $value !== '');
-        }
-
-        return $answers;
     }
 }

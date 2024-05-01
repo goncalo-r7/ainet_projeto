@@ -33,7 +33,7 @@ class EventServiceProvider extends ServiceProvider
     protected $observers = [];
 
     /**
-     * Indicates if events should be discovered.
+     * Indiates if events should be discovered.
      *
      * @var bool
      */

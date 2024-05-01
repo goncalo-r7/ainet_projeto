@@ -210,14 +210,8 @@ class NormalizerFormatter implements FormatterInterface
                 $accessor = new \ArrayObject($data);
                 $value = (string) $accessor['__PHP_Incomplete_Class_Name'];
             } elseif (method_exists($data, '__toString')) {
-                try {
-                    /** @var string $value */
-                    $value = $data->__toString();
-                } catch (\Throwable) {
-                    // if the toString method is failing, use the default behavior
-                    /** @var null|scalar|array<mixed[]|scalar|null> $value */
-                    $value = json_decode($this->toJson($data, true), true);
-                }
+                /** @var string $value */
+                $value = $data->__toString();
             } else {
                 // the rest is normalized by json encoding and decoding it
                 /** @var null|scalar|array<mixed[]|scalar|null> $value */

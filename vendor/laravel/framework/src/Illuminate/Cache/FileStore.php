@@ -60,7 +60,7 @@ class FileStore implements Store, LockProvider
     /**
      * Retrieve an item from the cache by key.
      *
-     * @param  string  $key
+     * @param  string|array  $key
      * @return mixed
      */
     public function get($key)
