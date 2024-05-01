@@ -17,11 +17,9 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
-.env
 composer.json
 composer.lock
 docker-compose.yml
-package.json
+package-lock.json
 package.json
 phpunit.xml
-
