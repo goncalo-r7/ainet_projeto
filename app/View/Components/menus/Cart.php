@@ -1,6 +1,6 @@
 <?php
 
-namespace App\View\Components\menus;
+namespace App\View\Components\Menus;
 
 use Closure;
 use Illuminate\Contracts\View\View;

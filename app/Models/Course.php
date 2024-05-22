@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Course extends Model
 {
@@ -38,5 +40,34 @@ class Course extends Model
             default     => ''
         }
             . $this->name;
+    }
+
+    public function getFileNameAttribute()
+    {
+        return strtoupper(trim($this->abbreviation)) . '.png';
+    }
+
+    public function getImageExistsAttribute()
+    {
+        return Storage::exists("public/courses/{$this->fileName}");
+    }
+
+    public function getImageUrlAttribute()
+    {
+        if ($this->imageExists) {
+            return asset("storage/courses/{$this->fileName}");
+        } else {
+            return asset("storage/courses/no_course.png");
+        }
+    }
+
+    public function students(): HasMany
+    {
+        return $this->hasMany(Student::class, 'course', 'abbreviation');
+    }
+
+    public function disciplines(): HasMany
+    {
+        return $this->hasMany(Discipline::class, 'course', 'abbreviation');
     }
 }

@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('header-title', 'Niggas in Paris')
+@section('header-title', 'Introduction')
 
 @section('main')
 <main>

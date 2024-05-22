@@ -1,48 +1,42 @@
 @php
-    $disabledStr = $readonlyData ?? false ? 'disabled' : '';
+    $mode = $mode ?? 'edit';
+    $readonly = $mode == 'show';
 @endphp
+<x-field.input name="abbreviation" label="Abbreviation" width="md"
+                :readonly="$readonly"
+                value="{{ old('abbreviation', $discipline->abbreviation) }}"/>
+<x-field.input name="name" label="Name" :readonly="$readonly"
+                value="{{ old('name', $discipline->name) }}"/>
+<x-field.input name="name_pt" label="Name (Portuguese)" :readonly="$readonly"
+               value="{{ old('name_pt', $discipline->name_pt) }}"/>
 
-<div>
-    <label for="inputAbbreviation">Abbreviation</label>
-    <input type="text" name="abbreviation" id="inputAbbreviation" {{ $disabledStr }} value="{{$discipline->abbreviation}}">
+<x-field.select name="course" label="Course" :readonly="$readonly"
+    value="{{ old('course', $discipline->course) }}"
+    :options="$courses->pluck('fullName', 'abbreviation')->toArray()"/>
+<div class="flex space-x-4">
+    <x-field.input name="year" label="Year" width="sm"
+                    :readonly="$readonly"
+                    value="{{ old('year', $discipline->year) }}"/>
+    <x-field.input name="semester" label="Semester" width="sm"
+                    :readonly="$readonly"
+                    value="{{ old('semester', $discipline->semester) }}"/>
+    <x-field.select name="semester" label="Semester" width="sm"
+                    :readonly="$readonly"
+                    value="{{ old('semester', $discipline->semester) }}"
+                    defaultValue="1"
+                    :options="[
+                        0 => 'Annual',
+                        1 => '1st',
+                        2 => '2nd',
+                    ]"/>
+    <x-field.input name="ECTS" label="ECTS" width="sm"
+                    :readonly="$readonly"
+                    value="{{ old('ECTS', $discipline->ECTS) }}"/>
+    <x-field.input name="hours" label="Hours" width="sm"
+                    :readonly="$readonly"
+                    value="{{ old('hours', $discipline->hours) }}"/>
 </div>
-<div>
-    <label for="inputName">Name</label>
-    <input type="text" name="name" id="inputName" {{ $disabledStr }} value="{{$discipline->name}}">
-</div>
-<div>
-    <label for="inputName_pt">Name (PT)</label>
-    <input type="text" name="name_pt" id="inputName_pt" {{ $disabledStr }} value="{{$discipline->name_pt}}">
-</div>
-<div>
-    <label for="inputCourse">Course</label>
-    <select name="course" id="inputCurso" {{ $disabledStr }}>
-        @foreach ($courses as $course)
-            <option {{ $course->abbreviation == $discipline->course ? 'selected' : '' }}
-                    value="{{$course->abbreviation}}">{{$course->name}}</option>
-        @endforeach
-    </select>
-</div>
-<div>
-    <label for="inputYear">Year</label>
-    <input type="text" name="year" id="inputYear" {{ $disabledStr }} value="{{$discipline->year}}">
-</div>
-<div>
-    <label for="inputSemester">Semester</label>
-    <input type="text" name="semester" id="inputSemester" {{ $disabledStr }} value="{{$discipline->semester}}">
-</div>
-<div>
-    <label for="inputECTS">ECTS</label>
-    <input type="text" name="ECTS" id="inputECTS" {{ $disabledStr }} value="{{$discipline->ECTS}}">
-</div>
-<div>
-    <label for="inputHours">Hours</label>
-    <input type="text" name="hours" id="inputHours" {{ $disabledStr }} value="{{$discipline->hours}}">
-</div>
-<div>
-    <label for="inputOptional">Optional</label>
-    {{-- This hidden field has the same name as the "optional" field
-    and ensures that the "optional" field has always a value ("0" - with hidden field and "1" when optional is checked ) --}}
-    <input type="hidden" name="optional" value="0">
-    <input type="checkbox" name="optional" id="inputOptional" {{ $disabledStr }} value="1" {{ $discipline->optional ? 'checked' : '' }}>
+<div class="flex space-x-4">
+    <x-field.checkbox name="optional" label="Optional" :readonly="$readonly"
+                    value="{{ old('optional', $discipline->optional) }}"/>
 </div>

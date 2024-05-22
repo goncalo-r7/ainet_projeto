@@ -1,48 +1,49 @@
 @php
-    $disabledStr = $readonlyData ?? false ? 'disabled' : '';
+    $mode = $mode ?? 'edit';
+    $readonly = $mode == 'show';
 @endphp
-
-<div>
-    <label for="inputAbbreviation">Abbreviation</label>
-    <input type="text" name="abbreviation" id="inputAbbreviation" {{ $disabledStr }} value="{{$course->abbreviation}}">
-</div>
-<div>
-    <label for="inputName">Name</label>
-    <input type="text" name="name" id="inputName" {{ $disabledStr }} value="{{$course->name}}">
-</div>
-<div>
-    <label for="inputName_pt">Name (PT)</label>
-    <input type="text" name="name_pt" id="inputName_pt" {{ $disabledStr }} value="{{$course->name_pt}}">
-</div>
-<div>
-    <label for="inputType">Type of course</label>
-    <select name="type" id="inputType" {{ $disabledStr }}>
-        <option {{$course->type == 'Degree' ? 'selected' : ''}}>Degree</option>
-        <option {{$course->type == 'Master' ? 'selected' : ''}}>Master</option>
-        <option {{$course->type == 'TESP' ? 'selected' : ''}}>TESP</option>
-    </select>
-</div>
-<div>
-    <label for="inputSemesters">Semesters</label>
-    <input type="text" name="semesters" id="inputSemesters" {{ $disabledStr }} value="{{$course->semesters}}">
-</div>
-<div>
-    <label for="inputECTS">ECTS</label>
-    <input type="text" name="ECTS" id="inputECTS" {{ $disabledStr }} value="{{$course->ECTS}}">
-</div>
-<div>
-    <label for="inputPlaces">Places</label>
-    <input type="text" name="places" id="inputPlaces" {{ $disabledStr }} value="{{$course->places}}">
-</div>
-<div>
-    <label for="inputContact">Contact</label>
-    <input type="text" name="contact" id="inputContact" {{ $disabledStr }} value="{{$course->contact}}">
-</div>
-<div>
-    <label for="inputObjectives">Objectives</label>
-    <textarea name="objectives" id="inputObjectives" {{ $disabledStr }} rows=10>{{$course->objectives}}</textarea>
-</div>
-<div>
-    <label for="inputObjectives_pt">Objectives (PT)</label>
-    <textarea name="objectives_pt" id="inputObjectives_pt" {{ $disabledStr }} rows=10>{{$course->objectives_pt}}</textarea>
+<div class="flex flex-wrap space-x-8">
+    <div class="grow mt-6 space-y-4">
+        <x-field.input name="abbreviation" label="Abbreviation" width="md"
+                        :readonly="$readonly || ($mode == 'edit')"
+                        value="{{ old('abbreviation', $course->abbreviation) }}"/>
+        <x-field.radio-group name="type" label="Type of course" :readonly="$readonly"
+                        value="{{ old('type', $course->type) }}"
+                        :options="[
+                            'Degree' => 'Degree',
+                            'Master' => 'Master',
+                            'TESP' => 'TESP'
+                        ]"/>
+        <x-field.input name="name" label="Name" :readonly="$readonly"
+                        value="{{ old('name', $course->name) }}"/>
+        <x-field.input name="name_pt" label="Name (Portuguese)" :readonly="$readonly"
+                    value="{{ old('name_pt', $course->name_pt) }}"/>
+        <div class="flex space-x-4">
+            <x-field.input name="semesters" label="Nº Semesters" width="sm"
+                            :readonly="$readonly"
+                            value="{{ old('semesters', $course->semesters) }}"/>
+            <x-field.input name="ECTS" label="Nº ECTS" width="sm" :readonly="$readonly"
+                            value="{{ old('ECTS', $course->ECTS) }}"/>
+            <x-field.input name="places" label="Nº Places" width="sm" :readonly="$readonly"
+                            value="{{ old('places', $course->places) }}"/>
+        </div>
+        <x-field.input name="contact" label="Contact" :readonly="$readonly"
+                            value="{{ old('contact', $course->contact) }}"/>
+        <x-field.text-area name="objectives" label="Objectives" :readonly="$readonly"
+                            value="{{ old('objectives', $course->objectives) }}"/>
+        <x-field.text-area name="objectives_pt" label="Objectives (Portuguese)"
+                        :readonly="$readonly"
+                        value="{{ old('objectives_pt', $course->objectives_pt) }}"/>
+    </div>
+    <div class="pb-6">
+        <x-field.image
+            name="image_file"
+            label="Course Image"
+            width="md"
+            :readonly="$readonly"
+            deleteTitle="Delete Image"
+            :deleteAllow="($mode == 'edit') && ($course->imageExists)"
+            deleteForm="form_to_delete_image"
+            :imageUrl="$course->imageUrl"/>
+    </div>
 </div>
