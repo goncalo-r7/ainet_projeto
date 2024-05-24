@@ -38,18 +38,16 @@
                 </header>
                 @include('students.shared.fields', ['mode' => 'show'])
 
-                @can('viewAny', App\Models\Discipline::class)
-                    <h3 class="pt-16 pb-4 text-2xl font-medium text-gray-900 dark:text-gray-100">
-                        Disciplines
-                    </h3>
-                    <x-disciplines.table :disciplines="$student->disciplines"
-                        :showView="true"
-                        :showEdit="false"
-                        :showDelete="false"
-                        :showAddToCart="true"
-                        class="pt-4"
-                        />
-                @endcan
+                <h3 class="pt-16 pb-4 text-2xl font-medium text-gray-900 dark:text-gray-100">
+                    Disciplines
+                </h3>
+                <x-disciplines.table :disciplines="$student->disciplines"
+                    :showView="true"
+                    :showEdit="false"
+                    :showDelete="false"
+                    :showAddToCart="true"
+                    class="pt-4"
+                    />
             </section>
         </div>
     </div>

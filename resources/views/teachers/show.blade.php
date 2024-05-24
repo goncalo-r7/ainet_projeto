@@ -8,19 +8,14 @@
         <div class="max-full">
             <section>
                 <div class="flex flex-wrap justify-end items-center gap-4 mb-4">
-                    @can('create', App\Models\Teacher::class)
                     <x-button
-                        href="{{ route('teachers.create') }}"
+                        href="{{ route('teachers.create', ['teacher' => $teacher]) }}"
                         text="New"
                         type="success"/>
-                    @endcan
-                    @can('update', $teacher)
                     <x-button
                         href="{{ route('teachers.edit', ['teacher' => $teacher]) }}"
                         text="Edit"
                         type="primary"/>
-                    @endcan
-                    @can('delete', $teacher)
                     <form method="POST" action="{{ route('teachers.destroy', ['teacher' => $teacher]) }}">
                         @csrf
                         @method('DELETE')
@@ -29,7 +24,6 @@
                             text="Delete"
                             type="danger"/>
                     </form>
-                    @endcan
                 </div>
                 <header>
                     <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
@@ -38,18 +32,17 @@
                 </header>
                 @include('teachers.shared.fields', ['mode' => 'show'])
 
-                @can('viewAny', App\Models\Discipline::class)
-                    <h3 class="pt-16 pb-4 text-2xl font-medium text-gray-900 dark:text-gray-100">
-                        Disciplines
-                    </h3>
-                    <x-disciplines.table :disciplines="$teacher->disciplines"
-                        :showView="true"
-                        :showEdit="false"
-                        :showDelete="false"
-                        :showAddToCart="true"
-                        class="pt-4"
-                        />
-                @endcan
+                <h3 class="pt-16 pb-4 text-2xl font-medium text-gray-900 dark:text-gray-100">
+                    Disciplines
+                </h3>
+                <x-disciplines.table :disciplines="$teacher->disciplines"
+                    :showView="true"
+                    :showEdit="false"
+                    :showDelete="false"
+                    :showAddToCart="true"
+                    class="pt-4"
+                    />
+
             </section>
         </div>
     </div>

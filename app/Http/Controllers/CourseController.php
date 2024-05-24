@@ -4,26 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Course;
-use App\Models\Student;
-use App\Models\Discipline;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\CourseFormRequest;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
-class CourseController extends \Illuminate\Routing\Controller
+class CourseController extends Controller
 {
-    use AuthorizesRequests;
-
-    public function __construct()
-    {
-        $this->authorizeResource(Course::class);
-    }
-
     public function index(): View
     {
-        $allCourses = Course::orderBy('type')->orderBy('name')->paginate(20)->withQueryString();
+        $allCourses = Course::orderBy('type')->orderBy('name')->paginate(20);
 
         return view('courses.index')->with('allCourses', $allCourses);
     }
@@ -81,8 +72,12 @@ class CourseController extends \Illuminate\Routing\Controller
     {
         try {
             $url = route('courses.show', ['course' => $course]);
-            $totalStudents = Student::where('course', $course->abbreviation)->count();
-            $totalDisciplines = Discipline::where('course', $course->abbreviation)->count();
+            $totalStudents = DB::scalar(
+                'select count(*) from students where course = ?',
+                [$course->abbreviation]);
+            $totalDisciplines = DB::scalar(
+                'select count(*) from disciplines where course = ?',
+                [$course->abbreviation]);
             if ($totalStudents == 0 && $totalDisciplines == 0) {
                 $course->delete();
                 if ($course->imageExists) {
@@ -136,5 +131,6 @@ class CourseController extends \Illuminate\Routing\Controller
         return redirect()->back()
             ->with('alert-type', 'success')
             ->with('alert-msg', "Image of course {$course->name} has been deleted.");
+        return redirect()->back();
     }
 }

@@ -35,34 +35,22 @@
                 <td class="px-2 py-2 text-left hidden xl:table-cell">{{ $teacher->locker }}</td>
                 <td class="px-2 py-2 text-center hidden xl:table-cell">{{ $teacher->user->admin ? 'Yes' : '-' }}</td>
                 @if($showView)
-                    @can('view', $teacher)
-                        <td>
-                            <x-table.icon-show class="ps-3 px-0.5"
-                            href="{{ route('teachers.show', ['teacher' => $teacher]) }}"/>
-                        </td>
-                    @else
-                        <td></td>
-                    @endcan
+                    <td>
+                        <x-table.icon-show class="ps-3 px-0.5"
+                        href="{{ route('teachers.show', ['teacher' => $teacher]) }}"/>
+                    </td>
                 @endif
                 @if($showEdit)
-                    @can('update', $teacher)
-                        <td>
-                            <x-table.icon-edit class="px-0.5"
-                            href="{{ route('teachers.edit', ['teacher' => $teacher]) }}"/>
-                        </td>
-                    @else
-                        <td></td>
-                    @endcan
+                    <td>
+                        <x-table.icon-edit class="px-0.5"
+                        href="{{ route('teachers.edit', ['teacher' => $teacher]) }}"/>
+                    </td>
                 @endif
                 @if($showDelete)
-                    @can('delete', $teacher)
-                        <td>
-                            <x-table.icon-delete class="px-0.5"
-                            action="{{ route('teachers.destroy', ['teacher' => $teacher]) }}"/>
-                        </td>
-                    @else
-                        <td></td>
-                    @endcan
+                    <td>
+                        <x-table.icon-delete class="px-0.5"
+                        action="{{ route('teachers.destroy', ['teacher' => $teacher]) }}"/>
+                    </td>
                 @endif
             </tr>
         @endforeach

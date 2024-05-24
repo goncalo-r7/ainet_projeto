@@ -8,103 +8,77 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\CartController;
-use App\Models\Discipline;
-use App\Models\Teacher;
-use App\Models\Student;
-use App\Models\Course;
-use App\Models\User;
 use Illuminate\Support\Facades\Route;
+use App\Models\Student;
 
 /* ----- PUBLIC ROUTES ----- */
 
 Route::view('/', 'home')->name('home');
-
-Route::get('courses/showcase', [CourseController::class, 'showCase'])
-    ->name('courses.showcase')
-    ->can('viewShowCase', Course::class);
-
-Route::get('courses/{course}/curriculum', [CourseController::class, 'showCurriculum'])
-    ->name('courses.curriculum')
-    ->can('viewCurriculum', Course::class);
-
+Route::get('courses/showcase', [CourseController::class, 'showCase'])->name('courses.showcase');
+Route::get('courses/{course}/curriculum', [CourseController::class, 'showCurriculum'])->name('courses.curriculum');
 
 /* ----- Non-Verified users ----- */
 Route::middleware('auth')->group(function () {
-    Route::get('/password', [ProfileController::class, 'editPassword'])->name('profile.edit.password');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
 /* ----- Verified users ----- */
 Route::middleware('auth', 'verified')->group(function () {
 
-
-// CHECK THIS -------- -------- -------- --------
-    /* ----- Non-Verified users ----- */
-    // Route::middleware('auth')->group(function () {
-    //     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    //     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    //     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    // });
-// CHECK THIS -------- -------- -------- --------
-
-
     Route::view('/dashboard', 'dashboard')->name('dashboard');
 
     Route::delete('courses/{course}/image', [CourseController::class, 'destroyImage'])
-        ->name('courses.image.destroy')
-        ->can('update', Course::class);
+        ->name('courses.image.destroy');
 
-    //Course resource routes are protected by CoursePolicy on the controller
-    // The route 'show' is public (for anonymous user)
-    Route::resource('courses', CourseController::class)->except(['show']);
+    //Course show is public and index for any authenticated user
+    Route::resource('courses', CourseController::class)->only(['index']);
 
-    //Department resource routes are protected by DepartmentPolicy on the controller
-    Route::resource('departments', DepartmentController::class);
+    //Department show and index are accessible to any authenticated user
+    Route::resource('departments', DepartmentController::class)->only(['index', 'show']);
 
-    Route::get('disciplines/my', [DisciplineController::class, 'myDisciplines'])
-        ->name('disciplines.my')
-        ->can('viewMy', Discipline::class);
-
-    //Discipline resource routes are protected by DisciplinePolicy on the controller
     //Disciplines index and show are public
     Route::resource('disciplines', DisciplineController::class)->except(['index', 'show']);
 
-    Route::get('teachers/my', [TeacherController::class, 'myTeachers'])
-        ->name('teachers.my')
-        ->can('viewMy', Teacher::class);
-
     Route::delete('teachers/{teacher}/photo', [TeacherController::class, 'destroyPhoto'])
-        ->name('teachers.photo.destroy')
-        ->can('update', 'teacher');
-
-    //Teacher resource routes are protected by TeacherPolicy on the controller
+        ->name('teachers.photo.destroy');
     Route::resource('teachers', TeacherController::class);
 
-    Route::get('students/my', [StudentController::class, 'myStudents'])
-        ->name('students.my')
-        ->can('viewMy', Student::class);
+
     Route::delete('students/{student}/photo', [StudentController::class, 'destroyPhoto'])
         ->name('students.photo.destroy')
         ->can('update', 'student');
-    //Student resource routes are protected by StudentPolicy on the controller
     Route::resource('students', StudentController::class);
+    // Route::delete('students/{student}/photo', [StudentController::class, 'destroyPhoto'])
+    //     ->name('students.photo.destroy')
+    //     ->can('update', 'student');
+    // Route::get('students', [StudentController::class, 'index'])->name('students.index')
+    //     ->can('viewAny', Student::class);
+    // Route::get('students/{student}', [StudentController::class, 'show'])
+    //     ->name('students.show')
+    //     ->can('view', 'student');
+    // Route::get('students/create', [StudentController::class, 'create'])
+    //     ->name('students.create')
+    //     ->can('create', Student::class);
+    // Route::post('students', [StudentController::class, 'store'])
+    //     ->name('students.store')
+    //     ->can('create', Student::class);
+    // Route::get('students/{student}/edit', [StudentController::class, 'edit'])
+    //     ->name('students.edit')
+    //     ->can('update', 'student');
+    // Route::put('students/{student}', [StudentController::class, 'update'])
+    //     ->name('students.update')
+    //     ->can('update', 'student');
+    // Route::delete('students/{student}', [StudentController::class, 'destroy'])
+    //     ->name('students.destroy')
+    //     ->can('delete', 'student');
+
 
     Route::delete('administratives/{administrative}/photo', [AdministrativeController::class, 'destroyPhoto'])
-        ->name('administratives.photo.destroy')
-        ->can('update', 'administrative');
-
-    //Admnistrative resource routes are protected by AdministrativePolicy on the controller
+        ->name('administratives.photo.destroy');
     Route::resource('administratives', AdministrativeController::class);
 
-    // Confirm (store) the cart and save disciplines registration on the database:
-    Route::post('cart', [CartController::class, 'confirm'])
-        ->name('cart.confirm')
-        ->can('confirm-cart');
-});
-
-/* ----- OTHER PUBLIC ROUTES ----- */
-
-// Use Cart routes should be accessible to the public */
-Route::middleware('can:use-cart')->group(function () {
     // Add a discipline to the cart:
     Route::post('cart/{discipline}', [CartController::class, 'addToCart'])
         ->name('cart.add');
@@ -113,14 +87,22 @@ Route::middleware('can:use-cart')->group(function () {
         ->name('cart.remove');
     // Show the cart:
     Route::get('cart', [CartController::class, 'show'])->name('cart.show');
+    // Confirm (store) the cart and save disciplines registration on the database:
+    Route::post('cart', [CartController::class, 'confirm'])->name('cart.confirm');
     // Clear the cart:
     Route::delete('cart', [CartController::class, 'destroy'])->name('cart.destroy');
+
+    Route::middleware('can:admin')->group(function () {
+        //Course insert, update and delete related routes are for admin only
+        Route::resource('courses', CourseController::class)->except(['index', 'show']);
+        //Department insert, update and delete related routes are for admin only
+        Route::resource('departments', DepartmentController::class)->except(['index', 'show']);
+    });
 });
 
-
+/* ----- OTHER PUBLIC ROUTES ----- */
 //Course show is public.
 Route::resource('courses', CourseController::class)->only(['show']);
-
 //Disciplines index and show are public
 Route::resource('disciplines', DisciplineController::class)->only(['index', 'show']);
 

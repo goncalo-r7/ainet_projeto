@@ -4,26 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Department;
-use App\Models\Teacher;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\DepartmentFormRequest;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
-class DepartmentController extends \Illuminate\Routing\Controller
+class DepartmentController extends Controller
 {
-    use AuthorizesRequests;
-
-    public function __construct()
-    {
-        $this->authorizeResource(Department::class);
-    }
-
     public function index(): View
     {
         return view('departments.index')
-            ->with('departments', Department::orderBy('name')->paginate(20)->withQueryString());
+            ->with('departments', Department::orderBy('name')->paginate(20));
     }
 
     public function create(): View
@@ -63,8 +54,10 @@ class DepartmentController extends \Illuminate\Routing\Controller
     {
         try {
             $url = route('departments.show', ['department' => $department]);
-
-            $totalTeachers = Teacher::where('department', $department->abbreviation)->count();
+            $totalTeachers = DB::scalar(
+                'select count(*) from teachers where department = ?',
+                [$department->abbreviation]
+            );
             if ($totalTeachers == 0) {
                 $department->delete();
                 $alertType = 'success';

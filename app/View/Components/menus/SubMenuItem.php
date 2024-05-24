@@ -15,10 +15,10 @@ class SubMenuItem extends Component
         public string $content = 'Submenu Item',
         public string $href = '#',
         public bool $selectable = true,
-        public bool $selected = false,
-        public string $form = '',
+        public bool $selected = false
     )
     {
+        //
     }
 
     /**

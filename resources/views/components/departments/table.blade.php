@@ -21,34 +21,22 @@
                 <td class="px-2 py-2 text-left hidden lg:table-cell">{{ $department->abbreviation }}</td>
                 <td class="px-2 py-2 text-left">{{ $department->name }}</td>
                 @if($showView)
-                    @can('view', $department)
-                        <td>
-                            <x-table.icon-show class="ps-3 px-0.5"
-                                href="{{ route('departments.show', ['department' => $department]) }}"/>
-                        </td>
-                    @else
-                        <td></td>
-                    @endcan
+                    <td>
+                        <x-table.icon-show class="ps-3 px-0.5"
+                            href="{{ route('departments.show', ['department' => $department]) }}"/>
+                    </td>
                 @endif
                 @if($showEdit)
-                    @can('update', $department)
-                        <td>
-                            <x-table.icon-edit class="px-0.5"
-                                href="{{ route('departments.edit', ['department' => $department]) }}"/>
-                        </td>
-                    @else
-                        <td></td>
-                    @endcan
+                    <td>
+                        <x-table.icon-edit class="px-0.5"
+                            href="{{ route('departments.edit', ['department' => $department]) }}"/>
+                    </td>
                 @endif
                 @if($showDelete)
-                    @can('delete', $department)
-                        <td>
-                            <x-table.icon-delete class="px-0.5"
-                                action="{{ route('departments.destroy', ['department' => $department]) }}"/>
-                        </td>
-                    @else
-                        <td></td>
-                    @endcan
+                    <td>
+                        <x-table.icon-delete class="px-0.5"
+                            action="{{ route('departments.destroy', ['department' => $department]) }}"/>
+                    </td>
                 @endif
             </tr>
         @endforeach

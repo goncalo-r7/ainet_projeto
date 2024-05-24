@@ -21,14 +21,12 @@
             @if($showDelete)
                 <th></th>
             @endif
-            @can('use-cart')
-                @if($showAddToCart)
-                    <th></th>
-                @endif
-                @if($showRemoveFromCart)
-                    <th></th>
-                @endif
-            @endcan
+            @if($showAddToCart)
+                <th></th>
+            @endif
+            @if($showRemoveFromCart)
+                <th></th>
+            @endif
         </tr>
         </thead>
         <tbody>
@@ -45,51 +43,37 @@
                 <td class="px-2 py-2 text-right hidden lg:table-cell">{{ $discipline->hours }}</td>
                 <td class="px-2 py-2 text-center hidden lg:table-cell">{{ $discipline->optional ? 'optional' : '' }}</td>
                 @if($showView)
-                    @can('view', $discipline)
-                        <td>
-                            <x-table.icon-show class="ps-3 px-0.5"
-                            href="{{ route('disciplines.show', ['discipline' => $discipline]) }}"/>
-                        </td>
-                    @else
-                        <td></td>
-                    @endcan
+                    <td>
+                        <x-table.icon-show class="ps-3 px-0.5"
+                        href="{{ route('disciplines.show', ['discipline' => $discipline]) }}"/>
+                    </td>
                 @endif
                 @if($showEdit)
-                    @can('update', $discipline)
-                        <td>
-                            <x-table.icon-edit class="px-0.5"
-                            href="{{ route('disciplines.edit', ['discipline' => $discipline]) }}"/>
-                        </td>
-                    @else
-                        <td></td>
-                    @endcan
+                    <td>
+                        <x-table.icon-edit class="px-0.5"
+                        href="{{ route('disciplines.edit', ['discipline' => $discipline]) }}"/>
+                    </td>
                 @endif
                 @if($showDelete)
-                    @can('delete', $discipline)
-                        <td>
-                            <x-table.icon-delete class="px-0.5"
-                            action="{{ route('disciplines.destroy', ['discipline' => $discipline]) }}"/>
-                        </td>
-                    @else
-                        <td></td>
-                    @endcan
+                    <td>
+                        <x-table.icon-delete class="px-0.5"
+                        action="{{ route('disciplines.destroy', ['discipline' => $discipline]) }}"/>
+                    </td>
                 @endif
-                @can('use-cart')
-                    @if($showAddToCart)
-                        <td>
-                            <x-table.icon-add-cart class="px-0.5"
-                                method="post"
-                                action="{{ route('cart.add', ['discipline' => $discipline]) }}"/>
-                        </td>
-                    @endif
-                    @if($showRemoveFromCart)
-                        <td>
-                            <x-table.icon-minus class="px-0.5"
-                                method="delete"
-                                action="{{ route('cart.remove', ['discipline' => $discipline]) }}"/>
-                        </td>
-                    @endif
-                @endcan
+                @if($showAddToCart)
+                    <td>
+                        <x-table.icon-add-cart class="px-0.5"
+                            method="post"
+                            action="{{ route('cart.add', ['discipline' => $discipline]) }}"/>
+                    </td>
+                @endif
+                @if($showRemoveFromCart)
+                    <td>
+                        <x-table.icon-minus class="px-0.5"
+                            method="delete"
+                            action="{{ route('cart.remove', ['discipline' => $discipline]) }}"/>
+                    </td>
+                @endif
             </tr>
         @endforeach
         </tbody>

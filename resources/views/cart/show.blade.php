@@ -26,7 +26,7 @@
                             @csrf
                                 <x-field.input name="student_number" label="Student Number" width="lg"
                                                 :readonly="false"
-                                                value="{{ old('student_number', Auth::User()?->student?->number ) }}"/>
+                                                value="{{ old('student_number') }}"/>
                                 <x-button element="submit" type="dark" text="Confirm" class="mt-4"/>
                         </form>
                     </div>

@@ -7,20 +7,11 @@ use App\Models\User;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\AdministrativeFormRequest;
-use App\Policies\AdministrativePolicy;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
-class AdministrativeController extends \Illuminate\Routing\Controller
+class AdministrativeController extends Controller
 {
-    use AuthorizesRequests;
-
-    public function __construct()
-    {
-        $this->authorizeResource(User::class, 'administrative');
-    }
-
     public function index(Request $request): View
     {
         $administrativesQuery = User::where('type', 'A')
@@ -60,22 +51,16 @@ class AdministrativeController extends \Illuminate\Routing\Controller
         $newAdministrative->type = 'A';
         $newAdministrative->name = $validatedData['name'];
         $newAdministrative->email = $validatedData['email'];
-        // Only sets admin field if it has permission  to do it.
-        // Otherwise, admin is false
-        $newAdministrative->admin = $request->user()?->can('createAdmin', User::class)
-            ? $validatedData['admin']
-            : 0;
+        $newAdministrative->admin = $validatedData['admin'];
         $newAdministrative->gender = $validatedData['gender'];
         // Initial password is always 123
         $newAdministrative->password = bcrypt('123');
         $newAdministrative->save();
-
         if ($request->hasFile('photo_file')) {
             $path = $request->photo_file->store('public/photos');
             $newAdministrative->photo_url = basename($path);
             $newAdministrative->save();
         }
-        $newAdministrative->sendEmailVerificationNotification();
         $url = route('administratives.show', ['administrative' => $newAdministrative]);
         $htmlMessage = "Administrative <a href='$url'><u>{$newAdministrative->name}</u></a> has been created successfully!";
         return redirect()->route('administratives.index')
@@ -95,11 +80,7 @@ class AdministrativeController extends \Illuminate\Routing\Controller
         $administrative->type = 'A';
         $administrative->name = $validatedData['name'];
         $administrative->email = $validatedData['email'];
-        // Only updates admin field if it has permission  to do it.
-        // Otherwise, do not change it (ignore it)
-        if ($request->user()?->can('updateAdmin', $administrative)) {
-            $administrative->admin = $validatedData['admin'];
-        }
+        $administrative->admin = $validatedData['admin'];
         $administrative->gender = $validatedData['gender'];
         $administrative->save();
         if ($request->hasFile('photo_file')) {
@@ -119,16 +100,6 @@ class AdministrativeController extends \Illuminate\Routing\Controller
         return redirect()->route('administratives.index')
             ->with('alert-type', 'success')
             ->with('alert-msg', $htmlMessage);
-
-        if ($request->user()->can('viewAny', User::class)) {
-            return redirect()->route('administrative.index')
-            ->with('alert-type', 'success')
-            ->with('alert-msg', $htmlMessage);
-        }
-        return redirect()->back()
-            ->with('alert-type', 'success')
-            ->with('alert-msg', $htmlMessage);
-
     }
 
     public function destroy(User $administrative): RedirectResponse

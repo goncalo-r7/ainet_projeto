@@ -11,18 +11,9 @@ use App\Http\Requests\TeacherFormRequest;
 use App\Models\Department;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
-class TeacherController extends \Illuminate\Routing\Controller
+class TeacherController extends Controller
 {
-    use AuthorizesRequests;
-
-    public function __construct()
-    {
-        $this->authorizeResource(Teacher::class);
-    }
-
     public function index(Request $request): View
     {
         $departments = Department::orderBy('name')->pluck('name', 'abbreviation')->toArray();
@@ -71,24 +62,6 @@ class TeacherController extends \Illuminate\Routing\Controller
         );
     }
 
-    public function myTeachers(Request $request): View
-    {
-        $idDisciplines = $request->user()?->student?->disciplines?->pluck('id')?->toArray();
-        if (empty($idDisciplines)) {
-            return view('teachers.my')->with('teachers', new Collection);
-        }
-        $teachersQuery = Teacher::join('users', 'users.id', '=', 'teachers.user_id')
-            ->select('teachers.*')
-            ->orderBy('users.name');
-        $teachers = $teachersQuery
-            ->join('teachers_disciplines', 'teachers_disciplines.teacher_id', '=', 'teachers.id')
-            ->whereIntegerInRaw('teachers_disciplines.discipline_id', $idDisciplines)
-            ->with('user', 'departmentRef')
-            ->get();
-        return view('teachers.my',compact('teachers'));
-    }
-
-
     public function show(Teacher $teacher): View
     {
         $departments = Department::orderBy('name')->pluck('name', 'abbreviation')->toArray();
@@ -119,11 +92,7 @@ class TeacherController extends \Illuminate\Routing\Controller
             $newUser->type = 'T';
             $newUser->name = $validatedData['name'];
             $newUser->email = $validatedData['email'];
-            // Only sets admin field if it has permission  to do it.
-            // Otherwise, admin is false
-            $newUser->admin = $request->user()?->can('createAdmin', Teacher::class)
-                ? $validatedData['admin']
-                : 0;
+            $newUser->admin = $validatedData['admin'];
             $newUser->gender = $validatedData['gender'];
             // Initial password is always 123
             $newUser->password =bcrypt('123');
@@ -146,7 +115,6 @@ class TeacherController extends \Illuminate\Routing\Controller
             }
             return $newTeacher;
         });
-        $newTeacher->user->sendEmailVerificationNotification();
         $url = route('teachers.show', ['teacher' => $newTeacher]);
         $htmlMessage = "Teacher <a href='$url'><u>{$newTeacher->user->name}</u></a> has been created successfully!";
         return redirect()->route('teachers.index')
@@ -174,11 +142,7 @@ class TeacherController extends \Illuminate\Routing\Controller
             $teacher->user->type = 'T';
             $teacher->user->name = $validatedData['name'];
             $teacher->user->email = $validatedData['email'];
-            // Only updates admin field if it has permission  to do it.
-            // Otherwise, do not change it (ignore it)
-            if ($request->user()?->can('updateAdmin', $teacher)) {
-                $teacher->user->admin = $validatedData['admin'];
-            }
+            $teacher->user->admin = $validatedData['admin'];
             $teacher->user->gender = $validatedData['gender'];
             $teacher->user->save();
             if ($request->hasFile('photo_file')) {
@@ -195,21 +159,19 @@ class TeacherController extends \Illuminate\Routing\Controller
         });
         $url = route('teachers.show', ['teacher' => $teacher]);
         $htmlMessage = "Teacher <a href='$url'><u>{$teacher->user->name}</u></a> has been updated successfully!";
-        if ($request->user()->can('viewAny', Teacher::class)) {
-            return redirect()->route('teachers.index')
-                ->with('alert-type', 'success')
-                ->with('alert-msg', $htmlMessage);
-        }
-        return redirect()->back()
-        ->with('alert-type', 'success')
-        ->with('alert-msg', $htmlMessage);
+        return redirect()->route('teachers.index')
+            ->with('alert-type', 'success')
+            ->with('alert-msg', $htmlMessage);
     }
 
     public function destroy(Teacher $teacher): RedirectResponse
     {
         try {
             $url = route('teachers.show', ['teacher' => $teacher]);
-            $totalTeachersDisciplines = $teacher->disciplines()->count();
+            $totalTeachersDisciplines = DB::scalar(
+                'select count(*) from teachers_disciplines where teacher_id = ?',
+                [$teacher->id]
+            );
             if ($totalTeachersDisciplines == 0) {
                 DB::transaction(function () use ($teacher) {
                     $fileToDelete = $teacher->user->photo_url;

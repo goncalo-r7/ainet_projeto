@@ -8,19 +8,14 @@
         <div class="max-full">
             <section>
                 <div class="flex flex-wrap justify-end items-center gap-4 mb-4">
-                    @can('create', App\Models\Department::class)
                     <x-button
-                        href="{{ route('departments.create') }}"
+                        href="{{ route('departments.create', ['department' => $department]) }}"
                         text="New"
                         type="success"/>
-                    @endcan
-                    @can('view', $department)
                     <x-button
                         href="{{ route('departments.show', ['department' => $department]) }}"
                         text="View"
                         type="info"/>
-                    @endcan
-                    @can('delete', $department)
                     <form method="POST" action="{{ route('departments.destroy', ['department' => $department]) }}">
                         @csrf
                         @method('DELETE')
@@ -29,7 +24,6 @@
                             text="Delete"
                             type="danger"/>
                     </form>
-                    @endcan
                 </div>
                 <header>
                     <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">

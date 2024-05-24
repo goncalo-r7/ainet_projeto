@@ -1,16 +1,6 @@
 @php
     $mode = $mode ?? 'edit';
     $readonly = $mode == 'show';
-    $adminReadonly = $readonly;
-    if (!$adminReadonly) {
-        if ($mode == 'create') {
-            $adminReadonly = Auth::user()?->cannot('createAdmin', App\Models\User::class);
-        } elseif ($mode == 'edit') {
-            $adminReadonly = Auth::user()?->cannot('updateAdmin', $administrative);
-        } else {
-            $adminReadonly = true;
-        }
-    }
 @endphp
 
 <div class="flex flex-wrap space-x-8">
@@ -22,7 +12,7 @@
         <x-field.radiogroup name="gender" label="Gender" :readonly="$readonly"
             value="{{ old('gender', $administrative->gender) }}"
             :options="['M' => 'Masculine', 'F' => 'Feminine']"/>
-        <x-field.checkbox name="admin" label="Administrator" :readonly="$adminReadonly"
+        <x-field.checkbox name="admin" label="Administrator" :readonly="$readonly"
                         value="{{ old('admin', $administrative->admin) }}"/>
     </div>
     <div class="pb-6">

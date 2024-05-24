@@ -1,16 +1,6 @@
 @php
     $mode = $mode ?? 'edit';
     $readonly = $mode == 'show';
-    $adminReadonly = $readonly;
-    if (!$adminReadonly) {
-        if ($mode == 'create') {
-            $adminReadonly = Auth::user()?->cannot('createAdmin', App\Models\Teacher::class);
-        } elseif ($mode == 'edit') {
-            $adminReadonly = Auth::user()?->cannot('updateAdmin', $teacher);
-        } else {
-            $adminReadonly = true;
-        }
-    }
 @endphp
 
 <div class="flex flex-wrap space-x-8">
@@ -33,7 +23,7 @@
             <x-field.input name="locker" label="Locker" :readonly="$readonly"
                         value="{{ old('locker', $teacher->locker) }}"/>
         </div>
-        <x-field.checkbox name="admin" label="Administrator" :readonly="$adminReadonly"
+        <x-field.checkbox name="admin" label="Administrator" :readonly="$readonly"
                         value="{{ old('admin', $teacher->user->admin) }}"/>
     </div>
     <div class="pb-6">

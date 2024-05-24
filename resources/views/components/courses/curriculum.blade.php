@@ -34,13 +34,9 @@
                                         @if($semesterCell['rowspan']) rowspan={{$semesterCell['rowspan']}} @endif
                                     >
                                         @if($semesterCell['discipline'])
-                                            @can('view', $semesterCell['discipline'])
-                                                <a href="{{ route('disciplines.show', ['discipline' =>$semesterCell['discipline']])}}">
-                                                    {{ $semesterCell['discipline']->name }}
-                                                </a>
-                                            @else
-                                                 {{ $semesterCell['discipline']->name }}
-                                            @endcan
+                                            <a href="{{ route('disciplines.show', ['discipline' =>$semesterCell['discipline']])}}">
+                                                {{ $semesterCell['discipline']->name }}
+                                            </a>
                                         @endif
                                     </td>
                                 @else
@@ -52,13 +48,9 @@
                                         @if($semesterCell['rowspan']) rowspan={{$semesterCell['rowspan']}} @endif
                                     >
                                         @if($semesterCell['discipline'])
-                                            @can('view', $semesterCell['discipline'])
-                                                <a href="{{ route('disciplines.show', ['discipline' =>$semesterCell['discipline']])}}">
-                                                    {{ $semesterCell['discipline']->name }}
-                                                </a>
-                                            @else
-                                                 {{ $semesterCell['discipline']->name }}
-                                            @endcan
+                                            <a href="{{ route('disciplines.show', ['discipline' =>$semesterCell['discipline']])}}">
+                                                {{ $semesterCell['discipline']->name }}
+                                            </a>
                                         @endif
                                     </td>
                                 @endif

@@ -15,12 +15,12 @@
                 class="mb-6"
                 />
             @can('create', App\Models\Student::class)
-                <div class="flex items-center gap-4 mb-4">
-                    <x-button
-                        href="{{ route('students.create') }}"
-                        text="Create a new student"
-                        type="success"/>
-                </div>
+            <div class="flex items-center gap-4 mb-4">
+                <x-button
+                    href="{{ route('students.create') }}"
+                    text="Create a new student"
+                    type="success"/>
+            </div>
             @endcan
             <div class="font-base text-sm text-gray-700 dark:text-gray-300">
                 <x-students.table :students="$students"

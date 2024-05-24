@@ -34,57 +34,44 @@
                     <div id="menu-container" class="grow flex flex-col sm:flex-row items-stretch
                     invisible h-0 sm:visible sm:h-auto">
                         <!-- Menu Item: Courses -->
-                        @can('viewShowcase', App\Models\Course::class)
-                            <x-menus.menu-item
-                                content="Courses"
-                                href="{{ route('courses.showcase') }}"
-                                selected="{{ Route::currentRouteName() == 'courses.showcase'}}"
-                            />
-                        @endcan
+                        <x-menus.menu-item
+                            content="Courses"
+                            href="{{ route('courses.showcase') }}"
+                            selected="{{ Route::currentRouteName() == 'courses.showcase'}}"
+                        />
 
                         <!-- Menu Item: Curricula -->
-                        @can('viewCurriculum', App\Models\Course::class)
-                            <x-menus.submenu-full-width
-                                content="Curricula"
+                        <x-menus.submenu-full-width
+                            content="Curricula"
+                            selectable="1"
+                            selected="0"
+                            uniqueName="submenu_curricula">
+                            @foreach ($courses as $course)
+                                <x-menus.submenu-item
+                                :content="$course->fullName"
                                 selectable="1"
                                 selected="0"
-                                uniqueName="submenu_curricula">
-                                @foreach ($courses as $course)
-                                    <x-menus.submenu-item
-                                    :content="$course->fullName"
-                                    selectable="1"
-                                    selected="0"
-                                    href="{{ route('courses.curriculum', ['course' => $course]) }}"/>
-                                @endforeach
-                            </x-menus.submenu-full-width>
-                        @endcan
+                                href="{{ route('courses.curriculum', ['course' => $course]) }}"/>
+                            @endforeach
+                        </x-menus.submenu-full-width>
+
                         <!-- Menu Item: Disciplines -->
-                        @can('viewAny', App\Models\Discipline::class)
                         <x-menus.menu-item
                             content="Disciplines"
                             selectable="1"
                             href="{{ route('disciplines.index') }}"
                             selected="{{ Route::currentRouteName() == 'disciplines.index'}}"
                             />
-                        @endcan
 
+                        @auth
                         <!-- Menu Item: Teachers -->
-                        @can('viewAny', App\Models\Teacher::class)
-                            <x-menus.menu-item
-                                content="Teachers"
-                                selectable="1"
-                                href="{{ route('teachers.index') }}"
-                                selected="{{ Route::currentRouteName() == 'teachers.index'}}"
-                                />
-                        @endcan
+                        <x-menus.menu-item
+                            content="Teachers"
+                            selectable="1"
+                            href="{{ route('teachers.index') }}"
+                            selected="{{ Route::currentRouteName() == 'teachers.index'}}"
+                            />
 
-                        {{-- If user has any of the 4 menu options previlege, then it should show the submenu --}}
-                        @if(
-                            Gate::check('viewAny', App\Models\Student::class) ||
-                            Gate::check('viewAny', App\Models\User::class) ||
-                            Gate::check('viewAny', App\Models\Department::class) ||
-                            Gate::check('viewAny', App\Models\Course::class)
-                            )
                         <!-- Menu Item: Others -->
                         <x-menus.submenu
                             selectable="0"
@@ -96,38 +83,30 @@
                                     selectable="0"
                                     href="{{ route('students.index') }}" />
                                 @endcan
-                                @can('viewAny', App\Models\User::class)
                                 <x-menus.submenu-item
                                     content="Administratives"
                                     selectable="0"
                                     href="{{ route('administratives.index') }}" />
-                                @endcan
                                 <hr>
-                                @can('viewAny', App\Models\Department::class)
                                 <x-menus.submenu-item
                                     content="Departments"
                                     selectable="0"
                                     href="{{ route('departments.index') }}"/>
-                                @endcan
-                                @can('viewAny', App\Models\Course::class)
                                 <x-menus.submenu-item
                                     content="Course Management"
                                     href="{{ route('courses.index') }}"/>
-                                @endcan
                         </x-menus.submenu>
-                        @endif
+                        @endauth
 
                         <div class="grow"></div>
 
                         <!-- Menu Item: Cart -->
                         @if (session('cart'))
-                            @can('use-cart')
                             <x-menus.cart
                                 :href="route('cart.show')"
                                 selectable="1"
                                 selected="{{ Route::currentRouteName() == 'cart.show'}}"
                                 :total="session('cart')->count()"/>
-                            @endcan
                         @endif
 
                         @auth
@@ -144,48 +123,40 @@
                                     {{ Auth::user()->name }}
                                 </div>
                             </x-slot>
-                            @can('viewMy', App\Models\Discipline::class)
                             <x-menus.submenu-item
                                 content="My Disciplines"
                                 selectable="0"
-                                href="{{ route('disciplines.my') }}"/>
-                            @endcan
-                            @can('viewMy', App\Models\Teacher::class)
+                                href="#"/>
                             <x-menus.submenu-item
                                 content="My Teachers"
                                 selectable="0"
-                                href="{{ route('teachers.my') }}"/>
-                            @endcan
-                            @can('viewMy', App\Models\Student::class)
-                                <x-menus.submenu-item
-                                    content="My Students"
-                                    selectable="0"
-                                    href="{{ route('students.my') }}"/>
-                                <hr>
-                            @endcan
-                            @auth
+                                href="#"/>
+                            <x-menus.submenu-item
+                                content="My Students"
+                                selectable="0"
+                                href="#"/>
                             <hr>
                             <x-menus.submenu-item
                                 content="Profile"
                                 selectable="0"
-                                :href="match(Auth::user()->type) {
-                                    'A' => route('administratives.edit', ['administrative' => Auth::user()]),
-                                    'T' => route('teachers.edit', ['teacher' => Auth::user()->teacher]),
-                                    'S' => route('students.edit', ['student' => Auth::user()->student]),
-                                }"/>
-                            <x-menus.submenu-item
-                                content="Change Password"
-                                selectable="0"
-                                href="{{ route('profile.edit.password') }}"/>
-                            @endauth
+                                href="{{ route('profile.edit') }}"/>
                             <hr>
                             <form id="form_to_logout_from_menu" method="POST" action="{{ route('logout') }}" class="hidden">
                                 @csrf
                             </form>
-                            <x-menus.submenu-item
-                                content="Log Out"
-                                selectable="0"
-                                form="form_to_logout_from_menu"/>
+                            <a class="px-3 py-4 border-b-2 border-transparent
+                                        text-sm font-medium leading-5 inline-flex h-auto
+                                        text-gray-500 dark:text-gray-400
+                                        hover:text-gray-700 dark:hover:text-gray-300
+                                        hover:bg-gray-100 dark:hover:bg-gray-800
+                                        focus:outline-none
+                                        focus:text-gray-700 dark:focus:text-gray-300
+                                        focus:bg-gray-100 dark:focus:bg-gray-800"
+                                    href="#"
+                                    onclick="event.preventDefault();
+                                    document.getElementById('form_to_logout_from_menu').submit();">
+                                Log Out
+                            </a>
                         </x-menus.submenu>
                         @else
                         <!-- Menu Item: Login -->
@@ -195,6 +166,7 @@
                             href="{{ route('login') }}"
                             selected="{{ Route::currentRouteName() == 'login'}}"
                             />
+
                         @endauth
                     </div>
                     <!-- Hamburger -->

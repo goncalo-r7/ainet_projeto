@@ -8,19 +8,12 @@ use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\DisciplineFormRequest;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Eloquent\Collection;
-use App\Models\Teacher;
-use App\Models\Student;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
-class DisciplineController extends \Illuminate\Routing\Controller
+class DisciplineController extends Controller
 {
-    use AuthorizesRequests;
-
-    public function __construct()
-    {
-        $this->authorizeResource(Discipline::class);
-    }
+    /**
+     * Display a listing of the resource.
+        */
 
     public function index(Request $request): View
     {
@@ -38,6 +31,23 @@ class DisciplineController extends \Illuminate\Routing\Controller
         if ($filterBySemester !== null) {
             $disciplinesQuery->where('semester', $filterBySemester);
         }
+        // if ($filterByTeacher !== null) {
+        //     $usersIds = DB::table('users')
+        //         ->where('type', 'T')
+        //         ->where('name', 'like', "%$filterByTeacher%")
+        //         ->pluck('id')
+        //         ->toArray();
+        //     $teachersIds = DB::table('teachers')
+        //         ->whereIntegerInRaw('user_id', $usersIds)
+        //         ->pluck('id')
+        //         ->toArray();
+        //     $disciplinesIds = DB::table('teachers_disciplines')
+        //         ->whereIntegerInRaw('teacher_id', $teachersIds)
+        //         ->pluck('discipline_id')
+        //         ->toArray();
+        //     $disciplinesQuery->whereIntegerInRaw('id', $disciplinesIds);
+        // }
+
         if ($filterByTeacher !== null) {
             $disciplinesQuery->with('teachers.user')->whereHas(
                 'teachers.user',
@@ -58,31 +68,6 @@ class DisciplineController extends \Illuminate\Routing\Controller
             'disciplines.index',
             compact('disciplines', 'filterByCourse', 'filterByYear', 'filterBySemester', 'filterByTeacher')
         );
-    }
-
-
-    public function myDisciplines(Request $request): View
-    {
-        if ($request->user()?->type == 'T') {
-            $idDisciplines = $request->user()?->teacher?->disciplines?->pluck('id')?->toArray();
-            if (empty($idDisciplines)) {
-                return view('disciplines.my')->with('disciplines', new Collection);
-            }
-        } elseif ($request->user()?->type == 'S') {
-            $idDisciplines = $request->user()?->student?->disciplines?->pluck('id')?->toArray();
-            if (empty($idDisciplines)) {
-                return view('disciplines.my')->with('disciplines', new Collection);
-            }
-        } else {
-            return view('disciplines.my')->with('disciplines', new Collection);
-        }
-        $disciplines = Discipline::whereIntegerInRaw('id', $idDisciplines)
-            ->with('courseRef')
-            ->orderBy('year')
-            ->orderBy('semester')
-            ->orderBy('name')
-            ->get();
-        return view('disciplines.my', compact('disciplines'));
     }
 
 
@@ -153,8 +138,14 @@ class DisciplineController extends \Illuminate\Routing\Controller
     {
         try {
             $url = route('disciplines.show', ['discipline' => $discipline]);
-            $totalStudents = $discipline->students()->count();
-            $totalTeachers = $discipline->teachers()->count();
+            $totalStudents = DB::scalar(
+                'select count(*) from students_disciplines where discipline_id = ?',
+                [$discipline->id]
+            );
+            $totalTeachers = DB::scalar(
+                'select count(*) from teachers_disciplines where discipline_id = ?',
+                [$discipline->id]
+            );
             if ($totalStudents == 0 && $totalTeachers == 0) {
                 $discipline->delete();
                 $alertType = 'success';

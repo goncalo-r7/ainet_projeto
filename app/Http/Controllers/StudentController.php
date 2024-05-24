@@ -4,15 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Student;
+use App\Models\User;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\StudentFormRequest;
+use App\Models\Course;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Database\Eloquent\Collection;
-use App\Models\Course;
-use App\Models\User;
 
 class StudentController extends \Illuminate\Routing\Controller
 {
@@ -71,23 +70,6 @@ class StudentController extends \Illuminate\Routing\Controller
         );
     }
 
-    public function myStudents(Request $request) : View
-    {
-        $idDisciplines = $request->user()?->teacher?->disciplines?->pluck('id')?->toArray();
-        if (empty($idDisciplines)) {
-            return view('students.my')->with('students', new Collection);
-        }
-        $studentsQuery = Student::join('users', 'users.id', '=', 'students.user_id')
-            ->select('students.*')
-            ->orderBy('users.name');
-        $students = $studentsQuery
-            ->join('students_disciplines', 'students_disciplines.students_id', '=', 'students.id')
-            ->whereIntegerInRaw('students_disciplines.discipline_id', $idDisciplines)
-            ->with('user', 'courseRef', 'disciplines')
-            ->get();
-        return view('students.my',compact('students'));
-    }
-
     public function show(Student $student): View
     {
         return view('students.show')->with('student', $student);
@@ -131,7 +113,6 @@ class StudentController extends \Illuminate\Routing\Controller
             }
             return $newStudent;
         });
-        $newStudent->user->sendEmailVerificationNotification();
         $url = route('students.show', ['student' => $newStudent]);
         $htmlMessage = "Student <a href='$url'><u>{$newStudent->user->name}</u></a> has been created successfully!";
         return redirect()->route('students.index')
@@ -175,12 +156,7 @@ class StudentController extends \Illuminate\Routing\Controller
         });
         $url = route('students.show', ['student' => $student]);
         $htmlMessage = "Student <a href='$url'><u>{$student->user->name}</u></a> has been updated successfully!";
-        if ($request->user()->can('viewAny', Student::class)) {
-            return redirect()->route('students.index')
-                ->with('alert-type', 'success')
-                ->with('alert-msg', $htmlMessage);
-        }
-        return redirect()->back()
+        return redirect()->route('students.index')
             ->with('alert-type', 'success')
             ->with('alert-msg', $htmlMessage);
     }
@@ -189,9 +165,10 @@ class StudentController extends \Illuminate\Routing\Controller
     {
         try {
             $url = route('students.show', ['student' => $student]);
-
-            $totalStudentsDisciplines = $student->disciplines()->count();
-
+            $totalStudentsDisciplines = DB::scalar(
+                'select count(*) from students_disciplines where students_id = ?',
+                [$student->id]
+            );
             if ($totalStudentsDisciplines == 0) {
                 DB::transaction(function () use ($student) {
                     $fileToDelete = $student->user->photo_url;

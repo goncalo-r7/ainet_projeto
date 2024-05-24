@@ -8,19 +8,14 @@
         <div class="max-full">
             <section>
                 <div class="flex flex-wrap justify-end items-center gap-4 mb-4">
-                    @can('create', App\Models\Discipline::class)
                     <x-button
-                        href="{{ route('disciplines.create') }}"
+                        href="{{ route('disciplines.create', ['discipline' => $discipline]) }}"
                         text="New"
                         type="success"/>
-                    @endcan
-                    @can('view', $discipline)
                     <x-button
                         href="{{ route('disciplines.show', ['discipline' => $discipline]) }}"
                         text="View"
                         type="info"/>
-                    @endcan
-                    @can('delete', $discipline)
                     <form method="POST" action="{{ route('disciplines.destroy', ['discipline' => $discipline]) }}">
                         @csrf
                         @method('DELETE')
@@ -29,7 +24,6 @@
                             text="Delete"
                             type="danger"/>
                     </form>
-                    @endcan
                 </div>
                 <header>
                     <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">

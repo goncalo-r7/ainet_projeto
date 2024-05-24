@@ -22,11 +22,6 @@ class StudentPolicy
         return $user->type == 'T' || $user->type == 'A';
     }
 
-    public function viewMy(User $user): bool
-    {
-        return $user->type == 'T';
-    }
-
     public function view(User $user, Student $student): bool
     {
         if ($user->type == 'A' || ($user->type == 'S' && $user->id == $student->user_id)) {
@@ -69,11 +64,11 @@ class StudentPolicy
 
     public function update(User $user, Student $student): bool
     {
-        return $user->type == 'A' || ($user->type == 'S' && $user->id == $student->user_id);
+        return $user->type == 'A';
     }
 
     public function delete(User $user, Student $student): bool
     {
         return $user->type == 'A';
     }
-    }
+}
