@@ -1,9 +1,9 @@
 @extends('layouts.main')
 
-@section('header-title', 'List of Courses')
+@section('header-title', 'List of Movies')
 
 @section('main')
     <div class="flex flex-col">
-        @each('courses.shared.card', $courses, 'course')
+        @each('movies.shared.card', $movies, 'movie')
     </div>
 @endsection

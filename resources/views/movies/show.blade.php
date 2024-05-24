@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('header-title', $course->name)
+@section('header-title', $movie->title)
 
 @section('main')
 <div class="flex flex-col space-y-6">
@@ -9,14 +9,14 @@
             <section>
                 <div class="flex flex-wrap justify-end items-center gap-4 mb-4">
                     <x-button
-                        href="{{ route('courses.create', ['course' => $course]) }}"
+                        href="{{ route('movie.create', ['movie' => $movie]) }}"
                         text="New"
                         type="success"/>
                     <x-button
-                        href="{{ route('courses.edit', ['course' => $course]) }}"
+                        href="{{ route('movies.edit', ['movie' => $movie]) }}"
                         text="Edit"
                         type="primary"/>
-                    <form method="POST" action="{{ route('courses.destroy', ['course' => $course]) }}">
+                    <form method="POST" action="{{ route('movies.destroy', ['movie' => $movie]) }}">
                         @csrf
                         @method('DELETE')
                         <x-button
@@ -27,16 +27,16 @@
                 </div>
                 <header>
                     <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                        Course "{{ $course->name }}"
+                        Movie "{{ $movie->name }}"
                     </h2>
                 </header>
                 <div class="mt-6 space-y-4">
-                    @include('courses.shared.fields', ['mode' => 'show'])
+                    @include('movies.shared.fields', ['mode' => 'show'])
                 </div>
                 <h3 class="pt-16 pb-4 text-2xl font-medium text-gray-900 dark:text-gray-100">
                     Curriculum
                 </h3>
-                <x-courses.curriculum :disciplines="$course->disciplines"
+                <x-movies.curriculum :disciplines="$movie->disciplines"
                     :showView="true"
                     class="pt-4"
                     />
