@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdministrativeController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\MovieController;
 use App\Http\Controllers\DisciplineController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\TeacherController;
@@ -16,6 +17,11 @@ use App\Models\Student;
 Route::view('/', 'home')->name('home');
 Route::get('courses/showcase', [CourseController::class, 'showCase'])->name('courses.showcase');
 Route::get('courses/{course}/curriculum', [CourseController::class, 'showCurriculum'])->name('courses.curriculum');
+
+
+//MOVIE
+Route::get('movies/showcase', [MovieController::class, 'showCase'])->name('movies.showcase');
+
 
 /* ----- Non-Verified users ----- */
 Route::middleware('auth')->group(function () {
@@ -34,6 +40,10 @@ Route::middleware('auth', 'verified')->group(function () {
 
     //Course show is public and index for any authenticated user
     Route::resource('courses', CourseController::class)->only(['index']);
+
+    //Route::resource('movies', MovieController::class)->only(['index']);
+    Route::resource('movies', MovieController::class); // TIRAR ISTO!!! QUANDO LOGS TIVEREM FEITOS
+
 
     //Department show and index are accessible to any authenticated user
     Route::resource('departments', DepartmentController::class)->only(['index', 'show']);
@@ -103,6 +113,8 @@ Route::middleware('auth', 'verified')->group(function () {
 /* ----- OTHER PUBLIC ROUTES ----- */
 //Course show is public.
 Route::resource('courses', CourseController::class)->only(['show']);
+
+Route::resource('movies', MovieController::class)->only(['show']);
 //Disciplines index and show are public
 Route::resource('disciplines', DisciplineController::class)->only(['index', 'show']);
 
