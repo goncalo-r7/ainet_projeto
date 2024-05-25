@@ -5,7 +5,7 @@
                     my-4 p-8 md:p-0">
         <a class="h-48 w-48 md:h-72 md:w-72 md:min-w-72 md:max-w-72 mx-auto md:m-0" href="{{ route('movies.show', ['movie' => $movie]) }}">
             <img class="h-full aspect-auto mx-auto rounded-full md:rounded-l-xl md:rounded-r-none"
-                src="{{ $movie->poster_filename }}">
+                src="{{ $movie->imageUrl }}">
         </a>
         <div class="h-auto p-6 text-center md:text-left space-y-1 flex flex-col">
             <a class="font-semibold text-lg text-gray-800 dark:text-gray-200 leading-tight" href="{{ route('movies.show', ['movie' => $movie]) }}">

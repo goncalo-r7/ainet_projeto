@@ -47,6 +47,9 @@
                 <a href="{{ route('courses.index') }}">Courses</a>
             </li>
             <li>
+                <a href="{{ route('movies.index') }}">Movies</a>
+            </li>
+            <li>
                 <a href="{{ route('disciplines.index') }}">Disciplines</a>
             </li>
         </ul>

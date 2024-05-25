@@ -36,10 +36,7 @@
                 <h3 class="pt-16 pb-4 text-2xl font-medium text-gray-900 dark:text-gray-100">
                     Curriculum
                 </h3>
-                <x-movies.curriculum :disciplines="$movie->disciplines"
-                    :showView="true"
-                    class="pt-4"
-                    />
+
             </section>
         </div>
     </div>

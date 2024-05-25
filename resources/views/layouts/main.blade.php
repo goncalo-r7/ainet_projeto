@@ -39,6 +39,12 @@
                             href="{{ route('courses.showcase') }}"
                             selected="{{ Route::currentRouteName() == 'courses.showcase'}}"
                         />
+                        <!-- Menu Item: MOvies -->
+                        <x-menus.menu-item
+                            content="Movies"
+                            href="{{ route('movies.showcase') }}"
+                            selected="{{ Route::currentRouteName() == 'movies.showcase'}}"
+                        />
 
                         <!-- Menu Item: Curricula -->
                         <x-menus.submenu-full-width
