@@ -22,19 +22,21 @@
                     {{ $movie->synopsis }}
                 </p>
             </div>
-            <div>
+            <div class="h-full flex flex-col"> <!-- Add these classes here -->
                 <figcaption class="font-">
                     <div class="text-center md:text-left font-semibold text-lg text-gray-800 dark:text-gray-200 leading-tight">
-                        Session
+                        Last Sessions
                     </div>
                 </figcaption>
-                <figcaption class="font- overflow-y-auto h-24 md:h-32">
-                    @foreach($movie->screeningsRef as $screening)
-                    <div class="flex justify-center md:justify-start font-base text-base space-x-6 text-gray-700 dark:text-gray-300 ">
-                        <div>Date: {{ $screening['date'] }} {{ $screening['start_time'] }}</div>
-                    </div>
-                    @endforeach
-                </figcaption>
+                <div class="overflow-y-auto flex-grow"> <!-- Add this div here -->
+                    <figcaption class="font- h-24 md:h-32">
+                        @foreach($movie->screeningsRef as $screening)
+                        <div class="flex justify-center md:justify-start font-base text-base space-x-6 text-gray-700 dark:text-gray-300 ">
+                            <div>Date: {{ $screening['date'] }} {{ $screening['start_time'] }}</div>
+                        </div>
+                        @endforeach
+                    </figcaption>
+                </div>
             </div>
         </div>
     </figure>
