@@ -25,12 +25,23 @@ class Movie extends Model
 
     // nao esta corrigido em baixo
 
-    public function getTrailerFullUrlAttribute()
+
+    public function getFileNameAttribute()
     {
-        if ($this->photo_url && Storage::exists("public/photos/{$this->trailer_url}")) {
-            return asset("storage/photos/{$this->photo_url}");
+        return strtoupper(trim($this->poster_filename));
+    }
+
+    public function getImageExistsAttribute()
+    {
+        return Storage::exists("public/posters/{$this->poster_filename}");
+    }
+
+    public function getImageUrlAttribute()
+    {
+        if ($this->imageExists) {
+            return asset("storage/posters/{$this->fileName}");
         } else {
-            return asset("storage/photos/blankTrailer.png"); //cuidado com este nome!!
+            return asset("storage/posters/_no_poster_1.png");
         }
     }
 

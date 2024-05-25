@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('header-title', $course->name)
+@section('header-title', $movie->name)
 
 @section('main')
 <div class="flex flex-col space-y-6">
@@ -9,13 +9,9 @@
             <section>
                 <header>
                     <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                        Curriculum of "{{ $course->fullName }}"
+                        Curriculum of "{{ $movie->title }}"
                     </h2>
                 </header>
-                <x-courses.curriculum :disciplines="$course->disciplines"
-                    :showView="true"
-                    class="pt-4"
-                    />
             </section>
         </div>
     </div>
