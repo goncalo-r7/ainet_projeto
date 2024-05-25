@@ -6,6 +6,12 @@
     <div class="flex justify-center">
         <div class="my-4 p-6 bg-white dark:bg-gray-900 overflow-hidden
                     shadow-sm sm:rounded-lg text-gray-900 dark:text-gray-50">
+                <x-searchbar
+                :filterAction="route('theaters.index')"
+                :resetUrl="route('theaters.index')"
+                :filter="$filter"
+                class="mb-6"
+                />
             <div class="flex items-center gap-4 mb-4">
                 <x-button
                     href="{{ route('theaters.create') }}"
