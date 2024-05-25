@@ -22,9 +22,9 @@ class MovieController extends Controller
 
     public function showCase(): View
     {
-        $movies = Movie::orderBy('title')->paginate(10);
-        $screenings = Screening::all();
-        return view('movies.showcase')->with('movies', $movies)->with('screenings', $screenings);
+       // $movies = Movie::orderBy('title')->paginate(10);
+       $movies = Movie::with('screeningsRef')->orderBy('title')->paginate(10);
+       return view('movies.showcase', compact('movies'));
     }
 
 

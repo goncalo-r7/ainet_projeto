@@ -50,7 +50,7 @@ class Movie extends Model
         return $this->belongsTo(Genre::class, 'genre_code', 'code');
     }
 
-    public function screenings(): HasMany
+    public function screeningsRef(): HasMany
     {
         return $this->hasMany(Screening::class);
     }

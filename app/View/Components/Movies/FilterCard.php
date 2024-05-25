@@ -11,7 +11,7 @@ class FilterCard extends Component
     public array $listScreenings;
 
     public function __construct(
-        public array $screenings,
+        public array $screenings =[],
        // public string $date,
 
     )
