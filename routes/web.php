@@ -8,6 +8,7 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\TheaterController;
 use Illuminate\Support\Facades\Route;
 use App\Models\Student;
 
@@ -17,7 +18,7 @@ Route::view('/', 'home')->name('home');
 Route::get('courses/showcase', [CourseController::class, 'showCase'])->name('courses.showcase');
 Route::get('courses/{course}/curriculum', [CourseController::class, 'showCurriculum'])->name('courses.curriculum');
 
-Route::resource('theaters', TheatersController::class);
+Route::resource('theaters', TheaterController::class);
 
 /* ----- Non-Verified users ----- */
 Route::middleware('auth')->group(function () {
