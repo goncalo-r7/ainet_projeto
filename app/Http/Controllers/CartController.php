@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use App\Models\Discipline;
 use App\Models\Student;
+use DateTime;
 
 class CartController extends Controller
 {
@@ -18,6 +19,7 @@ class CartController extends Controller
         return view('cart.show', compact('cart'));
     }
 
+    // TODO: Alterar para movies
     public function addToCart(Request $request, Discipline $discipline): RedirectResponse
     {
         $cart = session('cart', null);
@@ -33,13 +35,39 @@ class CartController extends Controller
                 return back()
                     ->with('alert-msg', $htmlMessage)
                     ->with('alert-type', $alertType);
-            } else {
-                $cart->push($discipline);
+            }else{
+                $now = new DateTime();
+                $screeningStartTime = DB::table('screenings')
+                                    ->where('id', $sessionId)
+                                    ->first(['start_time']);
+                if ($screeningStartTime == null) {
+                    $alertType = 'warning';
+                    $url = route('disciplines.show', ['discipline' => $discipline]);
+                    $htmlMessage = "Movie <a href='$url'>#{$discipline->id}</a>
+                    <strong>\"{$discipline->name}\"</strong> was not added to the cart because it has no screening!";
+                    return back()
+                        ->with('alert-msg', $htmlMessage)
+                        ->with('alert-type', $alertType);
+                }
+                $movieStartTime = new DateTime($screeningStartTime->start_time);
+                $interval = $now->diff($movieStartTime);
+                if($interval->i > 5){ // 5 minutes after the movie starts
+                    $alertType = 'warning';
+                    $url = route('disciplines.show', ['discipline' => $discipline]);
+                    $htmlMessage = "Discipline <a href='$url'>#{$discipline->id}</a>
+                    <strong>\"{$discipline->name}\"</strong> was not added to the cart because it has already started!";
+                    return back()
+                        ->with('alert-msg', $htmlMessage)
+                        ->with('alert-type', $alertType);
+                }else{
+                    $cart->push($discipline);
+                }
             }
         }
         $alertType = 'success';
+        // TODO: Alterar para movies
         $url = route('disciplines.show', ['discipline' => $discipline]);
-        $htmlMessage = "Discipline <a href='$url'>#{$discipline->id}</a>
+        $htmlMessage = "Movie <a href='$url'>#{$discipline->id}</a>
                 <strong>\"{$discipline->name}\"</strong> was added to the cart.";
         return back()
             ->with('alert-msg', $htmlMessage)
@@ -48,11 +76,12 @@ class CartController extends Controller
 
     public function removeFromCart(Request $request, Discipline $discipline): RedirectResponse
     {
+        // TODO: Alterar para movies
         $url = route('disciplines.show', ['discipline' => $discipline]);
-        $cart = session('cart', null);
+        $cart = session('cart', null); 
         if (!$cart) {
             $alertType = 'warning';
-            $htmlMessage = "Discipline <a href='$url'>#{$discipline->id}</a>
+            $htmlMessage = "Movie <a href='$url'>#{$discipline->id}</a>
                 <strong>\"{$discipline->name}\"</strong> was not removed from the cart because cart is empty!";
             return back()
                 ->with('alert-msg', $htmlMessage)
@@ -65,14 +94,14 @@ class CartController extends Controller
                     $request->session()->forget('cart');
                 }
                 $alertType = 'success';
-                $htmlMessage = "Discipline <a href='$url'>#{$discipline->id}</a>
+                $htmlMessage = "Movie <a href='$url'>#{$discipline->id}</a>
                 <strong>\"{$discipline->name}\"</strong> was removed from the cart.";
                 return back()
                     ->with('alert-msg', $htmlMessage)
                     ->with('alert-type', $alertType);
             } else {
                 $alertType = 'warning';
-                $htmlMessage = "Discipline <a href='$url'>#{$discipline->id}</a>
+                $htmlMessage = "Movie <a href='$url'>#{$discipline->id}</a>
                 <strong>\"{$discipline->name}\"</strong> was not removed from the cart because cart does not include it!";
                 return back()
                     ->with('alert-msg', $htmlMessage)
