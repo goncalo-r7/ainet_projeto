@@ -22,7 +22,7 @@
             </p>
             <figcaption class="font-medium">
                 <div class="flex justify-center md:justify-start font-base text-base space-x-6 text-gray-700 dark:text-gray-300">
-                    <div>Session: {{ $screening->date }} </div>
+                     {{-- <div>Session: {{ $screening->date }} </div> --}}
                 </div>
                 <div class="flex justify-center md:justify-start font-base text-base space-x-6 text-gray-700 dark:text-gray-300">
                     <div>Session:{{ $movie->genre_code }}</div>
