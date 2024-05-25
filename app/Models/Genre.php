@@ -17,6 +17,12 @@ class Genre extends Model
 
     public $timestamps = true;
 
+    protected $primaryKey = 'code';
+
+    public $incrementing = false;
+
+    protected $keyType = 'string';
+
     public function genre(): HasMany
     {
         return $this->hasMany(Genre::class, 'genre_code', 'code');

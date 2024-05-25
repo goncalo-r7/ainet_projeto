@@ -13,13 +13,21 @@
             </a>
             <figcaption class="font-medium">
                 <div class="flex justify-center md:justify-start font-base text-base space-x-6 text-gray-700 dark:text-gray-300">
-                    <div>{{ $movie->genre_code }} genre_code</div>
-                    <div>{{ $movie->year }} year</div>
+                    <div>{{ $movie->genre_code }}</div>
+                    <div>year: {{ $movie->year }} </div>
                 </div>
             </figcaption>
             <p class="pt-4 font-light text-gray-700 dark:text-gray-300 overflow-y-auto">
                 {{ $movie->synopsis }}
             </p>
+            <figcaption class="font-medium">
+                <div class="flex justify-center md:justify-start font-base text-base space-x-6 text-gray-700 dark:text-gray-300">
+                    <div>Session: {{ $screening->date }} </div>
+                </div>
+                <div class="flex justify-center md:justify-start font-base text-base space-x-6 text-gray-700 dark:text-gray-300">
+                    <div>Session:{{ $movie->genre_code }}</div>
+                </div>
+            </figcaption>
         </div>
     </figure>
 </div>
