@@ -9,6 +9,7 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\TheaterController;
 use Illuminate\Support\Facades\Route;
 use App\Models\Student;
 
@@ -21,7 +22,6 @@ Route::get('courses/{course}/curriculum', [CourseController::class, 'showCurricu
 
 //MOVIE
 Route::get('movies/showcase', [MovieController::class, 'showCase'])->name('movies.showcase');
-
 
 /* ----- Non-Verified users ----- */
 Route::middleware('auth')->group(function () {
@@ -43,6 +43,8 @@ Route::middleware('auth', 'verified')->group(function () {
 
     //Route::resource('movies', MovieController::class)->only(['index']);
     Route::resource('movies', MovieController::class); // TIRAR ISTO!!! QUANDO LOGS TIVEREM FEITOS
+
+    Route::resource('theaters', TheaterController::class);
 
 
     //Department show and index are accessible to any authenticated user
