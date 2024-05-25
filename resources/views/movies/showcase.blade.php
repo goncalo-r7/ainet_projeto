@@ -5,7 +5,14 @@
 @section('main')
 
     <x-movies.filter-card
-        :screenings="$screenings->pluck('date', 'movie_id')->toArray()"
+    :screenings="$movies->flatMap(function ($movie) {
+        return $movie->screeningsRef->map(function ($screening) {
+            return ['date' => $screening->date, 'start_time' => $screening->start_time];
+        });
+    })->toArray()"
+
+
+        {{-- se sobrar tempo tentar resolver (perguntar ao stor) --}}
         class="mb-6"
     />
                 <div class="flex flex-col">

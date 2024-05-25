@@ -7,27 +7,35 @@
             <img class="h-full aspect-auto mx-auto rounded-full md:rounded-l-xl md:rounded-r-none"
                 src="{{ $movie->imageUrl }}">
         </a>
-        <div class="h-auto p-6 text-center md:text-left space-y-1 flex flex-col">
-            <a class="font-semibold text-lg text-gray-800 dark:text-gray-200 leading-tight" href="{{ route('movies.show', ['movie' => $movie]) }}">
-                {{ $movie->title }}
-            </a>
-            <figcaption class="font-medium">
-                <div class="flex justify-center md:justify-start font-base text-base space-x-6 text-gray-700 dark:text-gray-300">
-                    <div>{{ $movie->genre_code }}</div>
-                    <div>year: {{ $movie->year }} </div>
-                </div>
-            </figcaption>
-            <p class="pt-4 font-light text-gray-700 dark:text-gray-300 overflow-y-auto">
-                {{ $movie->synopsis }}
-            </p>
-            <figcaption class="font-medium">
-                <div class="flex justify-center md:justify-start font-base text-base space-x-6 text-gray-700 dark:text-gray-300">
-                     <div>Session: {{ $movie->screeningRef->date }} </div>
-                </div>
-                <div class="flex justify-center md:justify-start font-base text-base space-x-6 text-gray-700 dark:text-gray-300">
-                    <div>Session:{{ $movie->genre_code }}</div>
-                </div>
-            </figcaption>
+        <div class="h-auto p-6 text-center md:text-left space-y-1 flex flex-col md:flex-row">
+            <div class="flex-grow">
+                <a class="font-semibold text-lg text-gray-800 dark:text-gray-200 leading-tight" href="{{ route('movies.show', ['movie' => $movie]) }}">
+                    {{ $movie->title }}
+                </a>
+                <figcaption class="font-medium">
+                    <div class="flex justify-center md:justify-start font-base text-base space-x-6 text-gray-700 dark:text-gray-300">
+                        <div>{{ $movie->genre_code }}</div>
+                        <div>year: {{ $movie->year }} </div>
+                    </div>
+                </figcaption>
+                <p class="pt-4 font-light text-gray-700 dark:text-gray-300 overflow-y-auto">
+                    {{ $movie->synopsis }}
+                </p>
+            </div>
+            <div>
+                <figcaption class="font-">
+                    <div class="text-center md:text-left font-semibold text-lg text-gray-800 dark:text-gray-200 leading-tight">
+                        Session
+                    </div>
+                </figcaption>
+                <figcaption class="font- overflow-y-auto h-24 md:h-32">
+                    @foreach($movie->screeningsRef as $screening)
+                    <div class="flex justify-center md:justify-start font-base text-base space-x-6 text-gray-700 dark:text-gray-300 ">
+                        <div>Date: {{ $screening['date'] }} {{ $screening['start_time'] }}</div>
+                    </div>
+                    @endforeach
+                </figcaption>
+            </div>
         </div>
     </figure>
 </div>

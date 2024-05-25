@@ -28,10 +28,7 @@ class MovieController extends Controller
     }
 
 
-    public function showCase2(): View
-    {
-    return view('movies.showcase');
-    }
+
 
     public function create(): View
     {
