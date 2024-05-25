@@ -44,6 +44,8 @@ Route::middleware('auth', 'verified')->group(function () {
     //Route::resource('movies', MovieController::class)->only(['index']);
     Route::resource('movies', MovieController::class); // TIRAR ISTO!!! QUANDO LOGS TIVEREM FEITOS
 
+    Route::resource('theaters', TheaterController::class);
+
 
     //Department show and index are accessible to any authenticated user
     Route::resource('departments', DepartmentController::class)->only(['index', 'show']);
