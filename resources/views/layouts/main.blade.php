@@ -95,9 +95,9 @@
                                     href="{{ route('administratives.index') }}" />
                                 <hr>
                                 <x-menus.submenu-item
-                                    content="Departments"
+                                    content="Theaters"
                                     selectable="0"
-                                    href="{{ route('departments.index') }}"/>
+                                    href="{{ route('theaters.index') }}"/>
                                 <x-menus.submenu-item
                                     content="Course Management"
                                     href="{{ route('courses.index') }}"/>

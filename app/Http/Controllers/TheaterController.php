@@ -7,26 +7,21 @@ use App\Models\Theater;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\TheaterFormRequest;
-//use App\Http\Requests\TheaterFormRequest;
+
 use Illuminate\Support\Facades\DB;
 
 
 class TheaterController extends Controller
 {
-        /**
-     * Display a listing of the resource.
-        */
+
 
         public function index(): View
         {
             $theatersQuery = Theater::query();
-            $theaters = $theatersQuery
-                ->orderBy('name')
-                ->paginate(20)
-                ->withQueryString();
+            $theaters = $theatersQuery->orderBy('name')->paginate(20)->withQueryString();
             return view(
                 'theaters.index'
-            )->with($theaters);
+            )->with('theaters', $theaters);
         }
     
     
@@ -116,8 +111,8 @@ class TheaterController extends Controller
                     };
                     $seatsStr = match (true) {
                         $totalSeats <= 0 => "",
-                        $totalSeats == 1 => "it already has 1 teacher",
-                        $totalSeats > 1 => "it already has $totalSeats teachers",
+                        $totalSeats == 1 => "it has a seat associated to this theater",
+                        $totalSeats > 1 => "it has $totalSeats seats associated",
                     };
                     $justification = $screeningsStr && $seatsStr
                         ? "$seatsStr and $screeningsStr"
