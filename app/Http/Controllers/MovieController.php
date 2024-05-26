@@ -48,20 +48,29 @@ class MovieController extends Controller
             $moviesQuery
                 ->where('movies.synopsis', 'like', "%$filterBySynopsis%");
         }
-        // // $moviesQuery->has('screeningsRef');
+        // $moviesQuery->has('screeningsRef');
         // $movies = $moviesQuery->with('screeningsRef')->orderBy('title')->paginate(10)->withQueryString();
 
-        // Only get movies that have at least one screening from today to the next 2 weeks
-        $moviesQuery->whereHas('screeningsRef', function ($query) {
-            $query->whereBetween('date', [now(), now()->addWeeks(2)]);
-        });
+        //FORMA 1 ##### 40MS
+        // $moviesQuery->whereHas('screeningsRef', function ($query) {
+        //     $query->whereBetween('date', [now(), now()->addWeeks(2)]);
+        // });
+        // $movies = $moviesQuery->with(['screeningsRef' => function ($query) {
+        //     $query->whereBetween('date', [now(), now()->addWeeks(2)]);
+        // }])->orderBy('title')->paginate(10)->withQueryString();
 
-        // Only load the screenings that are happening from today to the next 2 weeks
-        $movies = $moviesQuery->with(['screeningsRef' => function ($query) {
-            $query->whereBetween('date', [now(), now()->addWeeks(2)]);
-        }])->orderBy('title')->paginate(10)->withQueryString();
 
-        return view('movies.showcase', compact('movies', 'genres', 'filterByGenre','filterByTitle','filterBySynopsis'));
+
+        //FORMA 2 ##### 25ms !!!
+        $screenings = Screening::whereBetween('date', [now(), now()->addWeeks(2)])->get();
+        $movieIds = $screenings->pluck('movie_id');
+        $moviesQuery->whereIn('id', $movieIds);
+
+        $movies = $moviesQuery->with('screeningsRef')->orderBy('title')->paginate(10)->withQueryString();
+
+
+
+        return view('movies.showcase', compact('movies', 'genres', 'filterByGenre', 'filterByTitle', 'filterBySynopsis'));
     }
 
 
