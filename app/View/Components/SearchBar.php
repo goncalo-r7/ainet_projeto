@@ -15,7 +15,7 @@ class SearchBar extends Component
         //public array $theaters,
         public string $filterAction,
         public string $resetUrl,
-        public string $filter
+        public ?string $filter
     )
     {
         //
