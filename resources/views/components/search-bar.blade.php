@@ -8,7 +8,7 @@
             </div>
             <div class="grow-0 flex flex-col space-y-3 justify-start">
                 <div class="pt-6">
-                    <x-button element="submit" type="dark" text="Filter"/>
+                    <x-button element="submit" type="dark" text="Search"/>
                 </div>
                 <div>
                     <x-button element="a" type="light" text="Cancel" :href="$resetUrl"/>
