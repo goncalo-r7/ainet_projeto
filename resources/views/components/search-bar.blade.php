@@ -3,7 +3,7 @@
         <div class="flex justify-between space-x-3">
             <div class="grow flex flex-col space-y-2">
                 <div>
-                    <x-field.input name="theater" label="Theater" class="grow" value="{{$filter}}"/>
+                    <x-field.input name="theater" label="Theater" class="grow" value="{{old('filter', $filter)}}"/>
                 </div>
             </div>
             <div class="grow-0 flex flex-col space-y-3 justify-start">
