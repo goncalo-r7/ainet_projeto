@@ -15,6 +15,7 @@
                 <figcaption class="font-medium">
                     <div class="flex justify-center md:justify-start font-base text-base space-x-6 text-gray-700 dark:text-gray-300">
                         <div>{{ $movie->genre_code }}</div>
+                        {{-- genre-->name --}}
                         <div>year: {{ $movie->year }} </div>
                     </div>
                 </figcaption>

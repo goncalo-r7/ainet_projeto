@@ -8,16 +8,19 @@ use Illuminate\View\Component;
 
 class FilterCard extends Component
 {
-    public array $listScreenings;
+    public array $listGenres;
 
     public function __construct(
-        public array $screenings =[],
-       // public string $date,
+        public array $genres,
+        public ?string $genre = null,
+        public ?string $title = null,
+        public ?string $synopsis = null,
+        public string $filterAction,
+        public string $resetUrl,
 
     )
     {
-        $this->listScreenings = (array_merge([null => 'Any screening'], $screenings));
-        //$this->date = $date;
+        $this->listGenres = (array_merge([null => 'Any genre'], $genres));
     }
 
     /**
@@ -26,5 +29,6 @@ class FilterCard extends Component
     public function render(): View|Closure|string
     {
         return view('components.movies.filter-card');
+
     }
 }

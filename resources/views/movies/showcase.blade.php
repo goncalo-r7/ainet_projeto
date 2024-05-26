@@ -5,14 +5,12 @@
 @section('main')
 
     <x-movies.filter-card
-    :screenings="$movies->flatMap(function ($movie) {
-        return $movie->screeningsRef->map(function ($screening) {
-            return ['date' => $screening->date, 'start_time' => $screening->start_time];
-        });
-    })->toArray()"
-
-
-        {{-- se sobrar tempo tentar resolver (perguntar ao stor) --}}
+        :filterAction="route('movies.showcase')"
+        :resetUrl="route('movies.showcase')"
+        :genres="$genres->pluck('name','name')->toArray()"
+        :genre="old('genre', $filterByGenre)"
+        :title="request('title')"
+        :synopsis="request('synopsis')"
         class="mb-6"
     />
                 <div class="flex flex-col">
