@@ -29,7 +29,7 @@
                 The organization of CineMagic is structured to ensure a smooth and enjoyable experience for all our patrons. CineMagic is proudly owned by three passionate movie enthusiasts:
             <ul class="list-disc ms-12">
                 <li class="py-1 font-medium text-gray-700 dark:text-gray-300">Luís Oliveira 2221441;</li>
-                <li class="py-1 font-medium text-gray-700 dark:text-gray-300">Rodrigo Gomes 1111111;</li>
+                <li class="py-1 font-medium text-gray-700 dark:text-gray-300">Rodrigo Gomes 2221455;</li>
                 <li class="py-1 font-medium text-gray-700 dark:text-gray-300">Gonçalo Rodrigues 0000000.</li>
             </ul>
             </p>
