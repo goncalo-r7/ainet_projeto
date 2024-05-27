@@ -47,7 +47,7 @@
              src="{{ $imageUrl }}">
         @else
         <img class="{{$widthClass}} {{$maxHeightClass}} aspect-auto"
-             src=" {{url('storage/photos/unknown.png');}}">
+             src=" {{url('storage/photos/unknown.jpg');}}">
         @endif
         @if(!$readonly)
         <div class="{{$widthClass}} flex-col space-y-4 items-stretch mt-4">
