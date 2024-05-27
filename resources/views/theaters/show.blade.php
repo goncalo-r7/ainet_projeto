@@ -1,6 +1,5 @@
 @extends('layouts.main')
-
-@section('header-title', $discipline->name)
+@section('header-title', 'Theater "' . $theater->name . '"')
 
 @section('main')
 <div class="flex flex-col space-y-6">
@@ -9,14 +8,15 @@
             <section>
                 <div class="flex flex-wrap justify-end items-center gap-4 mb-4">
                     <x-button
-                        href="{{ route('disciplines.create', ['discipline' => $discipline]) }}"
+                        href="{{ route('theaters.create', ['theater' => $theater->id]) }}"
                         text="New"
                         type="success"/>
+
                     <x-button
-                        href="{{ route('disciplines.edit', ['discipline' => $discipline]) }}"
+                        href="{{ route('theaters.edit', ['theater' => $theater->id]) }}"
                         text="Edit"
                         type="primary"/>
-                    <form method="POST" action="{{ route('disciplines.destroy', ['discipline' => $discipline]) }}">
+                    <form method="POST" action="{{ route('theaters.destroy', ['theater' => $theater->id]) }}">
                         @csrf
                         @method('DELETE')
                         <x-button
@@ -24,26 +24,18 @@
                             text="Delete"
                             type="danger"/>
                     </form>
-                    <form method="POST" action="{{ route('cart.add', ['discipline' => $discipline]) }}">
-                        @csrf
-                        <x-button
-                            element="submit"
-                            text="Add to cart"
-                            type="dark"/>
-                    </form>
                 </div>
                 <header>
                     <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                        Discipline "{{ $discipline->name }}"
+                        Theater "{{ $theater->name }}"
                     </h2>
                 </header>
-                <div class="mt-6 space-y-4">
-                    @include('disciplines.shared.fields', ['mode' => 'show'])
-                </div>
+                @include('theaters.shared.fields', ['mode' => 'show'])
+
                 <h3 class="pt-16 pb-4 text-2xl font-medium text-gray-900 dark:text-gray-100">
-                    Teachers
+                    Theater Seats
                 </h3>
-                <x-teachers.table :teachers="$discipline->teachers"
+                <x-theaters.seats :seats="$theater->seats"
                     :showView="true"
                     :showEdit="false"
                     :showDelete="false"

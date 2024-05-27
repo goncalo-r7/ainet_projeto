@@ -9,11 +9,6 @@
         @foreach ($theaters as $theater)
             <tr class="border-b border-b-gray-400 dark:border-b-gray-500">
                 <td class="px-2 py-2 text-left">{{ $theater->name }}</td>
-                <td class="px-2 py-2 text-right hidden md:table-cell">{{ $theater->year }}</td>
-                <td class="px-2 py-2 text-right hidden md:table-cell">{{ $theater->semesterDescription }}</td>
-                <td class="px-2 py-2 text-right hidden lg:table-cell">{{ $theater->ECTS }}</td>
-                <td class="px-2 py-2 text-right hidden lg:table-cell">{{ $theater->hours }}</td>
-                <td class="px-2 py-2 text-center hidden lg:table-cell">{{ $theater->optional ? 'optional' : '' }}</td>
                 @if($showView)
                     <td>
                         <x-table.icon-show class="ps-3 px-0.5"

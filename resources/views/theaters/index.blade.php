@@ -23,8 +23,6 @@
                 :showCourse="true"
                 :showView="true"
                 :showEdit="true"
-                :showDelete="true"
-                :showAddToCart="true"
                 />
             </div>
         </div>

@@ -59,19 +59,19 @@ class TheaterController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Theater $theaters): View
+    public function show(Theater $theater): View
     {
         return view('theaters.show')
-            ->with('theater', $theaters);
+            ->with('theater', $theater);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Theater $theaters): View
+    public function edit(Theater $theater): View
     {
         return view('theaters.edit')
-            ->with('theater', $theaters);
+            ->with('theater', $theater);
     }
 
     /**

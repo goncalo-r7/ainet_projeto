@@ -19,7 +19,6 @@ Route::view('/', 'home')->name('home');
 Route::get('courses/showcase', [CourseController::class, 'showCase'])->name('courses.showcase');
 Route::get('courses/{course}/curriculum', [CourseController::class, 'showCurriculum'])->name('courses.curriculum');
 
-
 //MOVIE
 Route::get('movies/showcase', [MovieController::class, 'showCase'])->name('movies.showcase');
 
