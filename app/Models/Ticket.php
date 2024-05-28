@@ -35,6 +35,11 @@ class Ticket extends Model
     {
         return $this->belongsTo(Purchase::class);
     }
+    /* # talvez ??
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    } */
 
 
 

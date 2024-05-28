@@ -10,6 +10,7 @@ use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\TheaterController;
+use App\Http\Controllers\SeatController;
 use Illuminate\Support\Facades\Route;
 use App\Models\Student;
 
@@ -21,6 +22,9 @@ Route::get('courses/{course}/curriculum', [CourseController::class, 'showCurricu
 
 //MOVIE
 Route::get('movies/showcase', [MovieController::class, 'showCase'])->name('movies.showcase');
+
+// ex: /screenings/1/seats, 1 will be passed as the $screeningSessionId parameter to the index method of the SeatController
+Route::get('/screenings/{screeningSession}/seats', [SeatController::class, 'index'])->name('seats.index');
 
 /* ----- Non-Verified users ----- */
 Route::middleware('auth')->group(function () {

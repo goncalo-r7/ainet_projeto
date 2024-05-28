@@ -21,7 +21,7 @@ class Seat extends Model
 
     public function tickets(): HasMany
     {
-        return $this->hasMany(Theater::class);
+        return $this->hasMany(Ticket::class);
     }
 
     public function theater(): BelongsTo

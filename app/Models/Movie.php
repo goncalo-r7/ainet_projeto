@@ -55,4 +55,6 @@ class Movie extends Model
         return $this->hasMany(Screening::class);
     }
 
+    
+
 }

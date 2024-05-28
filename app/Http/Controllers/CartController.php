@@ -37,9 +37,11 @@ class CartController extends Controller
                     ->with('alert-type', $alertType);
             }else{
                 $now = new DateTime();
-                $screeningStartTime = DB::table('screenings')
+                /*$screeningStartTime = DB::table('screenings')
                                     ->where('id', $sessionId)
-                                    ->first(['start_time']);
+                                    ->first(['start_time']); */
+                // $screeningStartTime = Screening::whereBetween('date', [now(), now()->addWeeks(2)])->get();
+                
                 if ($screeningStartTime == null) {
                     $alertType = 'warning';
                     $url = route('disciplines.show', ['discipline' => $discipline]);
