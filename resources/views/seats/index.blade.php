@@ -12,7 +12,7 @@
                 $seatsByRow = $screeningSession->theater->seats->groupBy('row');
             @endphp
 
-            <div class="flex flex-col gap-4 mb-4">
+            <div class="flex flex-col gap-4 mb-4 overflow-auto">
             @foreach ($seatsByRow as $row => $seats)
                 <div class="flex items-center gap-4">
                     @foreach ($seats as $seat)
@@ -23,6 +23,7 @@
                             class="flex h-10 w-14"
                             text="{{ $seat->row . $seat->seat_number }}"    
                             type="{{ $isTaken ? 'secondary' : 'success'}}"
+                            
                             />
                     @endforeach
                 </div>
