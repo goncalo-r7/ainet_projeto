@@ -23,6 +23,8 @@ Route::get('courses/{course}/curriculum', [CourseController::class, 'showCurricu
 //MOVIE
 Route::get('movies/showcase', [MovieController::class, 'showCase'])->name('movies.showcase');
 
+
+
 // ex: /screenings/1/seats, 1 will be passed as the $screeningSessionId parameter to the index method of the SeatController
 Route::get('/screenings/{screeningSession}/seats', [SeatController::class, 'index'])->name('seats.index');
 

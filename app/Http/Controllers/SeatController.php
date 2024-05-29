@@ -13,4 +13,17 @@ class SeatController extends Controller
 
         return view('seats.index', compact('screeningSession'));
     }
+
+    public function submitSeats(Request $request)
+    {
+        $selectedSeats = $request->input('selectedSeats', []); // Retrieve selected seats from the request
+
+        foreach ($selectedSeats as $seatId) {
+
+            // add to Cart
+        }
+
+        return redirect()->back()->with('success', 'Seats selected successfully!');
+    }
+
 }

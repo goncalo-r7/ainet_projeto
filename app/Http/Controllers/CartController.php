@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use App\Models\Discipline;
 use App\Models\Student;
+use App\Models\Screening;
 use DateTime;
 
 class CartController extends Controller
@@ -36,12 +37,10 @@ class CartController extends Controller
                     ->with('alert-msg', $htmlMessage)
                     ->with('alert-type', $alertType);
             }else{
-                $now = new DateTime();
-                /*$screeningStartTime = DB::table('screenings')
-                                    ->where('id', $sessionId)
-                                    ->first(['start_time']); */
-                // $screeningStartTime = Screening::whereBetween('date', [now(), now()->addWeeks(2)])->get();
-                
+                // $screenings to receive in parameter
+                $aa = $screenings->where('start_time', '>', now()->subMinutes(5))->get();
+                $movieIds = $screenings->pluck('movie_id');
+                $moviesQuery->whereIn('id', $movieIds);
                 if ($screeningStartTime == null) {
                     $alertType = 'warning';
                     $url = route('disciplines.show', ['discipline' => $discipline]);
