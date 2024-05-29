@@ -48,8 +48,7 @@ class MovieController extends Controller
             $moviesQuery
                 ->where('movies.synopsis', 'like', "%$filterBySynopsis%");
         }
-        // $moviesQuery->has('screeningsRef');
-        // $movies = $moviesQuery->with('screeningsRef')->orderBy('title')->paginate(10)->withQueryString();
+
 
         //FORMA 1 ##### 40MS
         // $moviesQuery->whereHas('screeningsRef', function ($query) {
@@ -71,6 +70,11 @@ class MovieController extends Controller
 
 
         return view('movies.showcase', compact('movies', 'genres', 'filterByGenre', 'filterByTitle', 'filterBySynopsis'));
+    }
+
+    public function show(Movie $movie): View
+    {
+        return view('movies.show')->with('movie', $movie);
     }
 
 

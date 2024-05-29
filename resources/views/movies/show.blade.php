@@ -9,7 +9,7 @@
             <section>
                 <div class="flex flex-wrap justify-end items-center gap-4 mb-4">
                     <x-button
-                        href="{{ route('movie.create', ['movie' => $movie]) }}"
+                        href="{{ route('movies.create', ['movie' => $movie]) }}"
                         text="New"
                         type="success"/>
                     <x-button
