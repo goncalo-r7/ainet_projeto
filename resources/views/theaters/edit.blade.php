@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('header-title', $discipline->name)
+@section('header-title', 'Theater "' . $theater->namespace . '"')
 
 @section('main')
 <div class="flex flex-col space-y-6">
@@ -9,14 +9,14 @@
             <section>
                 <div class="flex flex-wrap justify-end items-center gap-4 mb-4">
                     <x-button
-                        href="{{ route('disciplines.create', ['discipline' => $discipline]) }}"
+                        href="{{ route('theaters.create', ['theater' => $theater]) }}"
                         text="New"
                         type="success"/>
                     <x-button
-                        href="{{ route('disciplines.show', ['discipline' => $discipline]) }}"
+                        href="{{ route('theaters.show', ['theater' => $theater]) }}"
                         text="View"
                         type="info"/>
-                    <form method="POST" action="{{ route('disciplines.destroy', ['discipline' => $discipline]) }}">
+                    <form method="POST" action="{{ route('theaters.destroy', ['theater' => $theater]) }}">
                         @csrf
                         @method('DELETE')
                         <x-button
@@ -27,19 +27,18 @@
                 </div>
                 <header>
                     <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                        Edit discipline "{{ $discipline->name }}"
+                        Edit theater "{{ $theater->name }}"
                     </h2>
                     <p class="mt-1 text-sm text-gray-600 dark:text-gray-300  mb-6">
                         Click on "Save" button to store the information.
                     </p>
                 </header>
 
-                <form method="POST" action="{{ route('disciplines.update', ['discipline' => $discipline]) }}">
+                <form method="POST" action="{{ route('theaters.update', ['theater' => $theater]) }}"
+                    enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
-                    <div class="mt-6 space-y-4">
-                        @include('disciplines.shared.fields', ['mode' => 'edit'])
-                    </div>
+                    @include('theaters.shared.fields', ['mode' => 'edit'])
                     <div class="flex mt-6">
                         <x-button element="submit" type="dark" text="Save" class="uppercase"/>
                         <x-button element="a" type="light" text="Cancel" class="uppercase ms-4"
@@ -50,5 +49,10 @@
         </div>
     </div>
 </div>
+<form class="hidden" id="form_to_delete_photo"
+    method="POST" action="{{ route('theaters.photo.destroy', ['theater' => $theater]) }}">
+    @csrf
+    @method('DELETE')
+</form>
 @endsection
 
