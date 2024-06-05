@@ -13,11 +13,11 @@
         :synopsis="request('synopsis')"
         class="mb-6"
     />
-                <div class="flex flex-col">
-                    @each('movies.shared.card', $movies, 'movie')
-                </div>
+    <div class="flex flex-col">
+        @each('movies.shared.card', $movies, 'movie')
+    </div>
 
-            <div class="mt-4">
-                {{ $movies->links() }}
+    <div class="mt-4">
+        {{ $movies->links() }}
     </div>
 @endsection

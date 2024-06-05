@@ -61,12 +61,11 @@ class MovieController extends Controller
 
 
         //FORMA 2 ##### 25ms !!!
-        $screenings = Screening::whereBetween('date', [now(), now()->addWeeks(2)])->get();
+        $screenings = Screening::whereBetween('date', [now(), now()->addWeeks(2)])->get(); //Mudar para 2 weeks
         $movieIds = $screenings->pluck('movie_id');
         $moviesQuery->whereIn('id', $movieIds);
 
         $movies = $moviesQuery->with('screeningsRef')->orderBy('title')->paginate(10)->withQueryString();
-
 
 
         return view('movies.showcase', compact('movies', 'genres', 'filterByGenre', 'filterByTitle', 'filterBySynopsis'));
