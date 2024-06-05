@@ -5,7 +5,7 @@
                 <th class="px-2 py-2 text-center">Theatre</th>
                 <th class="px-2 py-2 text-center hidden md:table-cell">Date</th>
                 <th class="px-2 py-2 text-center hidden lg:table-cell">Start time</th>
-                <th class="px-2 py-2 text-center">Choose Seat</th>
+                <th class="px-2 py-2 text-center"></th>
             </tr>
         </thead>
         <tbody>
@@ -14,8 +14,8 @@
                     <td class="px-2 py-2 text-center">{{ $screening->theater->name }}</td>
                     <td class="px-2 py-2 text-center hidden md:table-cell">{{ $screening->date }}</td>
                     <td class="px-2 py-2 text-center hidden md:table-cell">{{ substr($screening->start_time, 0, 5) }}</td>
-                    <td class="px-2 py-2 text-center">
-                        <x-table.icon-seat class="ps-3 px-0.5"
+                    <td class="px-2 py-2 flex justify-center items-center">
+                        <x-table.icon-add-cart class="px-0.5"
                             href="{{ route('seats.index', ['screeningSession' => $screening->id]) }}"/>
                     </td>
                 </tr>

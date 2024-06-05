@@ -14,9 +14,9 @@
                 </a>
                 <figcaption class="font-medium">
                     <div class="flex justify-center md:justify-start font-base text-base space-x-6 text-gray-700 dark:text-gray-300">
-                        <div>{{ $movie->genre_code }}</div>
+                        <div>{{ $movie->genre->name }}</div>
                         {{-- genre-->name --}}
-                        <div>year: {{ $movie->year }} </div>
+                        <div>Year: {{ $movie->year }} </div>
                     </div>
                 </figcaption>
                 <p class="pt-4 font-light text-gray-700 dark:text-gray-300 overflow-y-auto">
@@ -26,10 +26,10 @@
             <div class="h-full flex flex-col"> <!-- Add these classes here -->
                 <figcaption class="font-">
                     <div class="text-center md:text-left font-semibold text-lg text-gray-800 dark:text-gray-200 leading-tight">
-                        Last Sessions
+                        Next Sessions
                     </div>
                 </figcaption>
-                <div class="overflow-y-auto flex-grow"> <!-- Add this div here -->
+                <div class="overflow-y-auto w-full md:w-64 h-full "> <!-- Add this div here -->
                     <figcaption class="font- h-24 md:h-32">
                         @foreach($movie->screeningsRef as $screening)
                         <div class="flex justify-center md:justify-start font-base text-base space-x-6 text-gray-700 dark:text-gray-300 ">
