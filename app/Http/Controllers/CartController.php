@@ -46,9 +46,9 @@ class CartController extends Controller
             # $screenings to receive in parameter
             // $aa = $screening->where('start_time', '>', now()->subMinutes(5))->get();
             $seatsIds = $request->input('selectedSeats');
-            if ($seatsIds == null) {
+            if (!$seatsIds) {
                 $alertType = 'warning';
-                $url = route('screenings/{screening}', ['screening' => $screening]); // volta para pagina da sessao
+                $url = route('seats.index', ['screening' => $screening]); // volta para pagina da sessao
                 $htmlMessage = "Movie <a href='$url'>#{$screening->id}</a>
                 <strong>\"{$screening->movie->title}\"</strong> was not added to the cart because there were no seats selected!";
                 return back()
