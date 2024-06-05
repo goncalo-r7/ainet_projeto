@@ -26,7 +26,7 @@ Route::get('movies/showcase', [MovieController::class, 'showCase'])->name('movie
 
 
 // ex: /screenings/1/seats, 1 will be passed as the $screeningSessionId parameter to the index method of the SeatController
-Route::get('/screenings/{screeningSession}/seats', [SeatController::class, 'index'])->name('seats.index');
+Route::get('/screenings/{screeningSession}', [SeatController::class, 'index'])->name('seats.index');
 
 /* ----- Non-Verified users ----- */
 Route::middleware('auth')->group(function () {
@@ -96,12 +96,16 @@ Route::middleware('auth', 'verified')->group(function () {
         ->name('administratives.photo.destroy');
     Route::resource('administratives', AdministrativeController::class);
 
+    // Add movie to cart
+    Route::post('cart/screenings/{screening}', [CartController::class, 'addToCart'])
+        ->name('cart.add');
+
     // Add a discipline to the cart:
-    Route::post('cart/{discipline}', [CartController::class, 'addToCart'])
+    /*Route::post('cart/{discipline}', [CartController::class, 'addToCart'])
         ->name('cart.add');
     // Remove a discipline from the cart:
     Route::delete('cart/{discipline}', [CartController::class, 'removeFromCart'])
-        ->name('cart.remove');
+        ->name('cart.remove'); */
     // Show the cart:
     Route::get('cart', [CartController::class, 'show'])->name('cart.show');
     // Confirm (store) the cart and save disciplines registration on the database:
