@@ -1,7 +1,8 @@
 @extends('layouts.main')
 
 @section('header-title',  $screeningSession->movie->title .
-' - Sessão das ' . date('H:i', strtotime($screeningSession->start_time)) . ', ' . date('d-m-Y', strtotime($screeningSession->start_time)))
+' - Sessão das ' . date('H:i', strtotime($screeningSession->start_time)) . ', ' . date('d-m-Y', strtotime($screeningSession->start_time))
+. ' - Sala ' . $screeningSession->theater->name)
 
 @section('main')
     <div class="flex justify-center">
@@ -15,65 +16,53 @@
             <!-- Ao submeter, criar tickets e adicionar ao carrinho-->
 
 
-            {{-- <form id="seat-form" method="POST" action="/submit-seats">
-                <x-button type="submit" class="mt-4 px-4 py-2" text='Comprar' type='primary'></x-button>
-                <div class="flex flex-col gap-4 mb-4 overflow-auto">
-                @foreach ($seatsByRow as $row => $seats)
-                    <div class="flex items-center gap-4">
-                        @foreach ($seats as $seat)
-                            @php
-                                $isTaken = $screeningSession->tickets->where('seat_id', $seat->id)->isNotEmpty();
-                            @endphp
-
-                            <label class="flex items-center space-x-2">
-                                <input
-                                    type="checkbox"
-                                    name="selectedSeats[]"
-                                    value="{{ $seat->id }}"
-                                    class="seat-checkbox
-                                    {{ $isTaken ? 'cursor-not-allowed' : ''}}"
-                                    {{ $isTaken ? ' checked ' : '' }}
-                                    {{ $isTaken ? ' disabled ' : ''}}
-                                >
-                                <span>{{ $seat->row . $seat->seat_number }}</span>
-                            </label>
-                        @endforeach
-                    </div>
-                @endforeach
-                </div>
-            </form> --}}
-
             {{-- when the form is submitted, the IDs of the selected seats will be sent as an array with the name "selectedSeats" --}}
             {{-- action="{{ route('cart.add', ['discipline' => $discipline]) }}" --}}
             <form method="POST" action="">
-                <x-button type="submit" class="mt-4 px-4 py-2" text='Comprar' type='primary'/>
-                <table class="table-auto border-collapse">
-                    <div class="flex flex-col gap-4 mb-4 overflow-auto">
-                    @foreach ($seatsByRow as $row => $seats)
-                        <div class="flex items-center gap-4">
-                            <tr class="flex items-center space-x-2">
-                            @foreach ($seats as $seat)
-                                @php
-                                    $isTaken = $screeningSession->tickets->where('seat_id', $seat->id)->isNotEmpty();
-                                @endphp
+                @csrf
+                <div class="flex justify-center items-center">
+                    <x-button type="submit" class="mt-4 px-4 py-2" text='Adicionar ao carrinho' type='primary'/>
+                </div>
+                <div class="overflow-auto">
+                    <table class="table-auto border-collapse">
+                        <div class="flex flex-col gap-4 mb-4">
+                        @foreach ($seatsByRow as $row => $seats)
+                            <div class="flex items-center gap-4">
+                                <tr class="flex items-center space-x-2">
+                                @foreach ($seats as $seat)
+                                    @php
+                                        $isTaken = $screeningSession->tickets->where('seat_id', $seat->id)->isNotEmpty();
+                                    @endphp
+                                    <td class="px-2 py-2 text-left hidden sm:table-cell text-gray-900 dark:text-gray-100">
 
-                                <td class="px-2 py-2 text-left hidden sm:table-cell text-gray-900 dark:text-gray-100">
-                                <input
-                                    type="checkbox"
-                                    name="selectedSeats[]"
-                                    value="{{ $seat->id }}"
-                                    class="{{ $isTaken ? 'cursor-not-allowed' : ''}}"
-                                    {{ $isTaken ? ' checked ' : '' }}
-                                    {{ $isTaken ? ' disabled ' : ''}}
-                                >
-                                <span>{{ $seat->row . $seat->seat_number }}</span>
-                                </td>
-                            @endforeach
-                        </tr>
+
+                                    <input
+                                        id="{{ $seat->id }}"
+                                        type="checkbox"
+                                        name="selectedSeats[]"
+                                        value="{{ $seat->id }}"
+                                        class="hidden peer"
+                                        {{ $isTaken ? 'disabled' : '' }}
+                                    >
+                                    <label for="{{ $seat->id }}" class="
+                                        inline-flex items-center justify-between w-full p-5
+                                        {{ $isTaken ? 'bg-red-400 border-red-500 hover:bg-red-500 cursor-not-allowed' : 'bg-white border-2 border-gray-200 hover:bg-gray-50 cursor-pointer' }}
+                                        rounded-lg dark:hover:text-gray-300
+
+                                        peer-checked:border-blue-600 peer-checked:bg-blue-200  hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600
+                                        dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700
+                                        ">
+                                        {{ $seat->row . $seat->seat_number }}
+                                    </label>
+
+                                    </td>
+                                @endforeach
+                            </tr>
+                            </div>
+                        @endforeach
                         </div>
-                    @endforeach
-                    </div>
-                </table>
+                    </table>
+                </div>
             </form>
             {{-- <x-button
                                 class="flex h-10 w-14"
