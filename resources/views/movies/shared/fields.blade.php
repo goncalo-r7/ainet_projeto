@@ -8,12 +8,13 @@
                         :readonly="$readonly || ($mode == 'edit')"
                         value="{{ old('title', $movie->title) }}"/>
 
-        <x-field.input name="genre_code" label="Genre_code" width="md"
+        <x-field.input name="genre_code" label="Genre" width="md"
                         :readonly="$readonly || ($mode == 'edit')"
-                        value="{{ old('genre_code', $movie->genre_code) }}"/>
+                        value="{{ old('genre_code', $movie->genre->name) }}"/>
         <x-field.input name="year" label="Year" :readonly="$readonly"
                         value="{{ old('year', $movie->year) }}"/>
 
+        @if ($movie->trailer_url)
         <div class="bg-grey-950 text-grey p-4 rounded-lg shadow-md h-96 sm:h-112 md:h-128 lg:h-144">
             <iframe
                 class="h-full w-full rounded-lg"
@@ -26,6 +27,7 @@
                 allowfullscreen>
             </iframe>
         </div>
+        @endif
         <x-field.text-area name="synopsis" label="Synopsis"
             :readonly="$readonly"
             value="{{ old('synopsis', $movie->synopsis) }}"/>
