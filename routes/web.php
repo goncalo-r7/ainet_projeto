@@ -43,6 +43,9 @@ Route::middleware('auth', 'verified')->group(function () {
     Route::delete('courses/{course}/image', [CourseController::class, 'destroyImage'])
         ->name('courses.image.destroy');
 
+    Route::delete('movies/{movie}/image', [MovieController::class, 'destroyImage'])
+        ->name('movies.image.destroy');
+
     //Course show is public and index for any authenticated user
     Route::resource('courses', CourseController::class)->only(['index']);
 
