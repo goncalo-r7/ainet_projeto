@@ -19,16 +19,16 @@ class CartController extends Controller
         $cart = session('cart', null);
         return view('cart.show', compact('cart'));
     }
-
+    
     // TODO: Alterar para movies
-    public function addToCart(Request $request, Discipline $discipline): RedirectResponse
+    public function addToCart(Request $request, Screening $screening): RedirectResponse
     {
         $cart = session('cart', null);
         if (!$cart) {
-            $cart = collect([$discipline]);
+            $cart = collect([$screening]);
             $request->session()->put('cart', $cart);
         } else {
-            if ($cart->firstWhere('id', $discipline->id)) {
+            if ($cart->firstWhere('id', $screening->id)) {
                 $alertType = 'warning';
                 $url = route('disciplines.show', ['discipline' => $discipline]);
                 $htmlMessage = "Discipline <a href='$url'>#{$discipline->id}</a>
@@ -37,7 +37,7 @@ class CartController extends Controller
                     ->with('alert-msg', $htmlMessage)
                     ->with('alert-type', $alertType);
             }else{
-                // $screenings to receive in parameter
+                # $screenings to receive in parameter
                 $aa = $screenings->where('start_time', '>', now()->subMinutes(5))->get();
                 $movieIds = $screenings->pluck('movie_id');
                 $moviesQuery->whereIn('id', $movieIds);
@@ -74,6 +74,34 @@ class CartController extends Controller
             ->with('alert-msg', $htmlMessage)
             ->with('alert-type', $alertType);
     }
+
+    /*public function addToCart(Request $request, Discipline $discipline): RedirectResponse
+    {
+        $cart = session('cart', null);
+        if (!$cart) {
+            $cart = collect([$discipline]);
+            $request->session()->put('cart', $cart);
+        } else {
+            if ($cart->firstWhere('id', $discipline->id)) {
+                $alertType = 'warning';
+                $url = route('disciplines.show', ['discipline' => $discipline]);
+                $htmlMessage = "Discipline <a href='$url'>#{$discipline->id}</a>
+                <strong>\"{$discipline->name}\"</strong> was not added to the cart because it is already there!";
+                return back()
+                    ->with('alert-msg', $htmlMessage)
+                    ->with('alert-type', $alertType);
+            } else {
+                $cart->push($discipline);
+            }
+        }
+        $alertType = 'success';
+        $url = route('disciplines.show', ['discipline' => $discipline]);
+        $htmlMessage = "Discipline <a href='$url'>#{$discipline->id}</a>
+                <strong>\"{$discipline->name}\"</strong> was added to the cart.";
+        return back()
+            ->with('alert-msg', $htmlMessage)
+            ->with('alert-type', $alertType);
+    }*/
 
     public function removeFromCart(Request $request, Discipline $discipline): RedirectResponse
     {
