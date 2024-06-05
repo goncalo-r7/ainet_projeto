@@ -29,7 +29,7 @@
                 :showEdit="true"
                 :showDelete="true"
                 :showAddToCart="true"
-                />
+            />
             </div>
             <div class="mt-4">
                 {{ $disciplines->links() }}

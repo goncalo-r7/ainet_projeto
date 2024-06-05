@@ -2,8 +2,8 @@
     <table class="table-auto border-collapse">
         <thead>
         <tr class="border-b-2 border-b-gray-400 dark:border-b-gray-500 bg-gray-100 dark:bg-gray-800">
-            <th class="px-2 py-2 text-left hidden lg:table-cell">Abbreviation</th>
-            <th class="px-2 py-2 text-left">Name</th>
+            <th class="px-2 py-2 text-left hidden lg:table-cell">Date</th>
+            <th class="px-2 py-2 text-left">Start time</th>
             <th class="px-2 py-2 text-left">Type</th>
             <th class="px-2 py-2 text-right hidden sm:table-cell">Nº Semesters</th>
             <th class="px-2 py-2 text-right hidden sm:table-cell">Nº Places</th>

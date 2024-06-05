@@ -27,15 +27,27 @@
                 </div>
                 <header>
                     <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                        Movie "{{ $movie->name }}"
+                        Movie "{{ $movie->title }}"
                     </h2>
                 </header>
                 <div class="mt-6 space-y-4">
                     @include('movies.shared.fields', ['mode' => 'show'])
                 </div>
                 <h3 class="pt-16 pb-4 text-2xl font-medium text-gray-900 dark:text-gray-100">
-                    Curriculum
+                    Sessions
                 </h3>
+                <div class="font-base text-sm text-gray-700 dark:text-gray-300">
+                    <x-screenings.table :screenings="$movie->screeningsRef"
+                        :showCourse="true"
+                        :showView="true"
+                        :showEdit="true"
+                        :showDelete="true"
+                        :showAddToCart="true"
+                        />
+                </div>
+                    {{-- <div class="mt-4">
+                        {{ $movie->screeningsRef->links() }}
+                    </div> --}}
 
             </section>
         </div>

@@ -1,0 +1,5 @@
+Screening::where---
+->select('movie_id')->distinct()->pluck('movie_id')
+->toArray() //array com os ids
+
+Movie::whereIntegerInRaw('ID', $IDMOVIES)->get()
