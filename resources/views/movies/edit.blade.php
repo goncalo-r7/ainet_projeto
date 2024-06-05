@@ -9,14 +9,14 @@
             <section>
                 <div class="flex flex-wrap justify-end items-center gap-4 mb-4">
                     <x-button
-                        href="{{ route('movie.create', ['movie' => $movie]) }}"
+                        href="{{ route('movies.create', ['movie' => $movie]) }}"
                         text="New"
                         type="success"/>
                     <x-button
                         href="{{ route('movies.show', ['movie' => $movie]) }}"
                         text="View"
                         type="info"/>
-                    <form method="POST" action="{{ route('movie.destroy', ['movie' => $movie]) }}">
+                    <form method="POST" action="{{ route('movies.destroy', ['movie' => $movie]) }}">
                         @csrf
                         @method('DELETE')
                         <x-button

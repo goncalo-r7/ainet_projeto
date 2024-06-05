@@ -4,13 +4,19 @@
 @endphp
 <div class="flex flex-wrap space-x-8">
     <div class="grow mt-6 space-y-4">
-        <x-field.input name="title" label="Title of Movie" width="md"
-                        :readonly="$readonly || ($mode == 'edit')"
-                        value="{{ old('title', $movie->title) }}"/>
+        <x-field.input name="title" label="Title of Movie" :readonly="$readonly"
+            value="{{ old('title', $movie->title) }}"/>
+
+        <x-field.select name="genre" label="Genre" :readonly="$readonly" || ($mode == 'edit')"
+            value="{{ old('genre', $movie->genre->name) }}"
+            :options="$genres"/>
+
+
 
         <x-field.input name="genre_code" label="Genre" width="md"
                         :readonly="$readonly || ($mode == 'edit')"
                         value="{{ old('genre_code', $movie->genre->name) }}"/>
+
         <x-field.input name="year" label="Year" :readonly="$readonly"
                         value="{{ old('year', $movie->year) }}"/>
 

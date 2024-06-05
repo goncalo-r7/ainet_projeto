@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('header-title',  $screeningSession->movie->title . 
+@section('header-title',  $screeningSession->movie->title .
 ' - Sessão das ' . date('H:i', strtotime($screeningSession->start_time)) . ', ' . date('d-m-Y', strtotime($screeningSession->start_time))
 . ' - Sala ' . $screeningSession->theater->name)
 
@@ -14,8 +14,8 @@
             @endphp
             @csrf
             <!-- Ao submeter, criar tickets e adicionar ao carrinho-->
-            
-            
+
+
             {{-- when the form is submitted, the IDs of the selected seats will be sent as an array with the name "selectedSeats" --}}
             {{-- action="{{ route('cart.add', ['discipline' => $discipline]) }}" --}}
             <form method="POST" action="{{ route('cart.add', ['screening' => $screeningSession]) }}">
@@ -34,8 +34,8 @@
                                         $isTaken = $screeningSession->tickets->where('seat_id', $seat->id)->isNotEmpty();
                                     @endphp
                                     <td class="px-2 py-2 text-left hidden sm:table-cell text-gray-900 dark:text-gray-100">
-                                        
-                                        
+
+
                                     <input
                                         id="{{ $seat->id }}"
                                         type="checkbox"
@@ -51,8 +51,8 @@
                                         dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
                                         {{ $seat->row . $seat->seat_number }}
                                     </label>
-                                        
-                                    </td>              
+
+                                    </td>
                                 @endforeach
                             </tr>
                             </div>
@@ -63,12 +63,12 @@
             </form>
             {{-- <x-button
                                 class="flex h-10 w-14"
-                                text="{{ $seat->row . $seat->seat_number }}"    
+                                text="{{ $seat->row . $seat->seat_number }}"
                                 type="{{ $isTaken ? 'secondary' : 'success'}}"
-                                
+
                                 /> --}}
-           
-            
+
+
         </div>
     </div>
 @endsection

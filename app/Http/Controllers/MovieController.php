@@ -9,6 +9,8 @@ use App\Models\Movie;
 use App\Models\Screening;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use App\Http\Requests\MovieFormRequest;
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 class MovieController extends Controller
@@ -83,5 +85,52 @@ class MovieController extends Controller
         $newMovie = new Movie();
         return view('movies.create')->with('movie', $newMovie);
     }
+
+    public function edit(Movie $movie): View
+    {
+        $genres = Genre::orderBy('name')->pluck('name', 'code')->toArray();
+        return view('movies.edit')->with('genres', $genres)->with('movie', $movie);
+    }
+
+    public function destroy(Movie $movie): RedirectResponse
+    {
+        try {
+            $url = route('movies.show', ['movie' => $movie]);
+
+        } catch (\Exception $error) {
+        }
+        return redirect()->route('movies.index');
+
+    }
+
+    public function destroyImage(Movie $movie): RedirectResponse
+    {
+        if ($movie->imageExists) {
+            Storage::delete("public/movies/{$movie->fileName}");
+        }
+        return redirect()->back()
+            ->with('alert-type', 'success')
+            ->with('alert-msg', "Image of course {$movie->id} has been deleted.");
+        return redirect()->back();
+    }
+
+    public function update(MovieFormRequest $request, Movie $movie): RedirectResponse
+    {
+        $movie->update($request->validated());
+
+        if ($request->hasFile('image_file')) {
+            if ($movie->imageExists) {
+                Storage::delete("public/movies/{$movie->fileName}");
+            }
+            $request->image_file->storeAs('public/movies', $movie->fileName);
+        }
+
+        $url = route('courses.show', ['course' => $course]);
+        $htmlMessage = "Course <a href='$url'><u>{$course->name}</u></a> ({$course->abbreviation}) has been updated successfully!";
+        return redirect()->route('courses.index')
+            ->with('alert-type', 'success')
+            ->with('alert-msg', $htmlMessage);
+    }
+
 
 }
