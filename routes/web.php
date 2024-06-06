@@ -43,6 +43,9 @@ Route::middleware('auth', 'verified')->group(function () {
     Route::delete('courses/{course}/image', [CourseController::class, 'destroyImage'])
         ->name('courses.image.destroy');
 
+    Route::delete('theaters/{theater}/photo', [TheaterController::class, 'destroyImage'])
+        ->name('theaters.photo.destroy');
+        
     //Course show is public and index for any authenticated user
     Route::resource('courses', CourseController::class)->only(['index']);
 
@@ -50,6 +53,8 @@ Route::middleware('auth', 'verified')->group(function () {
     Route::resource('movies', MovieController::class); // TIRAR ISTO!!! QUANDO LOGS TIVEREM FEITOS
 
     Route::resource('theaters', TheaterController::class);
+
+    Route::resource('seats', SeatController::class);
 
 
     //Department show and index are accessible to any authenticated user

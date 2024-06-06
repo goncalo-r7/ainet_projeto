@@ -44,10 +44,10 @@
         </div>
         @if(!(strlen($imageUrl)<0 || $imageUrl == null))
         <img class="{{$widthClass}} {{$maxHeightClass}} aspect-auto"
-             src="{{ $imageUrl }}">
+             src="{{url('storage/photos')}}/{{$imageUrl}}">
         @else
         <img class="{{$widthClass}} {{$maxHeightClass}} aspect-auto"
-             src=" {{url('storage/photos/unknown.jpg');}}">
+             src=" {{url('storage/photos/unknown.png');}}">
         @endif
         @if(!$readonly)
         <div class="{{$widthClass}} flex-col space-y-4 items-stretch mt-4">

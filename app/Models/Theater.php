@@ -15,7 +15,7 @@ class Theater extends Model
         'photo_filename',
     ];
 
-    public $timestamps = true;
+    public $timestamps = false;
 
 
     public function seats(): HasMany
