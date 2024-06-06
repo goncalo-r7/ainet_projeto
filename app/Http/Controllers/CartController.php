@@ -14,14 +14,72 @@ use DateTime;
 
 class CartController extends Controller
 {
+    
     public function show(): View
     {
         $cart = session('cart', null);
         return view('cart.show', compact('cart'));
     }
 
-    // TODO: Alterar para movies
-    public function addToCart(Request $request, Discipline $discipline): RedirectResponse
+    public function index($screeningSessionId)
+    {
+        $screeningSession = Screening::with(['theater.seats', 'tickets'])->findOrFail($screeningSessionId);
+        
+
+        return view('seats.index', compact('screeningSession'));
+    }
+    
+    // funcao chamada em seats.index (no form)
+    public function addToCart(Request $request, Screening $screening): RedirectResponse
+    {
+        // request tem vetor com os ids dos lugares selecionados
+        // screening tem 
+        // For debug:
+        // dump($request->all());
+        // dd($screening);
+        
+        $cart = session('cart', null);
+        if (!$cart) {
+            $cart = collect([$screening]);
+            $request->session()->put('cart', $cart);
+        } else {
+            # $screenings to receive in parameter
+            // $aa = $screening->where('start_time', '>', now()->subMinutes(5))->get();
+            $seatsIds = $request->input('selectedSeats');
+            if (!$seatsIds) {
+                $alertType = 'warning';
+                $url = route('seats.index', ['screening' => $screening]); // volta para pagina da sessao
+                $htmlMessage = "Movie <a href='$url'>#{$screening->id}</a>
+                <strong>\"{$screening->movie->title}\"</strong> was not added to the cart because there were no seats selected!";
+                return back()
+                    ->with('alert-msg', $htmlMessage)
+                    ->with('alert-type', $alertType);
+            }
+            //$movieStartTime = new DateTime($screening->start_time);
+            //$interval = $now->diff($movieStartTime);
+            /*if($interval->i > 5){ // 5 minutes after the movie starts
+                $alertType = 'warning';
+                $url = route('disciplines.show', ['discipline' => $discipline]);
+                $htmlMessage = "Discipline <a href='$url'>#{$discipline->id}</a>
+                <strong>\"{$discipline->name}\"</strong> was not added to the cart because it has already started!";
+                return back()
+                    ->with('alert-msg', $htmlMessage)
+                    ->with('alert-type', $alertType); */
+            else{
+                $cart->push($screening);
+            }
+        }
+        $alertType = 'success';
+        // TODO: Alterar para movies
+        $url = route('cart.show');
+        $htmlMessage = "Seats for movie
+                <strong>\"{$screening->movie->title}\"</strong> was added to the cart.";
+        return back()
+            ->with('alert-msg', $htmlMessage)
+            ->with('alert-type', $alertType);
+    }
+
+    /*public function addToCart(Request $request, Discipline $discipline): RedirectResponse
     {
         $cart = session('cart', null);
         if (!$cart) {
@@ -36,44 +94,18 @@ class CartController extends Controller
                 return back()
                     ->with('alert-msg', $htmlMessage)
                     ->with('alert-type', $alertType);
-            }else{
-                // $screenings to receive in parameter
-                $aa = $screenings->where('start_time', '>', now()->subMinutes(5))->get();
-                $movieIds = $screenings->pluck('movie_id');
-                $moviesQuery->whereIn('id', $movieIds);
-                if ($screeningStartTime == null) {
-                    $alertType = 'warning';
-                    $url = route('disciplines.show', ['discipline' => $discipline]);
-                    $htmlMessage = "Movie <a href='$url'>#{$discipline->id}</a>
-                    <strong>\"{$discipline->name}\"</strong> was not added to the cart because it has no screening!";
-                    return back()
-                        ->with('alert-msg', $htmlMessage)
-                        ->with('alert-type', $alertType);
-                }
-                $movieStartTime = new DateTime($screeningStartTime->start_time);
-                $interval = $now->diff($movieStartTime);
-                if($interval->i > 5){ // 5 minutes after the movie starts
-                    $alertType = 'warning';
-                    $url = route('disciplines.show', ['discipline' => $discipline]);
-                    $htmlMessage = "Discipline <a href='$url'>#{$discipline->id}</a>
-                    <strong>\"{$discipline->name}\"</strong> was not added to the cart because it has already started!";
-                    return back()
-                        ->with('alert-msg', $htmlMessage)
-                        ->with('alert-type', $alertType);
-                }else{
-                    $cart->push($discipline);
-                }
+            } else {
+                $cart->push($discipline);
             }
         }
         $alertType = 'success';
-        // TODO: Alterar para movies
         $url = route('disciplines.show', ['discipline' => $discipline]);
-        $htmlMessage = "Movie <a href='$url'>#{$discipline->id}</a>
+        $htmlMessage = "Discipline <a href='$url'>#{$discipline->id}</a>
                 <strong>\"{$discipline->name}\"</strong> was added to the cart.";
         return back()
             ->with('alert-msg', $htmlMessage)
             ->with('alert-type', $alertType);
-    }
+    }*/
 
     public function removeFromCart(Request $request, Discipline $discipline): RedirectResponse
     {

@@ -33,12 +33,13 @@ class Movie extends Model
 
     public function getImageExistsAttribute()
     {
+
         return Storage::exists("public/posters/{$this->poster_filename}");
     }
 
     public function getImageUrlAttribute()
     {
-        if ($this->imageExists) {
+        if ($this->poster_filename && $this->imageExists) {
             return asset("storage/posters/{$this->fileName}");
         } else {
             return asset("storage/posters/_no_poster_1.png");
@@ -55,6 +56,6 @@ class Movie extends Model
         return $this->hasMany(Screening::class);
     }
 
-    
+
 
 }

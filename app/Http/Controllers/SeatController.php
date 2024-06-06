@@ -21,6 +21,7 @@ class SeatController extends Controller
         foreach ($selectedSeats as $seatId) {
 
             // add to Cart
+            route('cart.add', ['discipline' => $seatId]);
         }
 
         return redirect()->back()->with('success', 'Seats selected successfully!');
