@@ -46,7 +46,16 @@ class CartController extends Controller
             # $screenings to receive in parameter
             // $aa = $screening->where('start_time', '>', now()->subMinutes(5))->get();
             $seatsIds = $request->input('selectedSeats');
+            dd($seatsIds);
             if (!$seatsIds) {
+                $alertType = 'warning';
+                $url = route('seats.index', ['screening' => $screening]); // volta para pagina da sessao
+                $htmlMessage = "Movie <a href='$url'>#{$screening->id}</a>
+                <strong>\"{$screening->movie->title}\"</strong> was not added to the cart because there were no seats selected!";
+                return back()
+                    ->with('alert-msg', $htmlMessage)
+                    ->with('alert-type', $alertType);
+            } elseif ($seatsIds->count() == 0) {
                 $alertType = 'warning';
                 $url = route('seats.index', ['screening' => $screening]); // volta para pagina da sessao
                 $htmlMessage = "Movie <a href='$url'>#{$screening->id}</a>
@@ -66,7 +75,47 @@ class CartController extends Controller
                     ->with('alert-msg', $htmlMessage)
                     ->with('alert-type', $alertType); */
             else{
-                $cart->push($screening);
+                if ($cart->isEmpty()){ // certificar que se se remover todos os elementos do carrinho, a purchase é eliminada
+                    // criar purchase se n existir
+                    DB::table('purchases')->insert([
+                        'customer_id' => auth()->user()->id,
+                        'date' => now(),
+                        'total_price' => 0,
+                    ]);
+                } else{
+                    // atualizar purchase
+                    $purchaseId = DB::table('purchases')->where('customer_id', auth()->user()->id)->orderBy('date', 'desc')->first();
+                    DB::table('purchases')->where('id', $purchaseId)->update([
+                        'customer_id' => auth()->user()->id,
+                        'date' => now(),
+                        'total_price' => 0,
+                        'nif' => null,
+                    ]); // arranjar maneira obter null
+                }
+
+                $purchaseId = DB::table('purchases')->where('customer_id', auth()->user()->id)->orderBy('date', 'desc')->first();
+                // one ticket for each seat
+                $total=0;
+                foreach ($seatsIds as $seatId){
+                    DB::table('tickets')->insert([
+                        'screening_id' => $screening->id,
+                        'seat_id' => $seatId,
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]);
+
+                    $total += DB::table('seats')->where('id', $seatId)->first()->price;
+                    $total += $seatId->price; // será que a segunda funciona?
+                }
+                // atualizar purchase
+                $currentTotal = DB::table('purchases')->where('id', $purchaseId)->first()->total_price;
+                DB::table('purchases')->where('id', $purchaseId)->update([
+                    'customer_id' => auth()->user()->id,
+                    'date' => now(),
+                    'total_price' => $currentTotal + $total,
+                ]);
+
+                $cart->push($screening); // adicionar a sessao ao carrinho
             }
         }
         $alertType = 'success';
