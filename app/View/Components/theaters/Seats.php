@@ -15,10 +15,7 @@ class Seats extends Component
      * Create a new component instance.
      */
     public function __construct(
-        public object $seats,
-        public bool $showView = true,
-        public bool $showEdit = true,
-        public bool $showDelete = true,
+        public object $seats
     )
     {
     }

@@ -7,6 +7,7 @@ use App\Models\Theater;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\TheaterFormRequest;
+use Illuminate\Support\Facades\Storage;
 
 use Illuminate\Support\Facades\DB;
 
@@ -35,9 +36,9 @@ class TheaterController extends Controller
     public function create(): View
     {
         $theater = new Theater();
-        // $courses no longer required, because it is available through View::share
+        // $theaters no longer required, because it is available through View::share
         // Check AppServiceProvider
-        //$courses = Course::all();
+        //$theaters = theater::all();
         return view('theaters.create')
             ->with('theater', $theater);
     }
@@ -47,9 +48,16 @@ class TheaterController extends Controller
      */
     public function  store(TheaterFormRequest $request): RedirectResponse
     {
-        $Newtheater = theater::create($request->validated());
-        $url = route('theaters.show', ['theater' => $Newtheater]);
-        $htmlMessage = "Theater <a href='$url'><u>{$Newtheater->name}</u></a> ({$Newtheater->abbreviation}) has been created successfully!";
+        $theater = $request->validated();
+        $insertTheater = new Theater();
+        $insertTheater->name = $theater['name'];
+        if($request->file('photo_filename') != null){
+            $path = $request->file('photo_filename')->store('public/photos');
+            $insertTheater->photo_filename = $path;
+        }
+        $insertTheater->save();
+        $url = route('theaters.show', ['theater' => $insertTheater]);
+        $htmlMessage = "Theater <a href='$url'><u>{$insertTheater->name}</u> </a>has been created successfully!";
         return redirect()->route('theaters.index')
             ->with('alert-type', 'success')
             ->with('alert-msg', $htmlMessage);
@@ -77,11 +85,26 @@ class TheaterController extends Controller
     /**
      * Update the specified resource in storage.
      */
+
+
     public function update(TheaterFormRequest $request, Theater $theater): RedirectResponse
     {
+
+        $validated_data = $request->validated();
         $theater->update($request->validated());
         $url = route('theaters.show', ['theater' => $theater]);
-        $htmlMessage = "theater <a href='$url'><u>{$theater->name}</u></a> has been updated successfully!";
+        if ($request->hasFile('photo_filename')) {
+            // Deletar o arquivo anterior (se houver)
+            if ($theater->photo_filename && Storage::exists('public/photos/' . $theater->photo_filename)) {
+                Storage::delete('public/photos/' . $theater->photo_filename);
+            }
+            // Armazenar o novo arquivo
+            $path = $request->file('photo_filename')->store('public/photos');
+            $theater->photo_filename = basename($path);
+        }
+        $theater->name = $validated_data['name'];
+        $theater->save();
+        $htmlMessage = "Theater <a href='$url'><u>{$theater->name}</u></a> has been updated successfully!";
         return redirect()->route('theaters.index')
             ->with('alert-type', 'success')
             ->with('alert-msg', $htmlMessage);
@@ -132,5 +155,18 @@ class TheaterController extends Controller
         return redirect()->route('theaters.index')
             ->with('alert-type', $alertType)
             ->with('alert-msg', $alertMsg);
+    }
+
+    public function destroyImage(Theater $theater): RedirectResponse
+    {
+        if ($theater->photo_filename != null) {
+            Storage::delete("public/photos/$theater->photo_filename");
+            $theater->photo_filename = null;
+            $theater->save();
+        }
+        return redirect()->back()
+            ->with('alert-type', 'success')
+            ->with('alert-msg', "Image of theater {$theater->name} has been deleted.");
+        return redirect()->back();
     }
 }

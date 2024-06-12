@@ -26,6 +26,7 @@
         '3/5' => 'w-3/5',
         '4/5' => 'w-4/5',
     }
+
 @endphp
 <div {{ $attributes->merge(['class' => "$widthClass"]) }}>
     <label class="block font-medium text-sm text-gray-700 dark:text-gray-300" for="id_{{ $name }}">
@@ -53,6 +54,8 @@
             @required($required)
             @disabled($readonly)
         >
+        @php
+        @endphp
     @error( $name )
         <div class="text-sm text-red-500">
             {{ $message }}

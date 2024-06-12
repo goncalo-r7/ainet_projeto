@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('header-title', 'Theater "' . $theater->namespace . '"')
+@section('header-title', 'Theater "' . $theater->name . '"')
 
 @section('main')
 <div class="flex flex-col space-y-6">
@@ -8,21 +8,12 @@
         <div class="max-full">
             <section>
                 <div class="flex flex-wrap justify-end items-center gap-4 mb-4">
-                    <x-button
-                        href="{{ route('theaters.create', ['theater' => $theater]) }}"
-                        text="New"
-                        type="success"/>
-                    <x-button
-                        href="{{ route('theaters.show', ['theater' => $theater]) }}"
-                        text="View"
-                        type="info"/>
+                    <x-button href="{{ route('theaters.create', ['theater' => $theater]) }}" text="New" type="success" />
+                    <x-button href="{{ route('theaters.show', ['theater' => $theater]) }}" text="View" type="info" />
                     <form method="POST" action="{{ route('theaters.destroy', ['theater' => $theater]) }}">
                         @csrf
                         @method('DELETE')
-                        <x-button
-                            element="submit"
-                            text="Delete"
-                            type="danger"/>
+                        <x-button element="submit" text="Delete" type="danger" />
                     </form>
                 </div>
                 <header>
@@ -34,25 +25,28 @@
                     </p>
                 </header>
 
-                <form method="POST" action="{{ route('theaters.update', ['theater' => $theater]) }}"
-                    enctype="multipart/form-data">
+                <form method="POST" action="{{ route('theaters.update', ['theater' => $theater]) }}" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     @include('theaters.shared.fields', ['mode' => 'edit'])
+                    <div class="flex">
+                        <h3 class="pb-4 me-5 text-2xl font-medium text-gray-900 dark:text-gray-100">
+                            Theater Seats
+                        </h3>
+                        <x-button class="" href="{{ route('seats.index')}}" text="Edit Seats" type="primary" />
+                    </div>
+                    <x-theaters.seats :seats="$theater->seats" class="pt-4" />
                     <div class="flex mt-6">
-                        <x-button element="submit" type="dark" text="Save" class="uppercase"/>
-                        <x-button element="a" type="light" text="Cancel" class="uppercase ms-4"
-                                    href="{{ url()->full() }}"/>
+                        <x-button element="submit" type="dark" text="Save" class="uppercase" />
+                        <x-button element="a" type="light" text="Cancel" class="uppercase ms-4" href="{{ url()->full() }}" />
                     </div>
                 </form>
             </section>
         </div>
     </div>
 </div>
-<form class="hidden" id="form_to_delete_photo"
-    method="POST" action="{{ route('theaters.photo.destroy', ['theater' => $theater]) }}">
+<form class="hidden" id="form_to_delete_photo" method="POST" action="{{ route('theaters.photo.destroy', ['theater' => $theater]) }}">
     @csrf
     @method('DELETE')
 </form>
 @endsection
-

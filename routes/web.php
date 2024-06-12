@@ -25,8 +25,8 @@ Route::get('movies/showcase', [MovieController::class, 'showCase'])->name('movie
 
 
 
-// ex: /screenings/1/seats, 1 will be passed as the $screeningSessionId parameter to the index method of the SeatController
-Route::get('/screenings/{screeningSession}/seats', [SeatController::class, 'index'])->name('seats.index');
+// ex: /screenings/1, 1 will be passed as the $screeningSessionId parameter to the index method of the SeatController
+Route::get('/screenings/{screening}', [SeatController::class, 'index'])->name('seats.index');
 
 /* ----- Non-Verified users ----- */
 Route::middleware('auth')->group(function () {
@@ -43,9 +43,6 @@ Route::middleware('auth', 'verified')->group(function () {
     Route::delete('courses/{course}/image', [CourseController::class, 'destroyImage'])
         ->name('courses.image.destroy');
 
-    Route::delete('movies/{movie}/image', [MovieController::class, 'destroyImage'])
-        ->name('movies.image.destroy');
-
     //Course show is public and index for any authenticated user
     Route::resource('courses', CourseController::class)->only(['index']);
 
@@ -53,6 +50,8 @@ Route::middleware('auth', 'verified')->group(function () {
     Route::resource('movies', MovieController::class); // TIRAR ISTO!!! QUANDO LOGS TIVEREM FEITOS
 
     Route::resource('theaters', TheaterController::class);
+
+    Route::resource('seats', SeatController::class);
 
 
     //Department show and index are accessible to any authenticated user
@@ -99,12 +98,16 @@ Route::middleware('auth', 'verified')->group(function () {
         ->name('administratives.photo.destroy');
     Route::resource('administratives', AdministrativeController::class);
 
+    // Add movie to cart
+    Route::post('cart/screenings/{screening}', [CartController::class, 'addToCart'])
+        ->name('cart.add');
+
     // Add a discipline to the cart:
-    Route::post('cart/{discipline}', [CartController::class, 'addToCart'])
+    /*Route::post('cart/{discipline}', [CartController::class, 'addToCart'])
         ->name('cart.add');
     // Remove a discipline from the cart:
     Route::delete('cart/{discipline}', [CartController::class, 'removeFromCart'])
-        ->name('cart.remove');
+        ->name('cart.remove'); */
     // Show the cart:
     Route::get('cart', [CartController::class, 'show'])->name('cart.show');
     // Confirm (store) the cart and save disciplines registration on the database:

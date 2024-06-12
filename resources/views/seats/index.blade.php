@@ -18,49 +18,42 @@
 
             {{-- when the form is submitted, the IDs of the selected seats will be sent as an array with the name "selectedSeats" --}}
             {{-- action="{{ route('cart.add', ['discipline' => $discipline]) }}" --}}
-            <form method="POST" action="">
+            <form method="POST" action="{{ route('cart.add', ['screening' => $screeningSession]) }}">
                 @csrf
                 <div class="flex justify-center items-center">
-                    <x-button type="submit" class="mt-4 px-4 py-2" text='Adicionar ao carrinho' type='primary'/>
+                    <x-button element="submit" class="mt-4 px-4 py-2" text='Adicionar ao carrinho' type='primary'/>
                 </div>
                 <div class="overflow-auto">
-                    <table class="table-auto border-collapse">
-                        <div class="flex flex-col gap-4 mb-4">
+                    <table class="table-auto border-collapse w-full">
                         @foreach ($seatsByRow as $row => $seats)
-                            <div class="flex items-center gap-4">
-                                <tr class="flex items-center space-x-2">
+                            <tr class="items-center space-x-1">
                                 @foreach ($seats as $seat)
                                     @php
                                         $isTaken = $screeningSession->tickets->where('seat_id', $seat->id)->isNotEmpty();
                                     @endphp
-                                    <td class="px-2 py-2 text-left hidden sm:table-cell text-gray-900 dark:text-gray-100">
+                                    <td class="px-1 py-1 text-center">
 
 
                                     <input
                                         id="{{ $seat->id }}"
                                         type="checkbox"
-                                        name="selectedSeats[]"
+                                        name="selectedSeats[{{ $seat->id }}]"
                                         value="{{ $seat->id }}"
                                         class="hidden peer"
                                         {{ $isTaken ? 'disabled' : '' }}
-                                    >
-                                    <label for="{{ $seat->id }}" class="
-                                        inline-flex items-center justify-between w-full p-5
-                                        {{ $isTaken ? 'bg-red-400 border-red-500 hover:bg-red-500 cursor-not-allowed' : 'bg-white border-2 border-gray-200 hover:bg-gray-50 cursor-pointer' }}
-                                        rounded-lg dark:hover:text-gray-300
-
-                                        peer-checked:border-blue-600 peer-checked:bg-blue-200  hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600
-                                        dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700
-                                        ">
+                                    > 
+                                    <label for="{{ $seat->id }}" class="block w-full h-full p-5 
+                                        {{ $isTaken ? 'bg-red-400 border-red-500 hover:bg-red-500 cursor-not-allowed' : 'bg-white border-2 border-gray-200 hover:bg-gray-50 cursor-pointer' }} 
+                                        rounded-lg dark:hover:text-gray-300     
+                                        peer-checked:border-blue-600 peer-checked:bg-blue-200  hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600 
+                                        dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
                                         {{ $seat->row . $seat->seat_number }}
                                     </label>
 
                                     </td>
                                 @endforeach
                             </tr>
-                            </div>
                         @endforeach
-                        </div>
                     </table>
                 </div>
             </form>
