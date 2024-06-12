@@ -13,6 +13,7 @@ use App\Models\Screening;
 use App\Models\Ticket;
 use Illuminate\Support\Facades\Auth;
 use DateTime;
+use Illuminate\Support\Facades\Log;
 
 class CartController extends Controller
 {
@@ -57,16 +58,18 @@ class CartController extends Controller
                     ->with('alert-msg', $htmlMessage)
                     ->with('alert-type', $alertType);
             } 
-            //$movieStartTime = new DateTime($screening->start_time);
-            //$interval = $now->diff($movieStartTime);
-            /*if($interval->i > 5){ // 5 minutes after the movie starts
+            $movieStartTime = new DateTime($screening->start_time);
+            $now = new DateTime(); // Current time
+            $interval = $now->diff($movieStartTime);
+            if ($interval->invert == 1 && $interval->i >= 5) { // Invert indicates the interval is negative, meaning now is after start time
                 $alertType = 'warning';
-                $url = route('disciplines.show', ['discipline' => $discipline]);
-                $htmlMessage = "Discipline <a href='$url'>#{$discipline->id}</a>
-                <strong>\"{$discipline->name}\"</strong> was not added to the cart because it has already started!";
+                $url = route('seats.index', ['screening' => $screening->id]);
+                $htmlMessage = "Ticket <a href='$url'>#{$screening->id}</a> for
+                <strong>\"{$screening->movie->title}\"</strong> was not added to the cart because it has already started!";
                 return back()
                     ->with('alert-msg', $htmlMessage)
-                    ->with('alert-type', $alertType); */
+                    ->with('alert-type', $alertType); 
+            }
             else{
                 $userId = Auth::id();
                 if ($cart->isEmpty()){ // certificar que se se remover todos os elementos do carrinho, a purchase é eliminada
@@ -90,7 +93,6 @@ class CartController extends Controller
                         'nif' => null,
                     ]);
                 }
-
                 $purchaseId = DB::table('purchases')->where('customer_id', $userId)->orderBy('date', 'desc')->first()->id;
                 // one ticket for each seat
                 $total=0;
@@ -104,20 +106,26 @@ class CartController extends Controller
                         'updated_at' => now()
                     ]);
 
-                    //$total += DB::table('seats')->where('id', $seatId)->first()->price;
-                    // $total += $seatId->price; // será que a segunda funciona?
-                    dd($seatId->price);
+                    $total += 5.0; // alterar para preço de cada ticket
                 }
-                //dd($total);
                 // atualizar purchase
-                /*
-                $currentTotal = DB::table('purchases')->where('id', $purchaseId)->first()->total_price;
-                DB::table('purchases')->where('id', $purchaseId)->update([
-                    'customer_id' => auth()->user()->id,
-                    'date' => now(),
-                    'total_price' => $currentTotal + $total,
-                ]);
-                */
+                $purchase = DB::table('purchases')->where('id', $purchaseId)->first();
+                //dd($purchase);
+                if ($purchase){
+                    $totalPrice = $purchase->total_price + $total;
+                    DB::table('purchases')->where('id', $purchaseId)->update([
+                        'total_price' => $totalPrice,
+                    ]);
+                } else{
+                    $alertType = 'warning';
+                    $url = route('seats.index', ['screening' => $screening->id]);
+                    $htmlMessage = "Purchase was not found!";
+                    return back()
+                        ->with('alert-msg', $htmlMessage)
+                        ->with('alert-type', $alertType); 
+                }
+                
+                
                 $cart->push($screening); // adicionar a sessao ao carrinho
             }
         }
@@ -160,6 +168,7 @@ class CartController extends Controller
 
     public function removeFromCart(Request $request, Ticket $ticket): RedirectResponse
     {
+        // this function is not checked !!
         $screeningId = $ticket->screening_id;
         $movieTitle = $ticket->screening->movie->title;
         dd($movieTitle); // just to check if its correct
@@ -235,13 +244,14 @@ class CartController extends Controller
 
     public function destroy(Request $request): RedirectResponse
     {
+        // TODO: Confirmar se o destroy dá delete aos tickets e purchase
         $request->session()->forget('cart');
         return back()
             ->with('alert-type', 'success')
             ->with('alert-msg', 'Shopping Cart has been cleared');
     }
 
-
+    // TODO
     public function confirm(CartConfirmationFormRequest $request): RedirectResponse
     {
         $cart = session('cart', null);
