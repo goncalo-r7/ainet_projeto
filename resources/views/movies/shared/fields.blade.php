@@ -7,8 +7,8 @@
         <x-field.input name="title" label="Title of Movie" :readonly="$readonly"
             value="{{ old('title', $movie->title) }}"/>
 
-        <x-field.select name="genre" label="Genre" :readonly="$readonly"
-            value="{{ old('genre', $movie->genre->name) }}"
+        <x-field.select name="genre_code" label="Genre" :readonly="$readonly"
+            value="{{ old('genre', $movie->genre_code) }}"
             :options="$genres"/>
 
 
@@ -29,7 +29,7 @@
             </iframe>
         </div>
         @endif
-        @if ($mode == 'edit')
+        @if ($mode == 'edit' || $mode == 'create' )
         <div class="mt-4 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
             <p class="font-bold">Attention:</p>
             <p>Trailer URL will update only after confirmation on save.</p>

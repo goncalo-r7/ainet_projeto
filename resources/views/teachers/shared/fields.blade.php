@@ -15,6 +15,10 @@
         <x-field.select name="department" label="Department" :readonly="$readonly"
             value="{{ old('department', $teacher->department) }}"
             :options="$departments"/>
+
+            @php
+            debug($departments);
+        @endphp
         <div class="flex space-x-4">
             <x-field.input name="office" label="Office" :readonly="$readonly"
                         value="{{ old('office', $teacher->office) }}"/>

@@ -26,7 +26,7 @@ class MovieFormRequest extends FormRequest
             'title' => 'required|string|max:255',
             'year' => 'required|integer|between:1900,3000',
             'synopsis' => 'required|string',
-            'genre' => 'required|string',
+            'genre_code' => 'required|string',
             'trailer_url' => 'nullable|string|starts_with:https://www.youtube.com/watch?v=',
 
           'image_file' => 'sometimes|image|mimes:png,jpg,jpeg|max:4096',// maxsize = 4Mb

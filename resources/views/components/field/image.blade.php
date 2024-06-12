@@ -42,13 +42,8 @@
         <div class="block font-medium text-sm text-gray-700 dark:text-gray-300 mt-6">
             {{ $label }}
         </div>
-        @if(!(strlen($imageUrl)<0 || $imageUrl == null))
         <img class="{{$widthClass}} {{$maxHeightClass}} aspect-auto"
-             src="{{url('storage/photos')}}/{{$imageUrl}}">
-        @else
-        <img class="{{$widthClass}} {{$maxHeightClass}} aspect-auto"
-             src=" {{url('storage/photos/unknown.png');}}">
-        @endif
+             src="{{ $imageUrl }}">
         @if(!$readonly)
         <div class="{{$widthClass}} flex-col space-y-4 items-stretch mt-4">
             <div>

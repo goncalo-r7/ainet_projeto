@@ -7,7 +7,7 @@
     <x-movies.filter-card
         :filterAction="route('movies.showcase')"
         :resetUrl="route('movies.showcase')"
-        :genres="$genres->pluck('name','name')->toArray()"
+        :genres="$genres->pluck('name','code')->toArray()"
         :genre="old('genre', $filterByGenre)"
         :title="request('title')"
         :synopsis="request('synopsis')"

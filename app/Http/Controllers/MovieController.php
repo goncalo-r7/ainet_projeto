@@ -132,7 +132,7 @@ class MovieController extends Controller
         }
         return redirect()->back()
             ->with('alert-type', 'success')
-            ->with('alert-msg', "Image of course {$movie->id} has been deleted.");
+            ->with('alert-msg', "Image of movie {$movie->name} has been deleted.");
         return redirect()->back();
     }
 

@@ -60,15 +60,6 @@
                             </div>
                         @endforeach
 
-                        {{-- @foreach ($movie->screeningsRef as $screening)
-                            <div
-                                class="flex justify-center md:justify-start font-base text-base space-x-6 text-gray-700 dark:text-gray-300 ">
-
-                                <div>Date: {{ $screening['date'] }} {{ $screening['start_time'] }}</div>
-
-                            </div>
-                        @endforeach --}}
-
                     </figcaption>
                 </div>
             </div>
