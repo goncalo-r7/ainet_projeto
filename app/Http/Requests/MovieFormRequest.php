@@ -29,7 +29,7 @@ class MovieFormRequest extends FormRequest
             'genre' => 'required|string',
             'trailer_url' => 'nullable|string|starts_with:https://www.youtube.com/watch?v=',
 
-            'image_file' => 'sometimes|image|mimes:png|max:4096', // maxsize = 4Mb
+          'image_file' => 'sometimes|image|mimes:png,jpg,jpeg|max:4096',// maxsize = 4Mb
 
         ];
         // if (strtolower($this->getMethod()) == 'post') {
@@ -45,9 +45,8 @@ class MovieFormRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'ECTS.required' => 'ECTS is required',
-            'ECTS.integer' => 'ECTS must be an integer',
-            'ECTS.min' => 'ECTS must be equal or greater that 1',
+            'year.required' => 'ECTS is required',
+            'year.integer' => 'ECTS must be an integer',
         ];
     }
 }

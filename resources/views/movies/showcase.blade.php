@@ -11,6 +11,8 @@
         :genre="old('genre', $filterByGenre)"
         :title="request('title')"
         :synopsis="request('synopsis')"
+        :allMoviesBool="$allMoviesBool"
+
         class="mb-6"
     />
     <div class="flex flex-col">

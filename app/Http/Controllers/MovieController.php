@@ -34,6 +34,8 @@ class MovieController extends Controller
         $filterByGenre = $request->query('genre');
         $filterByTitle = $request->query('title');
         $filterBySynopsis = $request->query('synopsis');
+        $allMoviesBool = $request->has('allMoviesBool') ? '1' : '0';
+        //$allMoviesBool = $request->input('allMoviesBool');
 
         $moviesQuery
             ->join('genres', 'movies.genre_code', '=', 'genres.code')
@@ -50,9 +52,30 @@ class MovieController extends Controller
             $moviesQuery
                 ->where('movies.synopsis', 'like', "%$filterBySynopsis%");
         }
+        if ($allMoviesBool !== '1') {
+
+            //FORMA 2 ##### 25ms !!!
+            $screenings = Screening::whereBetween('date', [now(), now()->addWeeks(2)])->get();
+            $movieIds = $screenings->pluck('movie_id');
+            $moviesQuery->whereIn('movies.id', $movieIds);
+        }
 
 
-        //FORMA 1 ##### 40MS
+        $movies = $moviesQuery->with(['screeningsRef' => function ($query) use ($allMoviesBool) {
+            if (!$allMoviesBool) {
+                $query->whereBetween('date', [now(), now()->addWeeks(2)]);
+            }
+        }])->paginate(10)->withQueryString();
+
+
+
+       // $movies = $moviesQuery->with('screeningsRef')->orderBy('title')->paginate(10)->withQueryString();
+
+
+        return view('movies.showcase', compact('movies', 'genres', 'filterByGenre', 'filterByTitle', 'filterBySynopsis','allMoviesBool'));
+    }
+
+    //FORMA 1 ##### 40MS
         // $moviesQuery->whereHas('screeningsRef', function ($query) {
         //     $query->whereBetween('date', [now(), now()->addWeeks(2)]);
         // });
@@ -61,21 +84,15 @@ class MovieController extends Controller
         // }])->orderBy('title')->paginate(10)->withQueryString();
 
 
-
-        //FORMA 2 ##### 25ms !!!
-        $screenings = Screening::whereBetween('date', [now(), now()->addWeeks(2)])->get(); //Mudar para 2 weeks
-        $movieIds = $screenings->pluck('movie_id');
-        $moviesQuery->whereIn('id', $movieIds);
-
-        $movies = $moviesQuery->with('screeningsRef')->orderBy('title')->paginate(10)->withQueryString();
-
-
-        return view('movies.showcase', compact('movies', 'genres', 'filterByGenre', 'filterByTitle', 'filterBySynopsis'));
-    }
+            //   //FORMA 2 ##### 25ms !!!
+            //   $screenings = Screening::whereBetween('date', [now(), now()->addWeeks(2)])->get(); //Mudar para 2 weeks
+            //   $movieIds = $screenings->pluck('movie_id');
+            //   $moviesQuery->whereIn('id', $movieIds);
 
     public function show(Movie $movie): View
     {
-        return view('movies.show')->with('movie', $movie);
+        $genres = Genre::orderBy('name')->pluck('name', 'code')->toArray();
+        return view('movies.show')->with('genres', $genres)->with('movie', $movie);
     }
 
 
@@ -83,7 +100,12 @@ class MovieController extends Controller
     public function create(): View
     {
         $newMovie = new Movie();
-        return view('movies.create')->with('movie', $newMovie);
+        $genres = Genre::orderBy('name')->pluck('name', 'code')->toArray();
+        $firstGenre = reset($genres);
+        $newMovie->genre = (object) [
+            'name' => $firstGenre
+        ];
+        return view('movies.create')->with('genres', $genres)->with('movie', $newMovie);
     }
 
     public function edit(Movie $movie): View
@@ -106,7 +128,7 @@ class MovieController extends Controller
     public function destroyImage(Movie $movie): RedirectResponse
     {
         if ($movie->imageExists) {
-            Storage::delete("public/movies/{$movie->fileName}");
+            Storage::delete("public/posters/{$movie->fileName}");
         }
         return redirect()->back()
             ->with('alert-type', 'success')
@@ -120,14 +142,29 @@ class MovieController extends Controller
 
         if ($request->hasFile('image_file')) {
             if ($movie->imageExists) {
-                Storage::delete("public/movies/{$movie->fileName}");
+                Storage::delete("public/posters/{$movie->fileName}");
             }
-            $request->image_file->storeAs('public/movies', $movie->fileName);
+            $request->image_file->storeAs('public/posters', $movie->fileName);
         }
 
-        $url = route('courses.show', ['course' => $course]);
-        $htmlMessage = "Course <a href='$url'><u>{$course->name}</u></a> ({$course->abbreviation}) has been updated successfully!";
-        return redirect()->route('courses.index')
+        $url = route('movies.show', ['movie' => $movie]);
+        $htmlMessage = "Movie <a href='$url'><u>{$movie->name}</u></a> has been updated successfully!";
+        return redirect()->route('movies.showcase')
+            ->with('alert-type', 'success')
+            ->with('alert-msg', $htmlMessage);
+    }
+
+    public function store(MovieFormRequest $request): RedirectResponse
+    {
+        $newMovie = Movie::create($request->validated());
+
+        if ($request->hasFile('image_file')) {
+            $request->image_file->storeAs('public/posters', $newMovie->fileName);
+        }
+
+        $url = route('movies.show', ['movie' => $newMovie]);
+        $htmlMessage = "Movie <a href='$url'><u>{$newMovie->name}</u></a> has been created successfully!";
+        return redirect()->route('movies.showcase')
             ->with('alert-type', 'success')
             ->with('alert-msg', $htmlMessage);
     }

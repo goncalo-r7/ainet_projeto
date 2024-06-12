@@ -7,15 +7,10 @@
         <x-field.input name="title" label="Title of Movie" :readonly="$readonly"
             value="{{ old('title', $movie->title) }}"/>
 
-        <x-field.select name="genre" label="Genre" :readonly="$readonly" || ($mode == 'edit')"
+        <x-field.select name="genre" label="Genre" :readonly="$readonly"
             value="{{ old('genre', $movie->genre->name) }}"
             :options="$genres"/>
 
-
-
-        <x-field.input name="genre_code" label="Genre" width="md"
-                        :readonly="$readonly || ($mode == 'edit')"
-                        value="{{ old('genre_code', $movie->genre->name) }}"/>
 
         <x-field.input name="year" label="Year" :readonly="$readonly"
                         value="{{ old('year', $movie->year) }}"/>
@@ -32,6 +27,16 @@
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowfullscreen>
             </iframe>
+        </div>
+        @endif
+        @if ($mode == 'edit')
+        <div class="mt-4 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
+            <p class="font-bold">Attention:</p>
+            <p>Trailer URL will update only after confirmation on save.</p>
+        </div>
+        <div class="mt-4">
+            <x-field.input name="trailer_url" label="Trailer URL"
+                value="{{ old('trailer_url', $movie->trailer_url) }}"/>
         </div>
         @endif
         <x-field.text-area name="synopsis" label="Synopsis"

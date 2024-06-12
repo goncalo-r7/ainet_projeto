@@ -16,7 +16,7 @@
                     </p>
                 </header>
 
-                <form method="POST" action="{{ route('movie.store') }}"
+                <form method="POST" action="{{ route('movies.store') }}"
                     enctype="multipart/form-data">
                     @csrf
                     <div class="mt-6 space-y-4">

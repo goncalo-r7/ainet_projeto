@@ -15,6 +15,7 @@ class FilterCard extends Component
         public ?string $genre = null,
         public ?string $title = null,
         public ?string $synopsis = null,
+        public ?string $allMoviesBool = null,
         public string $filterAction,
         public string $resetUrl,
 
