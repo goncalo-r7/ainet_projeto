@@ -66,7 +66,7 @@ class CartController extends Controller
         $interval = $now->diff($movieStartTime);
         if ($interval->invert == 1 && $interval->i >= 5) { // Invert indicates the interval is negative, meaning now is after start time
             $alertType = 'warning';
-            $url = route('seats.index', ['screening' => $screening->id]);
+            $url = route('seats.index', ['screeningSessionId' => $screening->id]);
             $htmlMessage = "Ticket <a href='$url'>#{$screening->id}</a> for
             <strong>\"{$screening->movie->title}\"</strong> was not added to the cart because it has already started!";
             return back()
