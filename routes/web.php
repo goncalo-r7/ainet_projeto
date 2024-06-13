@@ -41,7 +41,8 @@ Route::middleware('auth')->group(function () {
 /* ----- Verified users ----- */
 Route::middleware('auth', 'verified')->group(function () {
 
-    Route::view('/dashboard', 'dashboard')->name('dashboard');
+    // Route::view('/dashboard', 'dashboard')->name('dashboard');
+    Route::view('/', 'home')->name('home');
 
     Route::delete('courses/{course}/image', [CourseController::class, 'destroyImage'])
         ->name('courses.image.destroy');
