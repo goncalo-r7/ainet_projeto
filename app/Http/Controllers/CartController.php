@@ -21,6 +21,11 @@ class CartController extends Controller
     public function show(): View
     {
         $cart = session('cart', null);
+        dd($cart);
+        $screenings = Screening::whereIn('id', $cart->pluck('id'))->get();
+        //dd($screenings);
+
+        // return view('cart.show', compact('cart'));
         return view('cart.show', compact('cart'));
     }
 
@@ -83,21 +88,13 @@ class CartController extends Controller
                         'payment_ref' => 123456789, // TODO: alterar para o ref do pagamento
                         //'nif' => auth()->user()->nif ?? null,
                     ]);
-                } else{
-                    // atualizar purchase
-                    $purchaseId = DB::table('purchases')->where('customer_id', auth()->user()->id)->orderBy('date', 'desc')->first()->id;
-                    DB::table('purchases')->where('id', $purchaseId)->update([
-                        'customer_id' => $userId,
-                        'date' => now(),
-                        'total_price' => 0,
-                        'nif' => null,
-                    ]);
-                }
+                } 
+
                 $purchaseId = DB::table('purchases')->where('customer_id', $userId)->orderBy('date', 'desc')->first()->id;
                 // one ticket for each seat
                 $total=0;
                 foreach ($seatsIds as $seatId){
-                    DB::table('tickets')->insert([
+                    $ticketId = DB::table('tickets')->insertGetId([
                         'screening_id' => $screening->id,
                         'seat_id' => $seatId,
                         'purchase_id' => $purchaseId,
@@ -106,36 +103,32 @@ class CartController extends Controller
                         'updated_at' => now()
                     ]);
 
+                    $ticketDetails = [
+                        'screening_id' => $screening->id,
+                        'seat_id' => $seatId,
+                        'ticket_id' => $ticketId,
+                        'price' => 5.0, // Example price
+                    ];
+                    
+                    // Push the ticket details to the cart
+                    $cart->push($ticketDetails);
+
                     $total += 5.0; // alterar para preço de cada ticket
                 }
                 // atualizar purchase
-                $purchase = DB::table('purchases')->where('id', $purchaseId)->first();
+                //$purchase = DB::table('purchases')->where('id', $purchaseId)->first();
                 //dd($purchase);
-                if ($purchase){
-                    $totalPrice = $purchase->total_price + $total;
-                    DB::table('purchases')->where('id', $purchaseId)->update([
-                        'total_price' => $totalPrice,
-                    ]);
-                } else{
-                    $alertType = 'warning';
-                    $url = route('seats.index', ['screening' => $screening->id]);
-                    $htmlMessage = "Purchase was not found!";
-                    return back()
-                        ->with('alert-msg', $htmlMessage)
-                        ->with('alert-type', $alertType); 
-                }
+                DB::table('purchases')->where('id', $purchaseId)->increment('total_price', $total);
+                session(['cart' => $cart]);
                 
-                
-                $cart->push($screening); // adicionar a sessao ao carrinho
+            
             }
         }
         $alertType = 'success';
-        $url = route('cart.show');
-        $htmlMessage = "Seats for movie
-                <strong>\"{$screening->movie->title}\"</strong> were added to the cart.";
+        $htmlMessage = "Seats for the movie <strong>\"{$screening->movie->title}\"</strong> were successfully added to the cart.";
         return back()
             ->with('alert-msg', $htmlMessage)
-            ->with('alert-type', $alertType);
+            ->with('alert-type', $alertType); 
     }
 
     /*public function addToCart(Request $request, Discipline $discipline): RedirectResponse

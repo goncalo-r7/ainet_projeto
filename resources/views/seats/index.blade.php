@@ -33,7 +33,6 @@
                                     @endphp
                                     <td class="px-1 py-1 text-center">
 
-
                                     <input
                                         id="{{ $seat->id }}"
                                         type="checkbox"
