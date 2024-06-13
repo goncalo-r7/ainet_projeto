@@ -11,6 +11,7 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\TheaterController;
 use App\Http\Controllers\SeatController;
+use App\Http\Controllers\TicketController;
 use Illuminate\Support\Facades\Route;
 use App\Models\Student;
 
@@ -23,6 +24,8 @@ Route::get('courses/{course}/curriculum', [CourseController::class, 'showCurricu
 //MOVIE
 Route::get('movies/showcase', [MovieController::class, 'showCase'])->name('movies.showcase');
 
+Route::get('tickets/verify', [TicketController::class, 'verify'])->name('tickets.verify');
+Route::get('/verify-ticket', [TicketController::class, 'showVerificationForm'])->name('verify.form');
 
 
 // ex: /screenings/1, 1 will be passed as the $screeningSessionId parameter to the index method of the SeatController
@@ -104,6 +107,9 @@ Route::middleware('auth', 'verified')->group(function () {
     // Add movie to cart
     Route::post('cart/screenings/{screening}', [CartController::class, 'addToCart'])
         ->name('cart.add');
+//route movie post to seat
+    // Route::post('/screenings/{screeningID}', [Screening::class, 'selectSeats'])
+    // ->name('seats.index');
 
     // Add a discipline to the cart:
     /*Route::post('cart/{discipline}', [CartController::class, 'addToCart'])

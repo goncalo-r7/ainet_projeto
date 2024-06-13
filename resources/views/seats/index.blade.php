@@ -41,11 +41,11 @@
                                         value="{{ $seat->id }}"
                                         class="hidden peer"
                                         {{ $isTaken ? 'disabled' : '' }}
-                                    > 
-                                    <label for="{{ $seat->id }}" class="block w-full h-full p-5 
-                                        {{ $isTaken ? 'bg-red-400 border-red-500 hover:bg-red-500 cursor-not-allowed' : 'bg-white border-2 border-gray-200 hover:bg-gray-50 cursor-pointer' }} 
-                                        rounded-lg dark:hover:text-gray-300     
-                                        peer-checked:border-blue-600 peer-checked:bg-blue-200  hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600 
+                                    >
+                                    <label for="{{ $seat->id }}" class="block w-full h-full p-5
+                                        {{ $isTaken ? 'bg-red-400 border-red-500 hover:bg-red-500 cursor-not-allowed' : 'bg-white border-2 border-gray-200 hover:bg-gray-50 cursor-pointer' }}
+                                        rounded-lg dark:hover:text-gray-300
+                                        peer-checked:border-blue-600 peer-checked:bg-blue-200  hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600
                                         dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
                                         {{ $seat->row . $seat->seat_number }}
                                     </label>

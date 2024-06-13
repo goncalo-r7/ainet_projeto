@@ -15,8 +15,10 @@
                     <td class="px-2 py-2 text-center hidden md:table-cell">{{ $screening->date }}</td>
                     <td class="px-2 py-2 text-center hidden md:table-cell">{{ substr($screening->start_time, 0, 5) }}</td>
                     <td class="px-2 py-2 flex justify-center items-center">
-                        <x-table.icon-add-cart class="px-0.5"
-                            href="{{ route('seats.index', ['screeningSession' => $screening->id]) }}"/>
+                        <x-table.icon-show class="px-0.5"
+                            {{-- href="{{ route('seats.index', ['screening' => $screening->id]) }}"/> --}}
+                                 href="{{ route('seats.index', ['screening' => $screening->id]) }}"/>
+
                     </td>
                 </tr>
             @endforeach
@@ -24,3 +26,4 @@
     </table>
 
 </div>
+        {{-- href="{{ route('seats.index', ['screeningSession' => $screening->id]) }}"/> --}}
