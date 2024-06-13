@@ -49,13 +49,14 @@
                         <x-table.icon-edit class="px-0.5"
                         href="{{ route('disciplines.edit', ['discipline' => $discipline]) }}"/>
                     </td>
-                @endif
+                @endif --}}
                 @if($showDelete)
                     <td>
                         <x-table.icon-delete class="px-0.5"
-                        action="{{ route('disciplines.destroy', ['discipline' => $discipline]) }}"/>
+                        action="{{ route('cart.destroy') }}"/>
                     </td>
                 @endif
+                {{--
                 @if($showAddToCart)
                     <td>
                         <x-table.icon-add-cart class="px-0.5"

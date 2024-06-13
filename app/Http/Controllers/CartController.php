@@ -160,7 +160,7 @@ class CartController extends Controller
         $screeningId = $ticket->screening_id;
         $movieTitle = $ticket->screening->movie->title;
         $url = route('seats.index', ['screening' => $screeningId]);
-        $cart = session('cart', null); 
+        $cart = session('cart', null);
         if (!$cart) {
             $alertType = 'warning';
             $htmlMessage = "Ticket <a href='$url'>#{$ticket->id}</a> for
@@ -233,7 +233,25 @@ class CartController extends Controller
     public function destroy(Request $request): RedirectResponse
     {
         // TODO: Confirmar se o destroy dá delete aos tickets e purchase
+        $cart = session('cart', null);
+         // Delete all tickets associated with the cart from the database
+        $purchase = null;
+        foreach ($cart as $cartItem) {
+            if (!$purchase){
+                $purchase = DB::table('tickets')->select('purchase_id')->where('id', $cartItem['ticket_id']);
+            }
+            if (isset($cartItem['ticket_id'])) {
+                DB::table('tickets')->where('id', $cartItem['ticket_id'])->delete();
+            }
+        }
+
+        // Delete the associated purchase
+        if ($purchase) {
+            DB::table('purchases')->where('id', $purchase)->delete();
+        }
+        
         $request->session()->forget('cart');
+        // confirm: destroy is not clearing the seats
         return back()
             ->with('alert-type', 'success')
             ->with('alert-msg', 'Shopping Cart has been cleared');
