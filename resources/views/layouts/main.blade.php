@@ -64,9 +64,6 @@
                                     <x-menus.submenu-item content="Students" selectable="0"
                                         href="{{ route('students.index') }}" />
                                 @endcan
-                                <x-menus.submenu-item content="Administratives" selectable="0"
-                                    href="{{ route('administratives.index') }}" />
-                                <hr>
                                 <x-menus.submenu-item content="Theaters" selectable="0"
                                     href="{{ route('theaters.index') }}" />
                                 <x-menus.submenu-item content="Course Management" href="{{ route('courses.index') }}" />

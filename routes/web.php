@@ -17,6 +17,8 @@ use App\Models\Student;
 
 /* ----- PUBLIC ROUTES ----- */
 
+Route::resource('seats', SeatController::class); //tem que estar em primeiro por causa de um conflito qualquer....
+
 Route::view('/', 'home')->name('home');
 Route::get('courses/showcase', [CourseController::class, 'showCase'])->name('courses.showcase');
 Route::get('courses/{course}/curriculum', [CourseController::class, 'showCurriculum'])->name('courses.curriculum');
@@ -24,12 +26,16 @@ Route::get('courses/{course}/curriculum', [CourseController::class, 'showCurricu
 //MOVIE
 Route::get('movies/showcase', [MovieController::class, 'showCase'])->name('movies.showcase');
 
-Route::get('tickets/verify', [TicketController::class, 'verify'])->name('tickets.verify');
-Route::get('/verify-ticket', [TicketController::class, 'showVerificationForm'])->name('verify.form');
+// Route::get('tickets/show', [TicketController::class, 'verify'])->name('tickets.showinfo');
+Route::post('tickets/verify/{screening}', [TicketController::class, 'verify'])->name('tickets.verify.submit');
+
+Route::get('tickets/verify/{screening}', [TicketController::class, 'showVerificationForm'])->name('tickets.verify');
+Route::get('tickets/show/{ticket}', [TicketController::class, 'showTicketInfo'])->name('tickets.showinfo');
 
 
 // ex: /screenings/1, 1 will be passed as the $screeningSessionId parameter to the index method of the SeatController
-Route::get('/screenings/{screening}', [SeatController::class, 'index'])->name('seats.index');
+Route::get('/screenings/{screeningSessionId}', [SeatController::class, 'index'])->name('seats.index');
+// Route::get('screenings/{screeningSessionId}', [SeatController::class, 'index'])->name('seats.index');
 
 /* ----- Non-Verified users ----- */
 Route::middleware('auth')->group(function () {
@@ -57,7 +63,10 @@ Route::middleware('auth', 'verified')->group(function () {
 
     Route::resource('theaters', TheaterController::class);
 
-    Route::resource('seats', SeatController::class);
+
+
+
+
 
 
     //Department show and index are accessible to any authenticated user
