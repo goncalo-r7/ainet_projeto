@@ -1,4 +1,4 @@
-<div {{ $attributes }}>
+{{-- <div {{ $attributes }}>
     <table class="table-auto border-collapse">
         <thead>
             <tr>
@@ -61,4 +61,4 @@
             @endforeach
         </tbody>
     </table>
-</div>
+</div> --}}

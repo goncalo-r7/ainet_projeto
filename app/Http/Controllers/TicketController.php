@@ -11,11 +11,11 @@ class TicketController extends Controller
 {
 
 
-    public function show(Ticket $ticket): View
-    {
-        $user = Genre::orderBy('name')->pluck('name', 'code')->toArray();
-        return view('tickets.show')->with('ticket', $ticket);
-    }
+    // public function show(Ticket $ticket): View
+    // {
+    //     // $user = Genre::orderBy('name')->pluck('name', 'code')->toArray();
+    //     return view('tickets.show')->with('ticket', $ticket);
+    // }
 
     public function verify(Request $request, $screeningId)
     {

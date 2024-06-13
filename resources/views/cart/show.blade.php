@@ -9,7 +9,7 @@
             @empty($cart)
                 <h3 class="text-xl w-96 text-center">Cart is Empty</h3>
             @else
-            <div class="font-base text-sm text-gray-700 dark:text-gray-300">
+            {{-- <div class="font-base text-sm text-gray-700 dark:text-gray-300">
                 <x-disciplines.table :tickets="$cart"
                     :showView="true"
                     :showEdit="false"
@@ -17,18 +17,18 @@
                     :showAddCart="false"
                     :showRemoveFromCart="true"
                     />
-            </div>
+            </div> --}}
             <div class="mt-12">
                 <div class="flex justify-between space-x-12 items-end">
                     <div>
                         <h3 class="mb-4 text-xl">Shopping Cart Confirmation </h3>
-                        <form action="{{ route('cart.confirm') }}" method="post">
+                        {{-- <form action="{{ route('cart.confirm') }}" method="post">
                             @csrf
                                 <x-field.input name="student_number" label="Student Number" width="lg"
                                                 :readonly="false"
                                                 value="{{ old('student_number') }}"/>
                                 <x-button element="submit" type="dark" text="Confirm" class="mt-4"/>
-                        </form>
+                        </form> --}}
                     </div>
                     <div>
                         <form action="{{ route('cart.destroy') }}" method="post">

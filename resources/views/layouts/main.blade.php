@@ -40,33 +40,17 @@
                         <x-menus.menu-item content="Movies" href="{{ route('movies.showcase') }}"
                             selected="{{ Route::currentRouteName() == 'movies.showcase' }}" />
 
-                        <!-- Menu Item: Curricula -->
-                        <x-menus.submenu-full-width content="Curricula" selectable="1" selected="0"
-                            uniqueName="submenu_curricula">
-                            @foreach ($courses as $course)
-                                <x-menus.submenu-item :content="$course->fullName" selectable="1" selected="0"
-                                    href="{{ route('courses.curriculum', ['course' => $course]) }}" />
-                            @endforeach
-                        </x-menus.submenu-full-width>
 
-                        <!-- Menu Item: Disciplines -->
-                        <x-menus.menu-item content="Disciplines" selectable="1" href="{{ route('disciplines.index') }}"
-                            selected="{{ Route::currentRouteName() == 'disciplines.index' }}" />
 
                         @auth
-                            <!-- Menu Item: Teachers -->
-                            <x-menus.menu-item content="Teachers" selectable="1" href="{{ route('teachers.index') }}"
-                                selected="{{ Route::currentRouteName() == 'teachers.index' }}" />
+
 
                             <!-- Menu Item: Others -->
                             <x-menus.submenu selectable="0" uniqueName="submenu_others" content="More">
-                                @can('viewAny', App\Models\Student::class)
-                                    <x-menus.submenu-item content="Students" selectable="0"
-                                        href="{{ route('students.index') }}" />
-                                @endcan
+
                                 <x-menus.submenu-item content="Theaters" selectable="0"
                                     href="{{ route('theaters.index') }}" />
-                                <x-menus.submenu-item content="Course Management" href="{{ route('courses.index') }}" />
+
                             </x-menus.submenu>
                         @endauth
 
@@ -91,9 +75,9 @@
                                         {{ Auth::user()->name }}
                                     </div>
                                 </x-slot>
-                                <x-menus.submenu-item content="My Disciplines" selectable="0" href="#" />
+                                {{-- <x-menus.submenu-item content="My Disciplines" selectable="0" href="#" />
                                 <x-menus.submenu-item content="My Teachers" selectable="0" href="#" />
-                                <x-menus.submenu-item content="My Students" selectable="0" href="#" />
+                                <x-menus.submenu-item content="My Students" selectable="0" href="#" /> --}}
                                 <hr>
                                 <x-menus.submenu-item content="Profile" selectable="0"
                                     href="{{ route('profile.edit') }}" />

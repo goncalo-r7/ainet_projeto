@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Log;
 
 class CartController extends Controller
 {
-    
+
     public function show(): View
     {
         $cart = session('cart', null);
@@ -29,26 +29,26 @@ class CartController extends Controller
     public function index($screeningSessionId)
     {
         $screeningSession = Screening::with(['theater.seats', 'tickets'])->findOrFail($screeningSessionId);
-        
+
 
         return view('seats.index', compact('screeningSession'));
     }
-    
+
     // funcao chamada em seats.index (no form)
     public function addToCart(Request $request, Screening $screening): RedirectResponse
     {
         // request tem vetor com os ids dos lugares selecionados
-        // screening tem 
+        // screening tem
         // For debug:
         // dump($request->all());
         // dd($screening);
-        
+
         $cart = session('cart', null);
-        
+
         if (!$cart) {
             $cart = collect([]);
             $request->session()->put('cart', $cart);
-        } 
+        }
         # $screenings to receive in parameter
         // $aa = $screening->where('start_time', '>', now()->subMinutes(5))->get();
         $seatsIds = $request->input('selectedSeats');
@@ -60,7 +60,7 @@ class CartController extends Controller
             return back()
                 ->with('alert-msg', $htmlMessage)
                 ->with('alert-type', $alertType);
-        } 
+        }
         $movieStartTime = new DateTime($screening->start_time);
         $now = new DateTime(); // Current time
         $interval = $now->diff($movieStartTime);
@@ -71,7 +71,7 @@ class CartController extends Controller
             <strong>\"{$screening->movie->title}\"</strong> was not added to the cart because it has already started!";
             return back()
                 ->with('alert-msg', $htmlMessage)
-                ->with('alert-type', $alertType); 
+                ->with('alert-type', $alertType);
         }
         else{
             $userId = Auth::id();
@@ -81,12 +81,12 @@ class CartController extends Controller
                     'customer_id' => $userId, // TODO alterar para customer_id
                     'date' => now(),
                     'total_price' => 0,
-                    'customer_name' => auth()->user()->name, 
+                    'customer_name' => auth()->user()->name,
                     'customer_email' => auth()->user()->email,
                     'payment_ref' => 123456789, // TODO: alterar para o ref do pagamento
                     //'nif' => auth()->user()->nif ?? null,
                 ]);
-            } 
+            }
 
             $purchaseId = DB::table('purchases')->where('customer_id', $userId)->orderBy('date', 'desc')->first()->id;
             // one ticket for each seat
@@ -107,7 +107,7 @@ class CartController extends Controller
                     'ticket_id' => $ticketId,
                     'price' => 5.0, // Example price
                 ];
-                
+
                 // Push the ticket details to the cart
                 $cart->push($ticketDetails);
 
@@ -123,7 +123,7 @@ class CartController extends Controller
         $htmlMessage = "Seats for the movie <strong>\"{$screening->movie->title}\"</strong> were successfully added to the cart.";
         return back()
             ->with('alert-msg', $htmlMessage)
-            ->with('alert-type', $alertType); 
+            ->with('alert-type', $alertType);
     }
 
     /*public function addToCart(Request $request, Discipline $discipline): RedirectResponse
@@ -198,7 +198,7 @@ class CartController extends Controller
     {
         // TODO: Alterar para movies
         $url = route('disciplines.show', ['discipline' => $discipline]);
-        $cart = session('cart', null); 
+        $cart = session('cart', null);
         if (!$cart) {
             $alertType = 'warning';
             $htmlMessage = "Movie <a href='$url'>#{$discipline->id}</a>
@@ -249,7 +249,7 @@ class CartController extends Controller
         if ($purchase) {
             DB::table('purchases')->where('id', $purchase)->delete();
         }
-        
+
         $request->session()->forget('cart');
         // confirm: destroy is not clearing the seats
         return back()
@@ -257,68 +257,69 @@ class CartController extends Controller
             ->with('alert-msg', 'Shopping Cart has been cleared');
     }
 
-    // TODO
-    public function confirm(CartConfirmationFormRequest $request): RedirectResponse
-    {
-        $cart = session('cart', null);
-        if (!$cart || ($cart->count() == 0)) {
-            return back()
-                ->with('alert-type', 'danger')
-                ->with('alert-msg', "Cart was not confirmed, because cart is empty!");
-        } else {
-            $student = Student::where('number', $request->validated()['student_number'])->first();
-            if (!$student) {
-                return back()
-                    ->with('alert-type', 'danger')
-                    ->with('alert-msg', "Student number does not exist on the database!");
-            }
-            $insertDisciplines = [];
-            $disciplinesOfStudent = $student->disciplines;
-            $ignored = 0;
-            foreach ($cart as $discipline) {
-                $exist = $disciplinesOfStudent->where('id', $discipline->id)->count();
-                if ($exist) {
-                    $ignored++;
-                } else {
-                    $insertDisciplines[$discipline->id] = [
-                        "discipline_id" => $discipline->id,
-                        "repeating" => 0,
-                        "grade" => null,
-                    ];
-                }
-            }
-            $ignoredStr = match($ignored) {
-                0 => "",
-                1 => "<br>(1 discipline was ignored because student was already enrolled in it)",
-                default => "<br>($ignored disciplines were ignored because student was already enrolled on them)"
-            };
-            $totalInserted = count($insertDisciplines);
-            $totalInsertedStr = match($totalInserted) {
-                0 => "",
-                1 => "1 discipline registration was added to the student",
-                default => "$totalInserted disciplines registrations were added to the student",
+    // TODO GONCALO AGORA ESTAMOS NO NOVO DB LOGO NAO HA ESTUDANTES
+    // public function confirm(CartConfirmationFormRequest $request): RedirectResponse
+    // {
+    //     $cart = session('cart', null);
+    //     if (!$cart || ($cart->count() == 0)) {
+    //         return back()
+    //             ->with('alert-type', 'danger')
+    //             ->with('alert-msg', "Cart was not confirmed, because cart is empty!");
+    //     } else {
+    //         $student = Student::where('number', $request->validated()['student_number'])->first();
+    //         if (!$student) {
+    //             return back()
+    //                 ->with('alert-type', 'danger')
+    //                 ->with('alert-msg', "Student number does not exist on the database!");
+    //         }
+    //         $insertDisciplines = [];
+    //         $disciplinesOfStudent = $student->disciplines;
+    //         $ignored = 0;
+    //         foreach ($cart as $discipline) {
+    //             $exist = $disciplinesOfStudent->where('id', $discipline->id)->count();
+    //             if ($exist) {
+    //                 $ignored++;
+    //             } else {
+    //                 $insertDisciplines[$discipline->id] = [
+    //                     "discipline_id" => $discipline->id,
+    //                     "repeating" => 0,
+    //                     "grade" => null,
+    //                 ];
+    //             }
+    //         }
+    //         $ignoredStr = match($ignored) {
+    //             0 => "",
+    //             1 => "<br>(1 discipline was ignored because student was already enrolled in it)",
+    //             default => "<br>($ignored disciplines were ignored because student was already enrolled on them)"
+    //         };
+    //         $totalInserted = count($insertDisciplines);
+    //         $totalInsertedStr = match($totalInserted) {
+    //             0 => "",
+    //             1 => "1 discipline registration was added to the student",
+    //             default => "$totalInserted disciplines registrations were added to the student",
 
-            };
-            if ($totalInserted == 0) {
-                $request->session()->forget('cart');
-                return back()
-                    ->with('alert-type', 'danger')
-                    ->with('alert-msg', "No registration was added to the student!$ignoredStr");
-            } else {
-                DB::transaction(function () use ($student, $insertDisciplines) {
-                    $student->disciplines()->attach($insertDisciplines);
-                });
-                $request->session()->forget('cart');
-                if ($ignored == 0) {
-                    return redirect()->route('students.show', ['student' => $student])
-                        ->with('alert-type', 'success')
-                        ->with('alert-msg', "$totalInsertedStr.");
-                } else {
-                    return redirect()->route('students.show', ['student' => $student])
-                        ->with('alert-type', 'warning')
-                        ->with('alert-msg', "$totalInsertedStr. $ignoredStr");
-                }
-            }
-        }
-    }
+    //         };
+    //         if ($totalInserted == 0) {
+    //             $request->session()->forget('cart');
+    //             return back()
+    //                 ->with('alert-type', 'danger')
+    //                 ->with('alert-msg', "No registration was added to the student!$ignoredStr");
+    //         } else {
+    //             DB::transaction(function () use ($student, $insertDisciplines) {
+    //                 $student->disciplines()->attach($insertDisciplines);
+    //             });
+    //             $request->session()->forget('cart');
+    //             if ($ignored == 0) {
+    //                 return redirect()->route('students.show', ['student' => $student])
+    //                     ->with('alert-type', 'success')
+    //                     ->with('alert-msg', "$totalInsertedStr.");
+    //             } else {
+    //                 return redirect()->route('students.show', ['student' => $student])
+    //                     ->with('alert-type', 'warning')
+    //                     ->with('alert-msg', "$totalInsertedStr. $ignoredStr");
+    //             }
+    //         }
+    //     }
+//}
+
 }
