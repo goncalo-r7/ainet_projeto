@@ -10,10 +10,10 @@
                 <h3 class="text-xl w-96 text-center">Cart is Empty</h3>
             @else
             <div class="font-base text-sm text-gray-700 dark:text-gray-300">
-                <x-disciplines.table :disciplines="$cart"
-                    :showView="false"
+                <x-disciplines.table :tickets="$cart"
+                    :showView="true"
                     :showEdit="false"
-                    :showDelete="false"
+                    :showDelete="true"
                     :showAddCart="false"
                     :showRemoveFromCart="true"
                     />

@@ -108,6 +108,11 @@ Route::middleware('auth', 'verified')->group(function () {
     // Add movie to cart
     Route::post('cart/screenings/{screening}', [CartController::class, 'addToCart'])
         ->name('cart.add');
+    // Remove a ticket from the cart:
+    // When the route /cart/remove/{ticket} is hit with a DELETE request, Laravel will automatically find the Ticket model with the provided ID
+    Route::delete('cart/remove/{ticket}', [CartController::class, 'removeFromCart'])
+        ->name('cart.remove');
+
 //route movie post to seat
     // Route::post('/screenings/{screeningID}', [Screening::class, 'selectSeats'])
     // ->name('seats.index');

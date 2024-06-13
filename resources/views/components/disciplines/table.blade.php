@@ -7,7 +7,7 @@
             <th class="px-2 py-2 text-right hidden md:table-cell">Date</th>
             <th class="px-2 py-2 text-right hidden md:table-cell">Start Time</th>
             @if($showView)
-                <th>aa</th>
+                <th></th>
             @endif
             @if($showEdit)
                 <th></th>
@@ -24,19 +24,21 @@
         </tr>
         </thead>
         <tbody>
-            @foreach ($screenings as $screening)
+            @foreach ($tickets as $ticket)
+            
+            @php
+            $screening = DB::table('screenings')->where('id', $ticket['screening_id'])->first();
+            $movieId = DB::table('screenings')->select('movie_id')->where('id', $ticket['screening_id'])->first();
+            $movieTitle = DB::table('movies')->select('title')->where('id', $movieId->movie_id)->first(); 
+            $theaterId = DB::table('screenings')->select('theater_id')->where('id', $ticket['screening_id'])->first();
+            $theater = DB::table('theaters')->select('name')->where('id', $theaterId->theater_id)->first();
+            @endphp
             <tr class="border-b border-b-gray-400 dark:border-b-gray-500">
-                <td class="px-2 py-2 text-left hidden sm:table-cell">{{ $screening->movie->title }}</td>
-                <td class="px-2 py-2 text-left">{{ $screening->theatre }}</td>
-                @if($showCourse)
-                    <td class="px-2 py-2 text-left hidden md:table-cell">{{ $discipline->courseRef->name }}</td>
-                @endif
-                <td class="px-2 py-2 text-right hidden md:table-cell">{{ $screening->date->format('d-m-Y') }}</td>
-                <td class="px-2 py-2 text-right hidden md:table-cell">{{ $screening->start_time->format('H:i') }}</td>
-                {{-- <td class="px-2 py-2 text-right hidden lg:table-cell">{{ $discipline->ECTS }}</td>
-                <td class="px-2 py-2 text-right hidden lg:table-cell">{{ $discipline->hours }}</td>
-                <td class="px-2 py-2 text-center hidden lg:table-cell">{{ $discipline->optional ? 'optional' : '' }}</td>
-                @if($showView)
+                <td class="px-2 py-2 text-left hidden sm:table-cell">{{ $movieTitle->title }}</td>
+                <td class="px-2 py-2 text-left">{{ $theater->name }}</td>
+                <td class="px-2 py-2 text-right hidden md:table-cell">{{ date('d-m-Y', strtotime($screening->start_time)) }}</td>
+                <td class="px-2 py-2 text-right hidden md:table-cell">{{ date('H:i', strtotime($screening->start_time)) }}</td>
+                {{-- @if($showView)
                     <td>
                         <x-table.icon-show class="ps-3 px-0.5"
                         href="{{ route('disciplines.show', ['discipline' => $discipline]) }}"/>
@@ -60,15 +62,15 @@
                             method="post"
                             action="{{ route('cart.add', ['discipline' => $discipline]) }}"/>
                     </td>
-                @endif
+                @endif --}}
                 @if($showRemoveFromCart)
                     <td>
                         <x-table.icon-minus class="px-0.5"
                             method="delete"
-                            action="{{ route('cart.remove', ['discipline' => $discipline]) }}"/>
+                            action="{{ route('cart.remove', ['ticket' => $ticket['ticket_id']]) }}"/>
                     </td>
                 @endif
-            </tr> --}}
+            </tr>
         @endforeach
         {{-- @foreach ($disciplines as $discipline)
             <tr class="border-b border-b-gray-400 dark:border-b-gray-500">
