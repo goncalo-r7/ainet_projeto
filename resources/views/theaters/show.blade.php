@@ -26,7 +26,7 @@
                 <h3 class="pt-16 pb-4 text-2xl font-medium text-gray-900 dark:text-gray-100">
                     Theater Seats
                 </h3>
-                <x-theaters.seats :seats="$theater->seats" class="pt-4" />
+                <x-theaters.seats :seatsByRow="$theater->seats->groupBy('row')->toArray()" class="pt-4" />
             </section>
         </div>
     </div>

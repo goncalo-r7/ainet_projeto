@@ -2,7 +2,8 @@
     $mode = $mode ?? 'edit';
     $readonly = $mode == 'show';
     $input_filler = old('name', $theater->name) ;
-
+    $url = $theater->photo_filename ?? "unknown.png";
+    $url = url('storage/theaters/'.$url);
 @endphp
 
 <div class="flex flex-wrap space-x-8">
@@ -19,6 +20,6 @@
             deleteTitle="Delete Photo"
             :deleteAllow="($mode == 'edit') && ($theater->photo_filename)"
             deleteForm="form_to_delete_photo"
-            :imageUrl="$theater->photo_filename"/>
+            :imageUrl="$url"/>
     </div>
 </div>

@@ -33,9 +33,8 @@
                         <h3 class="pb-4 me-5 text-2xl font-medium text-gray-900 dark:text-gray-100">
                             Theater Seats
                         </h3>
-                        <x-button class="" href="{{ route('seats.index')}}" text="Edit Seats" type="primary" />
                     </div>
-                    <x-theaters.seats :seats="$theater->seats" class="pt-4" />
+                    <x-theaters.seats :seatsByRow="$theater->seats->groupBy('row')->toArray()" class="pt-4" />
                     <div class="flex mt-6">
                         <x-button element="submit" type="dark" text="Save" class="uppercase" />
                         <x-button element="a" type="light" text="Cancel" class="uppercase ms-4" href="{{ url()->full() }}" />

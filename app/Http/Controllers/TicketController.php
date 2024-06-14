@@ -44,6 +44,8 @@ class TicketController extends Controller
             return redirect()->route('tickets.showinfo', ['ticket' => $ticket])
                 ->with('alert-type', 'success')
                 ->with('alert-msg', $htmlMessage);
+
+
         } else {
             // Ticket not found, return error
             $htmlMessage = "Ticket Invalido";
@@ -63,5 +65,19 @@ class TicketController extends Controller
     public function showTicketInfo(Ticket $ticket)
     {
         return view('tickets.showinfo', compact('ticket'));
+    }
+
+    public function invalidate(Ticket $ticket)
+    {
+        //nao precisa de validacoes uma vez que nos que definimos o valor
+        $ticket->status = 'invalid';
+        $ticket->save();
+
+        // Redirect back to the verify page with a message
+        $screening = Screening::find($ticket->screening_id);
+        return redirect()->route('tickets.verify', ['screening' => $ticket->screening_id])
+        ->with('alert-type', 'danger')
+        ->with('alert-msg', "Ticket {$ticket->id} was invalidated");
+
     }
 }

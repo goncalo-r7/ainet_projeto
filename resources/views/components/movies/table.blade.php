@@ -2,11 +2,9 @@
     <table class="table-auto border-collapse">
         <thead>
         <tr class="border-b-2 border-b-gray-400 dark:border-b-gray-500 bg-gray-100 dark:bg-gray-800">
-            <th class="px-2 py-2 text-left hidden lg:table-cell">Date</th>
-            <th class="px-2 py-2 text-left">Start time</th>
-            <th class="px-2 py-2 text-left">Type</th>
-            <th class="px-2 py-2 text-right hidden sm:table-cell">Nº Semesters</th>
-            <th class="px-2 py-2 text-right hidden sm:table-cell">Nº Places</th>
+            <th class="px-2 py-2 text-left hidden lg:table-cell">Title</th>
+            <th class="px-2 py-2 text-left">Genre</th>
+            <th class="px-2 py-2 text-right hidden sm:table-cell">Year</th>
             @if($showView)
                 <th></th>
             @endif
@@ -22,10 +20,9 @@
         @foreach ($movies as $movie)
             <tr class="border-b border-b-gray-400 dark:border-b-gray-500">
                 <td class="px-2 py-2 text-left hidden lg:table-cell">{{ $movie->title }}</td>
-                <td class="px-2 py-2 text-left">{{ $movie->title }}</td>
-                <td class="px-2 py-2 text-left">{{ $movie->title }}</td>
-                <td class="px-2 py-2 text-right hidden sm:table-cell">{{ $movie->title }}</td>
-                <td class="px-2 py-2 text-right hidden sm:table-cell">{{ $movie->title }}</td>
+                <td class="px-2 py-2 text-left">{{ $movie->genre->name }}</td>
+                <td class="px-2 py-2 text-right hidden sm:table-cell">{{ $movie->year }}</td>
+
                 @if($showView)
                     <td>
                         <x-table.icon-show class="ps-3 px-0.5"

@@ -7,26 +7,32 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\TheaterController;
 use App\Http\Controllers\SeatController;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\ScreeningController;
 use Illuminate\Support\Facades\Route;
 
 /* ----- PUBLIC ROUTES ----- */
 
 Route::resource('seats', SeatController::class); //tem que estar em primeiro por causa de um conflito qualquer....
 
+Route::delete('theaters/{theater}/photo', [TheaterController::class, 'destroyImage'])
+        ->name('theaters.photo.destroy');
+
 Route::view('/', 'home')->name('home');
+
+// Route::get('tickets/invalidate/{ticket}', [TicketController::class, 'invalidate'])->name('tickets.invalidate');
+Route::get('tickets/invalidate/{ticket}', [TicketController::class, 'invalidate'])->name('tickets.invalidate');
+Route::post('tickets/verify/{screening}', [TicketController::class, 'verify'])->name('tickets.verify.submit');
+Route::get('tickets/verify/{screening}', [TicketController::class, 'showVerificationForm'])->name('tickets.verify');
+Route::get('tickets/show/{ticket}', [TicketController::class, 'showTicketInfo'])->name('tickets.showinfo');
 
 //MOVIE
 Route::get('movies/showcase', [MovieController::class, 'showCase'])->name('movies.showcase');
 
-// Route::get('tickets/show', [TicketController::class, 'verify'])->name('tickets.showinfo');
-Route::post('tickets/verify/{screening}', [TicketController::class, 'verify'])->name('tickets.verify.submit');
 
-Route::get('tickets/verify/{screening}', [TicketController::class, 'showVerificationForm'])->name('tickets.verify');
-Route::get('tickets/show/{ticket}', [TicketController::class, 'showTicketInfo'])->name('tickets.showinfo');
 
 
 // ex: /screenings/1, 1 will be passed as the $screeningSessionId parameter to the index method of the SeatController
-Route::get('/screenings/{screening}', [SeatController::class, 'index'])->name('seats.index');
+Route::get('/screenings/{screeningSessionId}/seats', [SeatController::class, 'index'])->name('seats.index');
 // Route::get('screenings/{screeningSessionId}', [SeatController::class, 'index'])->name('seats.index');
 
 /* ----- Non-Verified users ----- */
@@ -53,7 +59,7 @@ Route::middleware('auth', 'verified')->group(function () {
 
     Route::resource('theaters', TheaterController::class);
 
-
+    Route::resource('screenings', ScreeningController::class);
 
 
 
