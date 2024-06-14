@@ -26,7 +26,7 @@ Route::get('tickets/show/{ticket}', [TicketController::class, 'showTicketInfo'])
 
 
 // ex: /screenings/1, 1 will be passed as the $screeningSessionId parameter to the index method of the SeatController
-Route::get('/screenings/{screeningSessionId}', [SeatController::class, 'index'])->name('seats.index');
+Route::get('/screenings/{screening}', [SeatController::class, 'index'])->name('seats.index');
 // Route::get('screenings/{screeningSessionId}', [SeatController::class, 'index'])->name('seats.index');
 
 /* ----- Non-Verified users ----- */
@@ -75,7 +75,7 @@ Route::middleware('auth', 'verified')->group(function () {
         ->name('cart.add');
     // Remove a ticket from the cart:
     // When the route /cart/remove/{ticket} is hit with a DELETE request, Laravel will automatically find the Ticket model with the provided ID
-    Route::delete('cart/remove/{ticket}', [CartController::class, 'removeFromCart'])
+    Route::delete('cart/remove/{screeningId}/{seatId}', [CartController::class, 'removeFromCart'])
         ->name('cart.remove');
 
 //route movie post to seat

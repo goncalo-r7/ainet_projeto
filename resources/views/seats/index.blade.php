@@ -4,11 +4,6 @@
 ' - Screening at ' . date('H:i', strtotime($screeningSession->start_time)) . ', ' . date('d-m-Y', strtotime($screeningSession->date)) .
 ' - Theater ' . $screeningSession->theater->name)
 
-{{-- GONCALO MUDEI TE ISTO BY LUIS
-@section('header-title',  $screeningSession->movie->title .
-' - Sessão das ' . date('H:i', strtotime($screeningSession->start_time)) . ', ' . date('d-m-Y', strtotime($screeningSession->start_time))
-. ' - Sala ' . $screeningSession->theater->name) --}}
-
 @section('main')
     <div class="flex justify-center">
         <div class="my-4 p-6 bg-white dark:bg-gray-900 overflow-hidden
@@ -59,14 +54,6 @@
                     </table>
                 </div>
             </form>
-            {{-- <x-button
-                                class="flex h-10 w-14"
-                                text="{{ $seat->row . $seat->seat_number }}"
-                                type="{{ $isTaken ? 'secondary' : 'success'}}"
-
-                                /> --}}
-
-
         </div>
     </div>
 @endsection
