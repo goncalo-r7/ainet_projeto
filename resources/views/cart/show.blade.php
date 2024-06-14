@@ -12,9 +12,9 @@
             <div class="font-base text-sm text-gray-700 dark:text-gray-300">
                 <x-tickets.table :tickets="$cart"
                     :showView="true"
-                    :showEdit="false"
-                    :showDelete="true"
-                    :showAddCart="false"
+                    {{-- :showEdit="false"
+                    :showDelete="false"
+                    :showAddCart="false" --}}
                     :showRemoveFromCart="true"
                     />
             </div>
