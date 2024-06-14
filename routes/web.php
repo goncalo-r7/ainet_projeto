@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::resource('seats', SeatController::class); //tem que estar em primeiro por causa de um conflito qualquer....
 
-Route::delete('theaters/{theater}/photo', [TheaterController::class, 'destroyPhoto'])
+Route::delete('theaters/{theater}/photo', [TheaterController::class, 'destroyImage'])
         ->name('theaters.photo.destroy');
 
 Route::view('/', 'home')->name('home');
