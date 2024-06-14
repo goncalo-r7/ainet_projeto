@@ -6,21 +6,22 @@
             <th class="px-2 py-2 text-left">Theatre</th>
             <th class="px-2 py-2 text-right hidden md:table-cell">Date</th>
             <th class="px-2 py-2 text-right hidden md:table-cell">Start Time</th>
-            @if($showView)
+            {{-- @if($showView)
                 <th></th>
-            @endif
-            @if($showEdit)
+            @endif --}}
+            {{-- @if($showEdit)
                 <th></th>
             @endif
             @if($showDelete)
                 <th></th>
-            @endif
+            @endif --}}
             @if($showRemoveFromCart)
                 <th></th>
             @endif
         </tr>
         </thead>
         <tbody>
+            {{-- $tickets is the cart --}}
             @foreach ($tickets as $ticket)
             
             @php
@@ -47,12 +48,12 @@
                         href="{{ route('disciplines.edit', ['discipline' => $discipline]) }}"/>
                     </td>
                 @endif --}}
-                @if($showDelete)
+                {{-- @if($showDelete)
                     <td>
                         <x-table.icon-delete class="px-0.5"
                         action="{{ route('cart.destroy') }}"/>
                     </td>
-                @endif
+                @endif --}}
                 {{--
                 @if($showAddToCart)
                     <td>
