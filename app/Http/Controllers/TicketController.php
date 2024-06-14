@@ -64,4 +64,19 @@ class TicketController extends Controller
     {
         return view('tickets.showinfo', compact('ticket'));
     }
+
+    public function invalidate(Ticket $ticket)
+    {
+        // // Perform ticket invalidation logic here (update status, etc.)
+        $ticket->status = 'invalid'; // Example logic, adjust as per your application's needs
+         $ticket->save();
+
+        // Redirect back to the verify page with a message
+        $screening = Screening::find($ticket->screening_id);
+        return redirect()->route('tickets.verify', ['screening' => $ticket->screening_id])
+        ->with('alert-type', 'danger')
+        ->with('alert-msg', 'Ticket was invalidated');
+        // $htmlMessage = "Ticket was invalidated ";
+        // return view('tickets.verify', compact('screening'))->with('alert-type', 'danger')->with('alert-msg', $htmlMessage);
+    }
 }
