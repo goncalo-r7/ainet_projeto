@@ -28,7 +28,7 @@ class ScreeningController extends Controller
 
         $url = route('screenings.show', ['screening' => $screening]);
         $htmlMessage = "Screening <a href='$url'><u>{$screening->id}</u></a> has been updated successfully!";
-        return redirect()->route('screenings.show')
+        return redirect()->route('screenings.show',  ['screening' => $screening])
             ->with('alert-type', 'success')
             ->with('alert-msg', $htmlMessage);
     }
