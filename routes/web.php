@@ -32,7 +32,7 @@ Route::get('movies/showcase', [MovieController::class, 'showCase'])->name('movie
 
 
 // ex: /screenings/1, 1 will be passed as the $screeningSessionId parameter to the index method of the SeatController
-Route::get('/seats/screenings/{screeningSessionId}', [SeatController::class, 'index'])->name('seats.index');
+Route::get('/screenings/{screeningSessionId}/seats', [SeatController::class, 'index'])->name('seats.index');
 // Route::get('screenings/{screeningSessionId}', [SeatController::class, 'index'])->name('seats.index');
 
 /* ----- Non-Verified users ----- */
