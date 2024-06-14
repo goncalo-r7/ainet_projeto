@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('header-title', 'List of Movies')
+@section('header-title', 'List of Screenings')
 
 @section('main')
     <div class="flex justify-center">
@@ -8,28 +8,27 @@
                     shadow-sm sm:rounded-lg text-gray-900 dark:text-gray-50">
             <div class="flex items-center gap-4 mb-4">
                 <x-button
-                    href="{{ route('movies.create') }}"
-                    text="Create a new movie"
+                    href="{{ route('screenings.create') }}"
+                    text="Create a new screening"
                     type="success"/>
             </div>
-
-            <x-movies.filter-card-v2
-            :filterAction="route('movies.index')"
-            :resetUrl="route('movies.index')"
-            :title="request('title')"
+            <x-screenings.filter-card
+            :filterAction="route('screenings.index')"
+            :resetUrl="route('screenings.index')"
+            :id="request('id')"
+            :movie="request('movie')"
+            :theater="request('theater')"
             class="mb-6"
-        />
-
-
-        <div class="font-base text-sm text-gray-700 dark:text-gray-300 d-flex justify-content-center">
-            <x-movies.table :movies="$movies"
+            />
+            <div class="font-base text-sm text-gray-700 dark:text-gray-300">
+                <x-screenings.table :screenings="$screenings"
                     :showView="true"
                     :showEdit="true"
                     :showDelete="true"
                     />
             </div>
             <div class="mt-4">
-                {{ $movies->links() }}
+                {{ $screenings->links() }}
             </div>
         </div>
     </div>

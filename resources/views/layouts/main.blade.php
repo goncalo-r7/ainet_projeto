@@ -51,6 +51,13 @@
                                 <x-menus.submenu-item content="Theaters" selectable="0"
                                     href="{{ route('theaters.index') }}" />
 
+
+                                <x-menus.submenu-item content="Screenings" selectable="0"
+                                href="{{ route('screenings.index') }}" />
+
+                                <x-menus.submenu-item content="Movies" selectable="0"
+                                href="{{ route('movies.index') }}" />
+
                             </x-menus.submenu>
                         @endauth
 
@@ -142,11 +149,31 @@
                     </x-alert>
                 @endif
                 @if (!$errors->isEmpty())
-                        <x-alert type="warning" message="Operation failed because there are validation errors!"/>
+                    <x-alert type="warning" message="Operation failed because there are validation errors!">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </x-alert>
                 @endif
                 @yield('main')
             </div>
         </main>
+
+        {{-- <main>
+            <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+                @if (session('alert-msg'))
+                    <x-alert type="{{ session('alert-type') ?? 'info' }}">
+                        {!! session('alert-msg') !!}
+                    </x-alert>
+                @endif
+                @if (!$errors->isEmpty())
+                        <x-alert type="warning" message="Operation failed because there are validation errors!"/>
+                @endif
+                @yield('main')
+            </div>
+        </main> --}}
     </div>
 </body>
 

@@ -24,6 +24,13 @@ class ScreeningFormRequest extends FormRequest
     {
         $rules = [
 
+                'date' => 'required|date',
+                'start_time' => 'required|date_format:H:i',
+                'movie_id' => 'required|integer',
+                'theater_id' => 'required|integer',
+
+
+
 
 
         ];

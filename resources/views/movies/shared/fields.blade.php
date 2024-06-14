@@ -8,7 +8,7 @@
             value="{{ old('title', $movie->title) }}"/>
 
         <x-field.select name="genre_code" label="Genre" :readonly="$readonly"
-            value="{{ old('genre', $movie->genre_code) }}"
+            value="{{ old('genre_code', $movie->genre_code) }}"
             :options="$genres"/>
 
 

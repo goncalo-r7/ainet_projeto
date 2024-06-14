@@ -7,7 +7,7 @@
     <div class="grow mt-6 space-y-4">
 
 
-        {{--
+{{-- NOTA O CALENDARIO FICAVA DESFORMATADO, MOSTRAVA TODOS OS DIAS NA VERTICAL, E ACABAMOS POR DESISTIR E METER A DATA MANUALMENTE --}}
 <div class="relative max-w-sm">
     <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
         <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -16,17 +16,18 @@
                 d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
         </svg>
     </div>
-    <input datepicker type="text" value="{{ old('date', $screening->date) }}"
+    <input datepicker type="text" name="date" value="{{ old('date', $screening->date) }}" id="id_date"
         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         placeholder="Select date">
 </div>
 
 
 
-<form class="max-w-[8rem] mx-auto">
+
+<div class="max-w-[8rem] mx-0">
     <label for="time" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select time:</label>
     <div class="relative">
-        <div class="absolute inset-y-0 end-0 top-0 flex items-center pe-3.5 pointer-events-none">
+        <div class="absolute inset-y-0 end-0 top-0 flex items-center pr-3.5 pointer-events-none">
             <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                 fill="currentColor" viewBox="0 0 24 24">
                 <path fill-rule="evenodd"
@@ -34,24 +35,21 @@
                     clip-rule="evenodd" />
             </svg>
         </div>
-        <input type="time" id="time"
+        <input name="start_time" type="time" id="id_start_time"
             class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            min="09:00" max="18:00" value="{{ old('start_time', $screening->start_time) }}" required />
+             value="{{ old('start_time', date('H:i', strtotime($screening->start_time))) }}" required />
     </div>
-</form> --}}
+</div>
 
 
 
 
+        <x-field.select name="movie_id" label="Movie" :readonly="$readonly"
+            value="{{ old('movie_id', $screening->movie_id) }}"
+            :options="$movies"/>
 
-        <x-field.input name="date" label="Date" :readonly="$readonly" value="{{ old('start_time', $screening->date) }}" />
-
-        <x-field.input name="start_time" label="Start time" :readonly="$readonly"
-            value="{{ old('start_time', $screening->start_time) }}" />
-
-        {{-- fazer isto para escolher os movies
-        <x-field.select name="genre_code" label="Genre" :readonly="$readonly"
-            value="{{ old('genre', $movie->genre_code) }}"
-            :options="$genres"/> --}}
+            <x-field.select name="theater_id" label="Theater" :readonly="$readonly"
+            value="{{ old('theater_id', $screening->theater_id) }}"
+            :options="$theaters"/>
     </div>
 </div>

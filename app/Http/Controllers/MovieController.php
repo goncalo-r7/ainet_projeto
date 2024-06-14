@@ -11,17 +11,31 @@ use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\MovieFormRequest;
 
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class MovieController extends Controller
 {
-    public function index(): View
+
+    public function index(Request $request): View
     {
-        $allMovies = Movie::orderBy('title')->paginate(20);
 
 
-        return view('movies.index')->with('allMovies', $allMovies);
+        $moviesQuery = Movie::query();
+        $moviesQuery
+            ->select('movies.*')
+            ->orderBy('movies.title');
+        $filterByTitle = $request->query('title');
+        if ($filterByTitle !== null) {
+            $moviesQuery
+                ->where('movies.title', 'like', "%$filterByTitle%");
+        }
+
+        $movies = $moviesQuery->paginate(10)->withQueryString();
+
+
+        return view('movies.index', compact('movies', 'filterByTitle'));
     }
 
     public function showCase(Request $request): View
@@ -88,6 +102,7 @@ class MovieController extends Controller
     {
         $genres = Genre::orderBy('name')->pluck('name', 'code')->toArray();
         $screenings = $movie->screeningsRef()->whereBetween('date', [now(), now()->addWeeks(2)])->get();
+        // $screenings = $movie->screeningsRef()->get(); luis ver se é admin?
 
         return view('movies.show')
             ->with('genres', $genres)
@@ -115,11 +130,42 @@ class MovieController extends Controller
 
     public function destroy(Movie $movie): RedirectResponse
     {
+        DB::beginTransaction();
+
         try {
             $url = route('movies.show', ['movie' => $movie]);
+
+            // Check if there are any active screening sessions for the movie
+            $hasActiveScreenings = DB::table('screenings')
+            ->where('movie_id', $movie->id)
+            ->where('date', '>=', date('Y-m-d'))
+            ->exists();
+
+            if (!$hasActiveScreenings) {
+                // No active screenings, proceed with deletion
+                $movie->delete();
+                // // Optionally, delete associated image if it exists
+                // if ($movie->imageExists) {
+                //     Storage::delete("public/movies/{$movie->fileName}");
+                // }
+
+                $alertType = 'success';
+                $alertMsg = "Movie {$movie->title} has been deleted successfully!";
+            } else {
+                // There are active screenings, prevent deletion
+                $alertType = 'warning';
+                $alertMsg = "Movie <a href='$url'><u>{$movie->title}</u></a> cannot be deleted because there are active screening sessions associated with it.";
+            }
+            DB::commit();
         } catch (\Exception $error) {
+            DB::rollBack();
+            $alertType = 'danger';
+            $alertMsg = "It was not possible to delete the movie <a href='$url'><u>{$movie->title}</u></a> due to an error with the operation!";
         }
-        return redirect()->route('movies.index');
+
+        return redirect()->route('movies.index')
+            ->with('alert-type', $alertType)
+            ->with('alert-msg', $alertMsg);
     }
 
     public function destroyImage(Movie $movie): RedirectResponse
@@ -146,7 +192,7 @@ class MovieController extends Controller
 
         $url = route('movies.show', ['movie' => $movie]);
         $htmlMessage = "Movie <a href='$url'><u>{$movie->name}</u></a> has been updated successfully!";
-        return redirect()->route('movies.showcase')
+        return redirect()->route('movies.index')
             ->with('alert-type', 'success')
             ->with('alert-msg', $htmlMessage);
     }
