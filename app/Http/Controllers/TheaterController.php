@@ -8,13 +8,13 @@ use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\TheaterFormRequest;
 use Illuminate\Support\Facades\Storage;
-
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 
 
 class TheaterController extends Controller
 {
-
+    use SoftDeletes;
 
     public function index(Request $request): View
     {
@@ -53,6 +53,8 @@ class TheaterController extends Controller
         $insertTheater->name = $theater['name'];
         if($request->file('photo_filename') != null && $request->file('photo_filename')->getClientOriginalName() != 'unknown.png'){
             $path = $request->file('photo_filename')->store('public/theaters');
+            $path = explode('/', $path);
+            $path = $path[2];
             $insertTheater->photo_filename = $path;
         }
         $insertTheater->save();
@@ -119,7 +121,7 @@ class TheaterController extends Controller
         try {
             $url = route('theaters.show', ['theater' => $theater]);
             $totalScreenings = DB::scalar(
-                'select count(*) from screenings where theater_id = ?',
+                'select count(*) from screenings where theater_id = ? and date < sysdate()',
                 [$theater->id]
             );
             $totalSeats = DB::scalar(
@@ -129,7 +131,7 @@ class TheaterController extends Controller
             if ($totalScreenings == 0 && $totalSeats == 0) {
                 $theater->delete();
                 $alertType = 'success';
-                $alertMsg = "theater {$theater->name} has been deleted successfully!";
+                $alertMsg = "Theater {$theater->name} has been deleted successfully!";
             } else {
                 $alertType = 'warning';
                 $screeningsStr = match (true) {
@@ -144,7 +146,7 @@ class TheaterController extends Controller
                 $justification = $screeningsStr && $seatsStr
                     ? "$seatsStr and $screeningsStr"
                     : "$seatsStr$screeningsStr";
-                $alertMsg = "theater <a href='$url'><u>{$theater->name}</u></a> cannot be deleted because $justification.";
+                $alertMsg = "Theater <a href='$url'><u>{$theater->name}</u></a> cannot be deleted because $justification.";
             }
         } catch (\Exception $error) {
             $alertType = 'danger';
