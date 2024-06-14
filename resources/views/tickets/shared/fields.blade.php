@@ -30,35 +30,25 @@
             value="{{ $ticket->purchase->customer_name }}" />
 
         <div class="pb-6">
-            <x-field.image
-                name="image_file"
-                label="Customer Image"
-                width="md"
-                :readonly="$readonly"
-                deleteTitle="Delete Image"
-                :deleteAllow="($mode == 'edit') && ($ticket->purchase->customer->user->imageExists)"
-                deleteForm="form_to_delete_image"
-                :imageUrl="$ticket->purchase->customer->user->imageUrl"/>
+            <x-field.image name="image_file" label="Customer Image" width="md" :readonly="$readonly"
+                deleteTitle="Delete Image" :deleteAllow="$mode == 'edit' && $ticket->purchase->customer->user->imageExists" deleteForm="form_to_delete_image" :imageUrl="$ticket->purchase->customer->user->imageUrl" />
+        </div>
+
+        <!-- Warning message -->
+        <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4">
+            <p class="font-bold">Please be advised that before granting entry to any screening session,<br> employees must verify the following criteria:</p>
+            <ul class="list-disc ml-8">
+                <li>Compliance with age restrictions for the film being screened.</li>
+                <li>Sobriety of the individual entering the premises.</li>
+                <li>Adherence to any other specific entry requirements as specified.</li>
+            </ul>
+            <p class="mt-2">Failure to meet any of these criteria constitutes grounds for refusal of entry.</p>
         </div>
 
 
-            <x-button type="submit" text="Invalidate ticket"
-                 href="{{ route('tickets.invalidate', ['ticket' => $ticket]) }}" />
+        <x-button type="submit" text="Invalidate ticket"
+            href="{{ route('tickets.invalidate', ['ticket' => $ticket]) }}" />
 
-
-
-        {{-- <div class="flex space-x-4">
-            <x-button
-                type="success"
-                text="Accept"
-                :href="route('accept.access', ['ticket' => $ticket])"/>
-            <x-button
-                type="danger"
-                text="Refuse"
-                :href="route('refuse.access', ['ticket' => $ticket])"/>
-        </div> --}}
 
     </div>
 </div>
-
-
