@@ -33,12 +33,7 @@
                 <div class="mt-6 space-y-4">
                     @include('screenings.shared.fields', ['mode' => 'show'])
                 </div>
-                <h3 class="pt-16 pb-4 text-2xl font-medium text-gray-900 dark:text-gray-100">
-                    Sessions
-                </h3>
-                <div class="font-base text-sm text-gray-700 dark:text-gray-300">
 
-                </div>
 
 
             </section>
