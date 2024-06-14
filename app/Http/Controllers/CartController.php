@@ -38,19 +38,14 @@ class CartController extends Controller
     public function addToCart(Request $request, Screening $screening): RedirectResponse
     {
         // request tem vetor com os ids dos lugares selecionados
-        // screening tem
-        // For debug:
-        // dump($request->all());
-        // dd($screening);
-
         $cart = session('cart', null);
+        $message = '';
 
         if (!$cart) {
             $cart = collect([]);
             $request->session()->put('cart', $cart);
         }
         # $screenings to receive in parameter
-        // $aa = $screening->where('start_time', '>', now()->subMinutes(5))->get();
         $seatsIds = $request->input('selectedSeats');
         if (!$seatsIds) {
             $alertType = 'warning';
@@ -61,7 +56,6 @@ class CartController extends Controller
                 ->with('alert-msg', $htmlMessage)
                 ->with('alert-type', $alertType);
         }
-        // $movieStartTime = new DateTime($screening->start_time); GONCALO MUDEI TE ISTO BY LUIS
         $dateTimeString = $screening->date . ' ' . $screening->start_time;
         $movieStartTime = new DateTime($dateTimeString);
         $now = new DateTime(); // Current time
@@ -78,6 +72,7 @@ class CartController extends Controller
         else{
             
             // one ticket for each seat
+            $seatsAlreadyInCart = [];
             foreach ($seatsIds as $seatId){
                 // $ticketId = DB::table('tickets')->insertGetId([
                 //     'screening_id' => $screening->id,
@@ -86,12 +81,26 @@ class CartController extends Controller
                 //     'created_at' => now(),
                 //     'updated_at' => now()
                 // ]);
+                // Check if the seat is already in the cart
+                $isSeatInCart = $cart->contains(function ($item) use ($seatId, $screening) {
+                    return $item['screening_id'] == $screening->id && $item['seat_id'] == $seatId;
+                });
 
-                $ticketDetails = [
-                    'screening_id' => $screening->id,
-                    'seat_id' => $seatId,
-                ];
-
+                if ($isSeatInCart) {
+                    // If the seat is already in the cart
+                    $seatsAlreadyInCart[] = $seatId;
+                } else{
+                    $ticketDetails = [
+                        'screening_id' => $screening->id,
+                        'seat_id' => $seatId,
+                    ];
+                }
+                $seatDetails = DB::table('seats')->select('row', 'seat_number')->whereIn('id', $seatsAlreadyInCart)->get();
+                $message = "Seat {$seatDetails->row}{$seatDetails->seat_number} were already in the cart.";
+                return back()
+                    ->with('alert-msg', $message)
+                    ->with('alert-type', 'warning');
+                $message = "Seat {$seatDetails->row}{$seatDetails->seat_number} were already in the cart.";
                 // Push the ticket details to the cart
                 $cart->push($ticketDetails);
             }
@@ -101,8 +110,14 @@ class CartController extends Controller
             //DB::table('purchases')->where('id', $purchaseId)->increment('total_price', $total);
             session(['cart' => $cart]);
         }
+        $seatsNames = DB::table('seats')->select('row', 'seat_number')->whereIn('id', $seatsIds)->get();
+        $seatStr = '';
+        foreach ($seatsNames as $seat) {
+            $seatStr .= $seat->row . $seat->seat_number . ', ';
+        }
+        $seatStr = rtrim($seatStr, ', '); // remove last comma
         $alertType = 'success';
-        $htmlMessage = "Seats for the movie <strong>\"{$screening->movie->title}\"</strong> were successfully added to the cart.";
+        $htmlMessage = "Seats $seatStr for the movie <strong>\"{$screening->movie->title}\"</strong> were successfully added to the cart.";
         return back()
             ->with('alert-msg', $htmlMessage)
             ->with('alert-type', $alertType);
@@ -143,7 +158,9 @@ class CartController extends Controller
         
         $cart = session('cart', null);
         $movieTitle = Screening::find($screeningId)->movie->title;
-
+        $seat = DB::table('seats')->select('row', 'seat_number')->where('id', $seatId)->first();
+        $screeningTime = DB::table('screenings')->select('start_time', 'date')->where('id', $screeningId)->first();
+        $screeningT = date('H:i', strtotime($screeningTime->start_time)) . ', ' . date('d-m-Y', strtotime($screeningTime->date));
         
         $url = route('seats.index', ['screening' => $screeningId]);
         if (!$cart) {
@@ -155,22 +172,23 @@ class CartController extends Controller
             $element = $cart->search(function ($item) use ($screeningId, $seatId) {
                 return $item['screening_id'] == $screeningId && $item['seat_id'] == $seatId;
             });
-            // $element = $cart->firstWhere('screening_id', $screeningId)->andWhere('seat_id', $t);
             if ($element) {
                 $cart->forget($cart->search($element));
                 if ($cart->count() == 0) {
                     $request->session()->forget('cart');
+                } else {
+                    $request->session()->put('cart', $cart);
                 }
                 $alertType = 'success';
-                $htmlMessage = "Ticket for <a href='$url'>
-                <strong>\"{$movieTitle}\"</strong></a> was removed from the cart.";
+                $htmlMessage = "Ticket in seat $seat->row$seat->seat_number for <a href='$url'>
+                <strong>\"{$movieTitle}\"</strong></a> at $screeningT was removed from the cart.";
                 return back()
                     ->with('alert-msg', $htmlMessage)
                     ->with('alert-type', $alertType);
             } else {
                 $alertType = 'warning';
-                $htmlMessage = "Ticket for <a href='$url'>
-                <strong>\"{$movieTitle}\"</strong></a> was not removed from the cart because cart does not include it!";
+                $htmlMessage = "Ticket in seat $seat->row$seat->seat_number for <a href='$url'>
+                <strong>\"{$movieTitle}\"</strong></a> at $screeningT was not removed from the cart because cart does not include it!";
                 return back()
                     ->with('alert-msg', $htmlMessage)
                     ->with('alert-type', $alertType);

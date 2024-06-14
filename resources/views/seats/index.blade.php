@@ -13,9 +13,8 @@
                 $seatsByRow = $screeningSession->theater->seats->groupBy('row');
             @endphp
             @csrf
-            <!-- Ao submeter, criar tickets e adicionar ao carrinho-->
+            <!-- Ao submeter, adicionar ao carrinho-->
             {{-- when the form is submitted, the IDs of the selected seats will be sent as an array with the name "selectedSeats" --}}
-            {{-- action="{{ route('cart.add', ['discipline' => $discipline]) }}" --}}
             <form method="POST" action="{{ route('cart.add', ['screening' => $screeningSession]) }}">
                 @csrf
                 <div class="flex justify-center items-center">
