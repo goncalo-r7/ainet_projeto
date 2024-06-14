@@ -34,7 +34,7 @@
                     </p>
                 </header>
 
-                <form method="POST" action="{{ route('screening.update', ['screening' => $screening]) }}"
+                <form method="POST" action="{{ route('screenings.update', ['screening' => $screening]) }}"
                         enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
@@ -51,10 +51,6 @@
         </div>
     </div>
 </div>
-<form class="hidden" id="form_to_delete_image"
-    method="POST" action="{{ route('screenings.image.destroy', ['screening' => $screening]) }}">
-    @csrf
-    @method('DELETE')
-</form>
+
 @endsection
 
