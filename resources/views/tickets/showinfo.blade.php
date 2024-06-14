@@ -8,15 +8,14 @@
         <div class="max-full">
             <section>
 
-                <header>
+                {{-- <header>
                     <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                        Price "{{ $ticket->price }}"
+                        Ticket "{{ $ticket->id }}"
                     </h2>
-                </header>
-
-                <h3 class="pt-16 pb-4 text-2xl font-medium text-gray-900 dark:text-gray-100">
-                    Sessions
-                </h3>
+                </header> --}}
+                <div class="mt-6 space-y-4">
+                    @include('tickets.shared.fields', ['mode' => 'show'])
+                </div>
 
             </section>
         </div>

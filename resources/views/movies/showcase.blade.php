@@ -12,9 +12,10 @@
         :title="request('title')"
         :synopsis="request('synopsis')"
         :allMoviesBool="$allMoviesBool"
-
         class="mb-6"
     />
+
+
     <div class="flex flex-col">
         @each('movies.shared.card', $movies, 'movie')
     </div>

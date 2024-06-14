@@ -37,7 +37,7 @@
                     Sessions
                 </h3>
                 <div class="font-base text-sm text-gray-700 dark:text-gray-300">
-                    <x-screenings.table :screenings="$movie->screeningsRef"
+                    <x-screenings.table :screenings="$screenings"
                         {{-- :showCourse="true" --}}
                         :showView="true"
                         :showEdit="true"

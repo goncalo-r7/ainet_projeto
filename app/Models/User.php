@@ -22,10 +22,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
-        'admin',
         'type',
-        'gender',
-        'photo_url'
+        'blocked',
+        'photo_filename'
     ];
 
     /**
@@ -51,13 +50,18 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
-    public function getPhotoFullUrlAttribute()
+    public function getPhotoFullUrlAttribute() //atencao mudar aqui
     {
-        if ($this->photo_url && Storage::exists("public/photos/{$this->photo_url}")) {
-            return asset("storage/photos/{$this->photo_url}");
+        if ($this->photo_filename && Storage::exists("public/photos/{$this->photo_filename}")) {
+            return asset("storage/photos/{$this->photo_filename}");
         } else {
             return asset("storage/photos/anonymous.png");
         }
+    }
+
+    public function customers(): HasOne
+    {
+        return $this->hasOne(Customer::class,'id','id');
     }
 
 

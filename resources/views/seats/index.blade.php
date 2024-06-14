@@ -1,8 +1,13 @@
 @extends('layouts.main')
 
+@section('header-title', $screeningSession->movie->title .
+' - Screening at ' . date('H:i', strtotime($screeningSession->start_time)) . ', ' . date('d-m-Y', strtotime($screeningSession->date)) .
+' - Theater ' . $screeningSession->theater->name)
+
+{{-- GONCALO MUDEI TE ISTO BY LUIS
 @section('header-title',  $screeningSession->movie->title .
 ' - Sessão das ' . date('H:i', strtotime($screeningSession->start_time)) . ', ' . date('d-m-Y', strtotime($screeningSession->start_time))
-. ' - Sala ' . $screeningSession->theater->name)
+. ' - Sala ' . $screeningSession->theater->name) --}}
 
 @section('main')
     <div class="flex justify-center">
@@ -14,8 +19,6 @@
             @endphp
             @csrf
             <!-- Ao submeter, criar tickets e adicionar ao carrinho-->
-
-
             {{-- when the form is submitted, the IDs of the selected seats will be sent as an array with the name "selectedSeats" --}}
             {{-- action="{{ route('cart.add', ['discipline' => $discipline]) }}" --}}
             <form method="POST" action="{{ route('cart.add', ['screening' => $screeningSession]) }}">

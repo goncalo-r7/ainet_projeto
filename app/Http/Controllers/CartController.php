@@ -61,7 +61,9 @@ class CartController extends Controller
                 ->with('alert-msg', $htmlMessage)
                 ->with('alert-type', $alertType);
         }
-        $movieStartTime = new DateTime($screening->start_time);
+        // $movieStartTime = new DateTime($screening->start_time); GONCALO MUDEI TE ISTO BY LUIS
+        $dateTimeString = $screening->date . ' ' . $screening->start_time;
+        $movieStartTime = new DateTime($dateTimeString);
         $now = new DateTime(); // Current time
         $interval = $now->diff($movieStartTime);
         if ($interval->invert == 1 && $interval->i >= 5) { // Invert indicates the interval is negative, meaning now is after start time

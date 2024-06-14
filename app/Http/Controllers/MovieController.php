@@ -13,6 +13,7 @@ use App\Http\Requests\MovieFormRequest;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+
 class MovieController extends Controller
 {
     public function index(): View
@@ -21,7 +22,6 @@ class MovieController extends Controller
 
 
         return view('movies.index')->with('allMovies', $allMovies);
-
     }
 
     public function showCase(Request $request): View
@@ -67,34 +67,33 @@ class MovieController extends Controller
             }
         }])->paginate(10)->withQueryString();
 
-
-
-       // $movies = $moviesQuery->with('screeningsRef')->orderBy('title')->paginate(10)->withQueryString();
-
-
-        return view('movies.showcase', compact('movies', 'genres', 'filterByGenre', 'filterByTitle', 'filterBySynopsis','allMoviesBool'));
+        return view('movies.showcase', compact('movies', 'genres', 'filterByGenre', 'filterByTitle', 'filterBySynopsis', 'allMoviesBool'));
     }
 
     //FORMA 1 ##### 40MS
-        // $moviesQuery->whereHas('screeningsRef', function ($query) {
-        //     $query->whereBetween('date', [now(), now()->addWeeks(2)]);
-        // });
-        // $movies = $moviesQuery->with(['screeningsRef' => function ($query) {
-        //     $query->whereBetween('date', [now(), now()->addWeeks(2)]);
-        // }])->orderBy('title')->paginate(10)->withQueryString();
+    // $moviesQuery->whereHas('screeningsRef', function ($query) {
+    //     $query->whereBetween('date', [now(), now()->addWeeks(2)]);
+    // });
+    // $movies = $moviesQuery->with(['screeningsRef' => function ($query) {
+    //     $query->whereBetween('date', [now(), now()->addWeeks(2)]);
+    // }])->orderBy('title')->paginate(10)->withQueryString();
 
 
-            //   //FORMA 2 ##### 25ms !!!
-            //   $screenings = Screening::whereBetween('date', [now(), now()->addWeeks(2)])->get(); //Mudar para 2 weeks
-            //   $movieIds = $screenings->pluck('movie_id');
-            //   $moviesQuery->whereIn('id', $movieIds);
+    //   //FORMA 2 ##### 25ms !!!
+    //   $screenings = Screening::whereBetween('date', [now(), now()->addWeeks(2)])->get();
+    //   $movieIds = $screenings->pluck('movie_id');
+    //   $moviesQuery->whereIn('id', $movieIds);
 
     public function show(Movie $movie): View
     {
         $genres = Genre::orderBy('name')->pluck('name', 'code')->toArray();
-        return view('movies.show')->with('genres', $genres)->with('movie', $movie);
-    }
+        $screenings = $movie->screeningsRef()->whereBetween('date', [now(), now()->addWeeks(2)])->get();
 
+        return view('movies.show')
+            ->with('genres', $genres)
+            ->with('movie', $movie)
+            ->with('screenings', $screenings);
+    }
 
 
     public function create(): View
@@ -118,11 +117,9 @@ class MovieController extends Controller
     {
         try {
             $url = route('movies.show', ['movie' => $movie]);
-
         } catch (\Exception $error) {
         }
         return redirect()->route('movies.index');
-
     }
 
     public function destroyImage(Movie $movie): RedirectResponse
@@ -168,6 +165,4 @@ class MovieController extends Controller
             ->with('alert-type', 'success')
             ->with('alert-msg', $htmlMessage);
     }
-
-
 }

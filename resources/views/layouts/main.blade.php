@@ -141,19 +141,8 @@
                         {!! session('alert-msg') !!}
                     </x-alert>
                 @endif
-                {{-- @if (!$errors->isEmpty())
-                        <x-alert type="warning" message="Operation failed because there are validation errors!"/>
-                @endif --}}
-
                 @if (!$errors->isEmpty())
-                    <x-alert type="warning" message="Operation failed because there are validation errors!" /> {{-- <Luis apaga isto e mete o de cima --}}
-                    <div class="alert alert-danger mt-2">
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
+                        <x-alert type="warning" message="Operation failed because there are validation errors!"/>
                 @endif
                 @yield('main')
             </div>

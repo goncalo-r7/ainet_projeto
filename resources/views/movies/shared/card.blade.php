@@ -34,6 +34,7 @@
                 </figcaption>
                 <div class="overflow-y-auto w-full md:w-48 h-full "> <!-- Add this div here -->
                     <figcaption class="font-">
+
                         @php
                             $screeningsByDate = [];
                             foreach ($movie->screeningsRef as $screening) {
