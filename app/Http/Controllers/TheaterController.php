@@ -51,7 +51,7 @@ class TheaterController extends Controller
         $theater = $request->validated();
         $insertTheater = new Theater();
         $insertTheater->name = $theater['name'];
-        if($request->file('photo_filename') != null){
+        if($request->file('photo_filename') != null && $request->file('photo_filename')->getClientOriginalName() != 'unknown.png'){
             $path = $request->file('photo_filename')->store('public/theaters');
             $insertTheater->photo_filename = $path;
         }
