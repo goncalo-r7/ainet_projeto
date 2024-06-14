@@ -52,7 +52,7 @@ class TheaterController extends Controller
         $insertTheater = new Theater();
         $insertTheater->name = $theater['name'];
         if($request->file('photo_filename') != null){
-            $path = $request->file('photo_filename')->store('public/photos');
+            $path = $request->file('photo_filename')->store('public/theaters');
             $insertTheater->photo_filename = $path;
         }
         $insertTheater->save();
@@ -95,11 +95,11 @@ class TheaterController extends Controller
         $url = route('theaters.show', ['theater' => $theater]);
         if ($request->hasFile('photo_filename')) {
             // Deletar o arquivo anterior (se houver)
-            if ($theater->photo_filename && Storage::exists('public/photos/' . $theater->photo_filename)) {
-                Storage::delete('public/photos/' . $theater->photo_filename);
+            if ($theater->photo_filename && Storage::exists('public/theaters/' . $theater->photo_filename)) {
+                Storage::delete('public/theaters/' . $theater->photo_filename);
             }
             // Armazenar o novo arquivo
-            $path = $request->file('photo_filename')->store('public/photos');
+            $path = $request->file('photo_filename')->store('public/theaters');
             $theater->photo_filename = basename($path);
         }
         $theater->name = $validated_data['name'];
@@ -160,7 +160,7 @@ class TheaterController extends Controller
     public function destroyImage(Theater $theater): RedirectResponse
     {
         if ($theater->photo_filename != null) {
-            Storage::delete("public/photos/$theater->photo_filename");
+            Storage::delete("public/theaters/$theater->photo_filename");
             $theater->photo_filename = null;
             $theater->save();
         }
