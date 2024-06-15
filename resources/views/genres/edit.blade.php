@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('header-title', $screening->id)
+@section('header-title', $genre->name)
 
 @section('main')
 <div class="flex flex-col space-y-6">
@@ -9,14 +9,14 @@
             <section>
                 <div class="flex flex-wrap justify-end items-center gap-4 mb-4">
                     <x-button
-                        href="{{ route('screenings.create', ['screening' => $screening]) }}"
+                        href="{{ route('genres.create', ['genre' => $genre]) }}"
                         text="New"
                         type="success"/>
                     <x-button
-                        href="{{ route('screenings.show', ['screening' => $screening]) }}"
+                        href="{{ route('genres.show', ['genre' => $genre]) }}"
                         text="View"
                         type="info"/>
-                    <form method="POST" action="{{ route('screenings.destroy', ['screening' => $screening]) }}">
+                    <form method="POST" action="{{ route('genres.destroy', ['genre' => $genre]) }}">
                         @csrf
                         @method('DELETE')
                         <x-button
@@ -27,19 +27,19 @@
                 </div>
                 <header>
                     <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                        Edit screening "{{ $screening->id }}"
+                        Edit genre "{{ $genre->name }}"
                     </h2>
                     <p class="mt-1 text-sm text-gray-600 dark:text-gray-300  mb-6">
                         Click on "Save" button to store the information.
                     </p>
                 </header>
 
-                <form method="POST" action="{{ route('screenings.update', ['screening' => $screening]) }}"
+                <form method="POST" action="{{ route('genres.update', ['genre' => $genre]) }}"
                         enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     <div class="mt-6 space-y-4">
-                        @include('screenings.shared.fields', ['mode' => 'edit'])
+                        @include('genres.shared.fields', ['mode' => 'edit'])
                     </div>
                     <div class="flex mt-6">
                         <x-button element="submit" type="dark" text="Save" class="uppercase"/>

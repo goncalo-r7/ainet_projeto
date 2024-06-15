@@ -7,6 +7,8 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\TheaterController;
 use App\Http\Controllers\SeatController;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\GenreController;
+
 use App\Http\Controllers\ScreeningController;
 use App\Http\Controllers\ReceiptController;
 use Illuminate\Support\Facades\Route;
@@ -66,6 +68,7 @@ Route::middleware('auth', 'verified')->group(function () {
 
     Route::resource('screenings', ScreeningController::class);
 
+    Route::resource('genres', GenreController::class);
 
 
 
