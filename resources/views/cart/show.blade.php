@@ -38,17 +38,18 @@
                             $paymentRef = $customerId->payment_ref;
                         }
                         @endphp
+                        <h4 class="mb-4 text-lg">Price:
+                            @php
+                                if ($isCustomer) {
+                                    echo "<s>" . $price . "</s> " . ($price - $discount);
+                                } else {
+                                    echo $price;
+                                }
+                            @endphp €</h4>
                         <h3 class="mb-4 text-xl"><b>Shopping Cart Confirmation</b></h3>
                         <form action="{{ route('cart.confirm') }}" method="post">
                             @csrf
-                                <h4 class="mb-4 text-lg">Price:
-                                @php
-                                    if ($isCustomer) {
-                                        echo "<s>" . $price . "</s> " . ($price - $discount);
-                                    } else {
-                                        echo $price;
-                                    }
-                                @endphp €</h4>
+                                {{-- attributes with readonly won't be sent --}}
                                 <x-field.input name="customer_name" label="Name" width="lg"
                                                 :readonly="$isCustomer"
                                                 value="{{ $isCustomer ? $customerName : old('customer_name') }}"/>
@@ -68,6 +69,8 @@
                                 <x-field.input name="payment_ref" label="Payment Reference" width="md"
                                                 :readonly="false"
                                                 value="{{ $paymentRef ?? old('payment_ref') }}"/>
+                                <x-field.check-box name="receipt_pdf_filename" label="Generate PDF with the receipt of the purchase" width="lg"
+                                                    :checked="false"/>
                                 <x-button element="submit" type="dark" text="Confirm" class="mt-4"/>
                         </form>
                     </div>
