@@ -50,8 +50,8 @@ class CartController extends Controller
         if (!$seatsIds) {
             $alertType = 'warning';
             $url = route('seats.index', ['screening' => $screening]); // volta para pagina da sessao
-            $htmlMessage = "Movie <a href='$url'>#{$screening->id}</a>
-            <strong>\"{$screening->movie->title}\"</strong> was not added to the cart because there were no seats selected!";
+            $htmlMessage = "Tickets <a href='$url'> for
+            <strong>\"{$screening->movie->title}\"</strong></a> were not added to the cart because there were no seats selected!";
             return back()
                 ->with('alert-msg', $htmlMessage)
                 ->with('alert-type', $alertType);
@@ -63,8 +63,8 @@ class CartController extends Controller
         if ($interval->invert == 1 && $interval->i >= 5) { // Invert indicates the interval is negative, meaning now is after start time
             $alertType = 'warning';
             $url = route('seats.index', ['screening' => $screening->id]);
-            $htmlMessage = "Ticket <a href='$url'>#{$screening->id}</a> for
-            <strong>\"{$screening->movie->title}\"</strong> was not added to the cart because it has already started!";
+            $htmlMessage = "Tickets for <a href='$url'>#{$screening->id}</a> 
+            <strong>\"{$screening->movie->title}\"</strong> were not added to the cart because the screening has already started!";
             return back()
                 ->with('alert-msg', $htmlMessage)
                 ->with('alert-type', $alertType);
@@ -270,24 +270,55 @@ class CartController extends Controller
         }
         // TODO: check if any of the screenings has already started
 
-
-        $userId = Auth::id();
-        dd($request);
+        $user = Auth::user();
+        $customer = DB::table('customers')->where('id', $user->id)->first();
+        $conf = DB::table('configuration')->first(); // to get the price
+        $price = $conf->ticket_price * count($cart);
+        $purchaseId = null;
+        // TODO: check received values
+        if ($customer){ // is a registered customer
+            // $request will only receive payment_type and payment_ref
+            $price = $price - ($conf->registered_customer_ticket_discount * count($cart));
+            $purchaseId = DB::table('purchases')->insertGetId([
+                'customer_id' => $customer->id,
+                'date' => now(),
+                'total_price' => $price,
+                'customer_name' => $user->name,
+                'customer_email' => $user->email,
+                'nif' => $customer->nif ?? null,
+                'payment_type' => $request['payment_type'],
+                'payment_ref' => $request['payment_ref'], 
+                'receipt_pdf_filename' => $request['receipt_pdf_filename']
+            ]);
+        } else{ // is not a registered customer
+            dd($request->all());
+            $purchaseId = DB::table('purchases')->insertGetId([
+                'customer_id' => null,
+                'date' => now(),
+                'total_price' => $price,
+                'customer_name' => $request['customer_name'],
+                'customer_email' => $request['customer_email'],
+                'nif' => $request['customer_nif'] ?? null,
+                'payment_type' => $request['payment_type'],
+                'payment_ref' => $request['payment_ref'], 
+                'receipt_pdf_filename' => $request['receipt_pdf_filename']
+            ]);
+        }
+        // $ticketId = DB::table('tickets')->insert([
+        //     'screening_id' => $screening->id,
+        //     'seat_id' => $seatId,
+        //     'price' => 5.0, // TODO: alterar para o preço do seat
+        //     'created_at' => now(),
+        //     'updated_at' => now()
+        // ]);
+        dd($request->all(), count($request->all()));
         $request->validate([
             'customer_nif' => 'optional|digits:9',
         ], [
             'customer_nif.digits' => 'The NIF must be exactly 9 digits.',
         ]);
         // create a purchase
-        $purchaseId = DB::table('purchases')->insertGetId([
-            'customer_id' => $userId, // TODO alterar para customer_id
-            'date' => now(),
-            'total_price' => 0,
-            'customer_name' => auth()->user()->name,
-            'customer_email' => auth()->user()->email,
-            'payment_ref' => 123456789, // TODO: alterar para o ref do pagamento
-            //'nif' => auth()->user()->nif ?? null,
-        ]);
+        
         
         // create tickets
 

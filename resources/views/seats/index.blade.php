@@ -22,11 +22,17 @@
                 </div>
                 <div class="overflow-auto">
                     <table class="table-auto border-collapse w-full">
+                        @php $cart = session('cart', null); @endphp
                         @foreach ($seatsByRow as $row => $seats)
                             <tr class="items-center space-x-1">
                                 @foreach ($seats as $seat)
                                     @php
                                         $isTaken = $screeningSession->tickets->where('seat_id', $seat->id)->isNotEmpty();
+                                        if ($cart){
+                                            $isInCart = $cart->contains(function ($item) use ($seat, $screeningSession) {
+                                                return $item['screening_id'] == $screeningSession->id && $item['seat_id'] == $seat->id;
+                                            });
+                                        }
                                     @endphp
                                     <td class="px-1 py-1 text-center">
 
@@ -38,11 +44,12 @@
                                         class="hidden peer"
                                         {{ $isTaken ? 'disabled' : '' }}
                                     >
-                                    <label for="{{ $seat->id }}" class="block w-full h-full p-5
+                                    <label for="{{ $seat->id }}" class="block w-full h-full p-3
                                         {{ $isTaken ? 'bg-red-400 border-red-500 hover:bg-red-500 cursor-not-allowed' : 'bg-white border-2 border-gray-200 hover:bg-gray-50 cursor-pointer' }}
                                         rounded-lg dark:hover:text-gray-300
                                         peer-checked:border-blue-600 peer-checked:bg-blue-200  hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600
-                                        dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
+                                        dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700
+                                        {{ $isInCart ? 'bg-gray-300 border-gray-200 hover:bg-gray-400 dark:bg-gray-300 dark:border-gray-200 dark:hover:bg-gray-400' : '' }}">
                                         {{ $seat->row . $seat->seat_number }}
                                     </label>
 
