@@ -72,6 +72,8 @@ class MovieController extends Controller
             $screenings = Screening::whereBetween('date', [now(), now()->addWeeks(2)])->get();
             $movieIds = $screenings->pluck('movie_id');
             $moviesQuery->whereIn('movies.id', $movieIds);
+            $moviesQuery->where('genres.code', 'not like', 'DEFAULT');
+
         }
 
 
@@ -103,6 +105,7 @@ class MovieController extends Controller
         $genres = Genre::orderBy('name')->pluck('name', 'code')->toArray();
         $screenings = $movie->screeningsRef()->whereBetween('date', [now(), now()->addWeeks(2)])->get();
         // $screenings = $movie->screeningsRef()->get(); luis ver se é admin?
+
 
         return view('movies.show')
             ->with('genres', $genres)

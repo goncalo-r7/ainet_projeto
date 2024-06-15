@@ -15,7 +15,6 @@
                         Click on "Save" button to store the information.
                     </p>
                 </header>
-
                 <form method="POST" action="{{ route('screenings.store') }}"
                     enctype="multipart/form-data">
                     @csrf

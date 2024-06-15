@@ -24,7 +24,7 @@ class MovieFormRequest extends FormRequest
     {
         $rules = [
             'title' => 'required|string|max:255',
-            'year' => 'required|integer|between:1900,3000',
+            'year' => 'required|integer|gte:0',
             'synopsis' => 'required|string',
             'genre_code' => 'required|string',
             'trailer_url' => 'nullable|string|starts_with:https://www.youtube.com/watch?v=',

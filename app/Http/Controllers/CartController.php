@@ -243,14 +243,6 @@ class CartController extends Controller
     public function destroy(Request $request): RedirectResponse
     {
         $cart = session('cart', null);
-        // foreach ($cart as $cartItem) {
-        //     // if (!$purchase){
-        //     //     $purchase = DB::table('tickets')->select('purchase_id')->where('id', $cartItem['ticket_id']);
-        //     // }
-        //     if (isset($cartItem['ticket_id'])) {
-        //         DB::table('tickets')->where('id', $cartItem['ticket_id'])->delete();
-        //     }
-        // }
 
         $request->session()->forget('cart');
         // confirm: destroy is not clearing the seats
@@ -259,7 +251,6 @@ class CartController extends Controller
             ->with('alert-msg', 'Shopping Cart has been cleared');
     }
 
-    // TODO GONCALO AGORA ESTAMOS NO NOVO DB LOGO NAO HA ESTUDANTES
     public function confirm(CartConfirmationFormRequest $request): RedirectResponse
     {
         $cart = session('cart', null);
@@ -268,17 +259,40 @@ class CartController extends Controller
                 ->with('alert-type', 'danger')
                 ->with('alert-msg', "Cart was not confirmed, because cart is empty!");
         }
-        // TODO: check if any of the screenings has already started
-
+        // check if any of the screenings has already started
+        $screeningIds = [];
+        foreach ($cart as $ticket) {
+            // Check if the screening ID is already in the array
+            if (!in_array($ticket['screening_id'], $screeningIds)) {
+                $screeningIds[] = $ticket['screening_id'];
+            }
+        }
+        foreach ($screeningIds as $sId){
+            $screening = Screening::find($sId);
+            $dateTimeString = $screening->date . ' ' . $screening->start_time;
+            $movieStartTime = new DateTime($dateTimeString);
+            $now = new DateTime(); // Current time
+            $interval = $now->diff($movieStartTime);
+            if ($interval->invert == 1 && $interval->i >= 5) { // Invert indicates the interval is negative, meaning now is after start time
+                $alertType = 'warning';
+                $url = route('cart.show', ['screening' => $screening->id]);
+                $htmlMessage = "Purchase was not confirmed because screening <a href='$url'>#{$screening->id}</a> 
+                <strong>\"{$screening->movie->title}\"</strong> has already started!";
+                return back()
+                    ->with('alert-msg', $htmlMessage)
+                    ->with('alert-type', $alertType);
+            }
+        }
         $user = Auth::user();
         $customer = DB::table('customers')->where('id', $user->id)->first();
         $conf = DB::table('configuration')->first(); // to get the price
-        $price = $conf->ticket_price * count($cart);
+        $pricePerTicket = $conf->ticket_price;
+        $price = $pricePerTicket * count($cart);
         $purchaseId = null;
-        // TODO: check received values
         if ($customer){ // is a registered customer
-            // $request will only receive payment_type and payment_ref
+            // in this case $request will only receive payment_type, payment_ref and pdf_filename
             $price = $price - ($conf->registered_customer_ticket_discount * count($cart));
+            $pricePerTicket = $pricePerTicket - $conf->registered_customer_ticket_discount;
             $purchaseId = DB::table('purchases')->insertGetId([
                 'customer_id' => $customer->id,
                 'date' => now(),
@@ -290,8 +304,7 @@ class CartController extends Controller
                 'payment_ref' => $request['payment_ref'], 
                 'receipt_pdf_filename' => $request['receipt_pdf_filename']
             ]);
-        } else{ // is not a registered customer
-            dd($request->all());
+        } else{ 
             $purchaseId = DB::table('purchases')->insertGetId([
                 'customer_id' => null,
                 'date' => now(),
@@ -304,27 +317,26 @@ class CartController extends Controller
                 'receipt_pdf_filename' => $request['receipt_pdf_filename']
             ]);
         }
-        // $ticketId = DB::table('tickets')->insert([
-        //     'screening_id' => $screening->id,
-        //     'seat_id' => $seatId,
-        //     'price' => 5.0, // TODO: alterar para o preço do seat
-        //     'created_at' => now(),
-        //     'updated_at' => now()
-        // ]);
-        dd($request->all(), count($request->all()));
-        $request->validate([
-            'customer_nif' => 'optional|digits:9',
-        ], [
-            'customer_nif.digits' => 'The NIF must be exactly 9 digits.',
-        ]);
-        // create a purchase
-        
-        
-        // create tickets
-
-
-
-
+        foreach ($cart as $ticket) {
+            DB::table('tickets')->insert([
+                'screening_id' => $ticket['screening_id'],
+                'seat_id' => $ticket['seat_id'],
+                'purchase_id' => $purchaseId,
+                'price' => $pricePerTicket,
+                'qrcode_url' => null,
+                'status' => 'valid',
+            ]);
+        }
+        $strAux = '';
+        foreach ($screeningIds as $screen) {
+            $url = route('seats.index', ['screening' => $screen]);
+            $strAux .= '<a href="' . $url . '">#' . $screen . '</a>, ';
+        }
+        $strAux = rtrim($strAux, ', '); // remove last comma
+        $request->session()->forget('cart');
+        return redirect()->route('home')
+            ->with('alert-type', 'success')
+            ->with('alert-msg', "Purchase for screening {$strAux} was successfully completed!");
 
         //     $student = Student::where('number', $request->validated()['student_number'])->first();
         //     if (!$student) {

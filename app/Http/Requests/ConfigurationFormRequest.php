@@ -4,7 +4,8 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class GenreFormRequest extends FormRequest
+
+class ConfigurationFormRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,14 +23,17 @@ class GenreFormRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'name' => 'required|string|max:255',
+            'ticket_price' => 'required|numeric|gte:0',
+            'registered_customer_ticket_discount' => 'required|numeric|min:0|lte:ticket_price'
         ];
-        if (strtolower($this->getMethod()) == 'post') {
-            //Relembrando que nao é possivel criar um novo com um codigo igual a um que foi eliminado!! (acredito que seja suposto)
-            $rules = array_merge($rules, [
-                'code' => 'required|string|max:20|unique:genres,code',
-            ]);
-        }
+
         return $rules;
+    }
+
+    public function messages(): array
+    {
+        return [
+
+        ];
     }
 }

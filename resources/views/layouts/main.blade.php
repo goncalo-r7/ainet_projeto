@@ -17,6 +17,8 @@
 <body class="font-sans antialiased">
 
     <div class="min-h-screen bg-gray-100 dark:bg-gray-800">
+
+    <div class="min-h-screen bg-gray-100 dark:bg-gray-800">
         <!-- Navigation Menu -->
         <nav class="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
             <!-- Navigation Menu Full Container -->
@@ -39,6 +41,10 @@
                         <!-- Menu Item: MOvies -->
                         <x-menus.menu-item content="Movies" href="{{ route('movies.showcase') }}"
                             selected="{{ Route::currentRouteName() == 'movies.showcase' }}" />
+                            <!-- Menu Item: Configuration -->
+                        <x-menus.menu-item content="Configuration" href="{{ route('configurations.show') }}"
+                        selected="{{ Route::currentRouteName() == 'configurations.show' }}" />
+
 
 
 
@@ -50,7 +56,6 @@
 
                                 <x-menus.submenu-item content="Theaters" selectable="0"
                                     href="{{ route('theaters.index') }}" />
-
 
                                 <x-menus.submenu-item content="Screenings" selectable="0"
                                 href="{{ route('screenings.index') }}" />

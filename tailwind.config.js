@@ -8,7 +8,8 @@ module.exports = {
     "./resources/**/*.vue", //tira
     './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
     './storage/framework/views/*.php',
-    './resources/views/**/*.blade.php'
+    './resources/views/**/*.blade.php',
+    './node_modules/flowbite/**/*.js', // Include Flowbite classes
   ],
 
   theme: {
@@ -20,6 +21,7 @@ module.exports = {
   },
 
   plugins: [
-    forms
+    forms,
+    require('flowbite/plugin'), // Add Flowbite as a plugin
   ],
 };
