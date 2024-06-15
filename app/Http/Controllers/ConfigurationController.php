@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Configuration;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use App\Http\Requests\ConfigurationFormRequest;
+use Illuminate\Http\RedirectResponse;
 
 class ConfigurationController extends Controller
 
@@ -15,12 +17,9 @@ class ConfigurationController extends Controller
         return view('configurations.show')->with('configuration', $configuration);
     }
 
-    public function edit(Configuration $screening): View
+    public function edit(Configuration $configuration): View
     {
-        $movies = Movie::orderBy('title')->pluck('title', 'id')->toArray();
-        $theaters = Theater::orderBy('name')->pluck('name', 'id')->toArray();
-
-        return view('screenings.edit')->with('screening', $screening)->with('movies', $movies)->with('theaters', $theaters);
+        return view('configurations.edit')->with('configuration', $configuration);
     }
 
     public function update(ConfigurationFormRequest $request, Configuration $screening): RedirectResponse
