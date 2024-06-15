@@ -40,6 +40,10 @@
                         <!-- Menu Item: MOvies -->
                         <x-menus.menu-item content="Movies" href="{{ route('movies.showcase') }}"
                             selected="{{ Route::currentRouteName() == 'movies.showcase' }}" />
+                            <!-- Menu Item: Configuration -->
+                        <x-menus.menu-item content="Configuration" href="{{ route('configurations.show') }}"
+                        selected="{{ Route::currentRouteName() == 'configurations.show' }}" />
+
 
 
 
@@ -51,7 +55,6 @@
 
                                 <x-menus.submenu-item content="Theaters" selectable="0"
                                     href="{{ route('theaters.index') }}" />
-
 
                                 <x-menus.submenu-item content="Screenings" selectable="0"
                                 href="{{ route('screenings.index') }}" />

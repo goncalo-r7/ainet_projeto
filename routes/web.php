@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdministrativeController;
 use App\Http\Controllers\MovieController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\ConfigurationController;
 use App\Http\Controllers\TheaterController;
 use App\Http\Controllers\SeatController;
 use App\Http\Controllers\TicketController;
@@ -16,6 +17,18 @@ use Illuminate\Support\Facades\Route;
 /* ----- PUBLIC ROUTES ----- */
 
 Route::get('receipt/{purchase}', [ReceiptController::class, 'show'])->name('receipt.show');
+
+
+
+
+Route::get('configuration/show', [ConfigurationController::class, 'show'])->name('configurations.show');
+Route::get('configuration/edit', [ConfigurationController::class, 'edit'])->name('configurations.edit');
+// Route::put('configuration/update', [ConfigurationController::class, 'update'])->name('configurations.update');
+// Route::get('configuration/update', [ConfigurationController::class, 'update'])->name('configurations.update');
+Route::put('/configurations/{configuration}', [ConfigurationController::class, 'update'])->name('configurations.update');
+
+
+
 
 Route::resource('seats', SeatController::class); //tem que estar em primeiro por causa de um conflito qualquer....
 
@@ -61,7 +74,6 @@ Route::middleware('auth', 'verified')->group(function () {
         ->name('movies.image.destroy');
 
 
-    //Route::resource('movies', MovieController::class)->only(['index']);
     Route::resource('movies', MovieController::class); // TIRAR ISTO!!! QUANDO LOGS TIVEREM FEITOS
 
     Route::resource('theaters', TheaterController::class);

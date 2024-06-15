@@ -7,29 +7,35 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use App\Http\Requests\ConfigurationFormRequest;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
 
 class ConfigurationController extends Controller
 
 {
-    public function show(Configuration $configuration): View
+    public function show(): View
     {
+        $configuration = DB::table('configuration')->first();
+        return view('configurations.show', compact('configuration'));
 
-        return view('configurations.show')->with('configuration', $configuration);
+        // return view('configurations.show')->with('configuration', $configuration);
     }
 
-    public function edit(Configuration $configuration): View
+    public function edit(): View
     {
-        return view('configurations.edit')->with('configuration', $configuration);
+        $configuration = DB::table('configuration')->first();
+        return view('configurations.edit', compact('configuration'));
+
+        // return view('configurations.edit')->with('configuration', $configuration);
     }
 
-    public function update(ConfigurationFormRequest $request, Configuration $screening): RedirectResponse
+    public function update(ConfigurationFormRequest $request, Configuration $configuration): RedirectResponse
     {
-        $screening->update($request->validated());
+        $configuration->update($request->validated());
 
 
-        $url = route('screenings.show', ['screening' => $screening]);
-        $htmlMessage = "Screening <a href='$url'><u>{$screening->id}</u></a> has been updated successfully!";
-        return redirect()->route('screenings.index')
+        $url = route('configurations.show');
+        $htmlMessage = "Configuration <a href='$url'></a> has been updated successfully!";
+        return redirect()->route('configurations.show')
             ->with('alert-type', 'success')
             ->with('alert-msg', $htmlMessage);
     }
