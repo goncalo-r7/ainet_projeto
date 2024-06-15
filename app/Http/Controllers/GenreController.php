@@ -79,6 +79,10 @@ class GenreController extends Controller
                 ->with('alert-msg', 'Cannot delete genre with active screening sessions.');
         }
 
+        DB::table('movies')
+        ->where('genre_code', $genre->code)
+        ->update(['genre_code' => 'DEFAULT']);
+
         $genre->delete();
 
         return redirect()->route('genres.index')

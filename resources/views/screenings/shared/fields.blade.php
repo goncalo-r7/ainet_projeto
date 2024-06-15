@@ -18,7 +18,7 @@
     </div>
     <input datepicker type="text" name="date" value="{{ old('date', $screening->date) }}" id="id_date"
         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-        placeholder="Select date">
+        placeholder="Select date" {{ $readonly ? 'readonly' : '' }}>
 </div>
 
 
@@ -35,12 +35,11 @@
                     clip-rule="evenodd" />
             </svg>
         </div>
-        <input name="start_time" type="time" id="id_start_time"
+        <input name="start_time" type="time" id="id_start_time "
             class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-             value="{{ old('start_time', date('H:i', strtotime($screening->start_time))) }}" required />
+             value="{{ old('start_time', date('H:i', strtotime($screening->start_time))) }}" {{ $readonly ? 'readonly' : '' }} required />
     </div>
 </div>
-
 
 
 
