@@ -186,11 +186,11 @@ class MovieController extends Controller
     {
         $movie->update($request->validated());
 
-        if ($request->hasFile('image_file')) {
+        if ($request->hasFile('poster_filename')) {
             if ($movie->imageExists) {
                 Storage::delete("public/posters/{$movie->fileName}");
             }
-            $request->image_file->storeAs('public/posters', $movie->fileName);
+            $request->poster_filename->storeAs('public/posters', $movie->fileName);
         }
 
         $url = route('movies.show', ['movie' => $movie]);

@@ -29,10 +29,10 @@ class Movie extends Model
     // nao esta corrigido em baixo
 
 
-    public function getFileNameAttribute()
-    {
-        return strtoupper(trim($this->poster_filename));
-    }
+    // public function getFileNameAttribute()
+    // {
+    //     return strtoupper(trim($this->poster_filename));
+    // }
 
     public function getImageExistsAttribute()
     {
@@ -43,7 +43,7 @@ class Movie extends Model
     public function getImageUrlAttribute()
     {
         if ($this->poster_filename && $this->imageExists) {
-            return asset("storage/posters/{$this->fileName}");
+            return asset("storage/posters/{$this->poster_filename}");
         } else {
             return asset("storage/posters/_no_poster_1.png");
         }
