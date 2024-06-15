@@ -71,8 +71,8 @@ class CartController extends Controller
         }
         else{
             
-            // one ticket for each seat
             $seatsAlreadyInCart = [];
+            $isRepeated = false;
             foreach ($seatsIds as $seatId){
                 // $ticketId = DB::table('tickets')->insertGetId([
                 //     'screening_id' => $screening->id,
@@ -89,20 +89,26 @@ class CartController extends Controller
                 if ($isSeatInCart) {
                     // If the seat is already in the cart
                     $seatsAlreadyInCart[] = $seatId;
+                    $isRepeated = true;
                 } else{
                     $ticketDetails = [
                         'screening_id' => $screening->id,
                         'seat_id' => $seatId,
                     ];
+                    // Push the ticket details to the cart
+                    $cart->push($ticketDetails);
                 }
-                $seatDetails = DB::table('seats')->select('row', 'seat_number')->whereIn('id', $seatsAlreadyInCart)->get();
-                $message = "Seat {$seatDetails->row}{$seatDetails->seat_number} were already in the cart.";
-                return back()
-                    ->with('alert-msg', $message)
-                    ->with('alert-type', 'warning');
-                $message = "Seat {$seatDetails->row}{$seatDetails->seat_number} were already in the cart.";
-                // Push the ticket details to the cart
-                $cart->push($ticketDetails);
+                
+            }
+            if ($isRepeated) {
+                // Get the seats that are already in the cart
+                $seatsCart = DB::table('seats')->select('row', 'seat_number')->whereIn('id', $seatsAlreadyInCart)->get();
+                $strAux = '';
+                foreach ($seatsCart as $seat) {
+                    $strAux .= $seat->row . $seat->seat_number . ', ';
+                }
+                $strAux = rtrim($strAux, ', '); // remove last comma
+                $message = "Seats {$strAux} were already in the cart.<br>";
             }
             // atualizar purchase
             //$purchase = DB::table('purchases')->where('id', $purchaseId)->first();
@@ -110,14 +116,17 @@ class CartController extends Controller
             //DB::table('purchases')->where('id', $purchaseId)->increment('total_price', $total);
             session(['cart' => $cart]);
         }
-        $seatsNames = DB::table('seats')->select('row', 'seat_number')->whereIn('id', $seatsIds)->get();
+        $newSeats = DB::table('seats')->select('row', 'seat_number')->whereIn('id', $seatsIds)->whereNotIn('id', $seatsAlreadyInCart)->get();
         $seatStr = '';
-        foreach ($seatsNames as $seat) {
+        foreach ($newSeats as $seat) {
             $seatStr .= $seat->row . $seat->seat_number . ', ';
         }
         $seatStr = rtrim($seatStr, ', '); // remove last comma
         $alertType = 'success';
-        $htmlMessage = "Seats $seatStr for the movie <strong>\"{$screening->movie->title}\"</strong> were successfully added to the cart.";
+        $htmlMessage = $newSeats->isEmpty() 
+                            ? $message
+                            : $message . "Seats $seatStr for the movie <strong>\"{$screening->movie->title}\"</strong> were successfully added to the cart." ;
+        //$htmlMessage = $message . "Seats $seatStr for the movie <strong>\"{$screening->movie->title}\"</strong> were successfully added to the cart.";
         return back()
             ->with('alert-msg', $htmlMessage)
             ->with('alert-type', $alertType);
@@ -173,12 +182,10 @@ class CartController extends Controller
                 return $item['screening_id'] == $screeningId && $item['seat_id'] == $seatId;
             });
             if ($element) {
-                $cart->forget($cart->search($element));
+                $cart->forget($element);
                 if ($cart->count() == 0) {
                     $request->session()->forget('cart');
-                } else {
-                    $request->session()->put('cart', $cart);
-                }
+                } 
                 $alertType = 'success';
                 $htmlMessage = "Ticket in seat $seat->row$seat->seat_number for <a href='$url'>
                 <strong>\"{$movieTitle}\"</strong></a> at $screeningT was removed from the cart.";
@@ -235,23 +242,15 @@ class CartController extends Controller
 
     public function destroy(Request $request): RedirectResponse
     {
-        // TODO: Confirmar se o destroy dá delete aos tickets e purchase
         $cart = session('cart', null);
-         // Delete all tickets associated with the cart from the database
-        $purchase = null;
-        foreach ($cart as $cartItem) {
-            if (!$purchase){
-                $purchase = DB::table('tickets')->select('purchase_id')->where('id', $cartItem['ticket_id']);
-            }
-            if (isset($cartItem['ticket_id'])) {
-                DB::table('tickets')->where('id', $cartItem['ticket_id'])->delete();
-            }
-        }
-
-        // Delete the associated purchase
-        if ($purchase) {
-            DB::table('purchases')->where('id', $purchase)->delete();
-        }
+        // foreach ($cart as $cartItem) {
+        //     // if (!$purchase){
+        //     //     $purchase = DB::table('tickets')->select('purchase_id')->where('id', $cartItem['ticket_id']);
+        //     // }
+        //     if (isset($cartItem['ticket_id'])) {
+        //         DB::table('tickets')->where('id', $cartItem['ticket_id'])->delete();
+        //     }
+        // }
 
         $request->session()->forget('cart');
         // confirm: destroy is not clearing the seats
@@ -268,8 +267,17 @@ class CartController extends Controller
             return back()
                 ->with('alert-type', 'danger')
                 ->with('alert-msg', "Cart was not confirmed, because cart is empty!");
-        } 
+        }
+        // TODO: check if any of the screenings has already started
+
+
         $userId = Auth::id();
+        dd($request);
+        $request->validate([
+            'customer_nif' => 'optional|digits:9',
+        ], [
+            'customer_nif.digits' => 'The NIF must be exactly 9 digits.',
+        ]);
         // create a purchase
         $purchaseId = DB::table('purchases')->insertGetId([
             'customer_id' => $userId, // TODO alterar para customer_id

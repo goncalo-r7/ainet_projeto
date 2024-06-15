@@ -2,10 +2,11 @@
     <table class="table-auto border-collapse">
         <thead>
         <tr class="border-b-2 border-b-gray-400 dark:border-b-gray-500 bg-gray-100 dark:bg-gray-800">
-            <th class="px-2 py-2 text-left hidden sm:table-cell">Movie</th>
-            <th class="px-2 py-2 text-left">Theatre</th>
-            <th class="px-2 py-2 text-right hidden md:table-cell">Date</th>
-            <th class="px-2 py-2 text-right hidden md:table-cell">Start Time</th>
+            <th class="px-2 py-2 text-center hidden sm:table-cell">Movie</th>
+            <th class="px-2 py-2 text-center">Theatre</th>
+            <th class="px-2 py-2 text-center hidden md:table-cell">Date</th>
+            <th class="px-2 py-2 text-center hidden md:table-cell">Start Time</th>
+            <th class="px-2 py-2 text-center hidden md:table-cell">Seat</th>
             {{-- @if($showView)
                 <th></th>
             @endif --}}
@@ -30,12 +31,14 @@
             $movieTitle = DB::table('movies')->select('title')->where('id', $movieId->movie_id)->first(); 
             $theaterId = DB::table('screenings')->select('theater_id')->where('id', $ticket['screening_id'])->first();
             $theater = DB::table('theaters')->select('name')->where('id', $theaterId->theater_id)->first();
+            $seatId = DB::table('seats')->select('row', 'seat_number')->where('id', $ticket['seat_id'])->first();
             @endphp
             <tr class="border-b border-b-gray-400 dark:border-b-gray-500">
-                <td class="px-2 py-2 text-left hidden sm:table-cell">{{ $movieTitle->title }}</td>
-                <td class="px-2 py-2 text-left">{{ $theater->name }}</td>
-                <td class="px-2 py-2 text-right hidden md:table-cell">{{ date('d-m-Y', strtotime($screening->date)) }}</td>
-                <td class="px-2 py-2 text-right hidden md:table-cell">{{ date('H:i', strtotime($screening->start_time)) }}</td>
+                <td class="px-2 py-2 text-center hidden sm:table-cell">{{ $movieTitle->title }}</td>
+                <td class="px-2 py-2 text-center">{{ $theater->name }}</td>
+                <td class="px-2 py-2 text-center hidden md:table-cell">{{ date('d-m-Y', strtotime($screening->date)) }}</td>
+                <td class="px-2 py-2 text-center hidden md:table-cell">{{ date('H:i', strtotime($screening->start_time)) }}</td>
+                <td class="px-2 py-2 text-center md:table-cell">{{ $seatId->row . $seatId->seat_number }}</td>
                 {{-- @if($showView)
                     <td>
                         <x-table.icon-show class="ps-3 px-0.5"
