@@ -243,14 +243,6 @@ class CartController extends Controller
     public function destroy(Request $request): RedirectResponse
     {
         $cart = session('cart', null);
-        // foreach ($cart as $cartItem) {
-        //     // if (!$purchase){
-        //     //     $purchase = DB::table('tickets')->select('purchase_id')->where('id', $cartItem['ticket_id']);
-        //     // }
-        //     if (isset($cartItem['ticket_id'])) {
-        //         DB::table('tickets')->where('id', $cartItem['ticket_id'])->delete();
-        //     }
-        // }
 
         $request->session()->forget('cart');
         // confirm: destroy is not clearing the seats
@@ -274,11 +266,13 @@ class CartController extends Controller
         $customer = DB::table('customers')->where('id', $user->id)->first();
         $conf = DB::table('configuration')->first(); // to get the price
         $price = $conf->ticket_price * count($cart);
+        $pricePerTicket = $conf->ticket_price;
         $purchaseId = null;
         // TODO: check received values
         if ($customer){ // is a registered customer
             // $request will only receive payment_type and payment_ref
             $price = $price - ($conf->registered_customer_ticket_discount * count($cart));
+            $pricePerTicket = $pricePerTicket - $conf->registered_customer_ticket_discount;
             $purchaseId = DB::table('purchases')->insertGetId([
                 'customer_id' => $customer->id,
                 'date' => now(),
@@ -291,7 +285,12 @@ class CartController extends Controller
                 'receipt_pdf_filename' => $request['receipt_pdf_filename']
             ]);
         } else{ // is not a registered customer
-            dd($request->all());
+            // $request->validate([
+            //     'customer_nif' => 'optional|digits:9',
+            // ], [
+            //     'customer_nif.digits' => 'The NIF must be exactly 9 digits.',
+            // ]);
+
             $purchaseId = DB::table('purchases')->insertGetId([
                 'customer_id' => null,
                 'date' => now(),
@@ -304,27 +303,32 @@ class CartController extends Controller
                 'receipt_pdf_filename' => $request['receipt_pdf_filename']
             ]);
         }
-        // $ticketId = DB::table('tickets')->insert([
-        //     'screening_id' => $screening->id,
-        //     'seat_id' => $seatId,
-        //     'price' => 5.0, // TODO: alterar para o preço do seat
-        //     'created_at' => now(),
-        //     'updated_at' => now()
-        // ]);
-        dd($request->all(), count($request->all()));
-        $request->validate([
-            'customer_nif' => 'optional|digits:9',
-        ], [
-            'customer_nif.digits' => 'The NIF must be exactly 9 digits.',
-        ]);
-        // create a purchase
-        
-        
-        // create tickets
+        $screeningIds = [];
+        foreach ($cart as $ticket) {
+            DB::table('tickets')->insert([
+                'screening_id' => $ticket['screening_id'],
+                'seat_id' => $ticket['seat_id'],
+                'purchase_id' => $purchaseId,
+                'price' => $pricePerTicket,
+                'qrcode_url' => null,
+                'status' => 'valid',
+            ]);
 
-
-
-
+            // Check if the screening ID is already in the array
+            if (!in_array($ticket['screening_id'], $screeningIds)) {
+                $screeningIds[] = $ticket['screening_id'];
+            }
+        }
+        $strAux = '';
+        foreach ($screeningIds as $screen) {
+            $url = route('seats.index', ['screening' => $screen]);
+            $strAux .= '<a href="' . $url . '">#' . $screen . '</a>, ';
+        }
+        $strAux = rtrim($strAux, ', '); // remove last comma
+        $request->session()->forget('cart');
+        return redirect()->route('home')
+            ->with('alert-type', 'success')
+            ->with('alert-msg', "Purchase for screening {$strAux} was successfully completed!");
 
         //     $student = Student::where('number', $request->validated()['student_number'])->first();
         //     if (!$student) {

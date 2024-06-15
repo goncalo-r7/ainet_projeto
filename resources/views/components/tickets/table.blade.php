@@ -32,9 +32,10 @@
             $theaterId = DB::table('screenings')->select('theater_id')->where('id', $ticket['screening_id'])->first();
             $theater = DB::table('theaters')->select('name')->where('id', $theaterId->theater_id)->first();
             $seatId = DB::table('seats')->select('row', 'seat_number')->where('id', $ticket['seat_id'])->first();
+            $url = route('seats.index', ['screening' => $screening->id]);
             @endphp
             <tr class="border-b border-b-gray-400 dark:border-b-gray-500">
-                <td class="px-2 py-2 text-center hidden sm:table-cell">{{ $movieTitle->title }}</td>
+                <td class="px-2 py-2 text-center hidden sm:table-cell"><a href={{$url}}>{{ $movieTitle->title }}</a></td>
                 <td class="px-2 py-2 text-center">{{ $theater->name }}</td>
                 <td class="px-2 py-2 text-center hidden md:table-cell">{{ date('d-m-Y', strtotime($screening->date)) }}</td>
                 <td class="px-2 py-2 text-center hidden md:table-cell">{{ date('H:i', strtotime($screening->start_time)) }}</td>

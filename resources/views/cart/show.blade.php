@@ -59,16 +59,17 @@
                                 <x-field.input name="customer_nif" label="NIF (optional)" width="sm"
                                                 :readonly="$isCustomer"
                                                 value="{{ $isCustomer ? $customerNif : old('customer_nif') }}"/><br>
+
                                 <h3 class="mb-4 text-xl">Payment Details</h3>
                                 <x-field.radio-group name="payment_type" label="Payment Type" width="lg"
                                                     :options="['VISA' => 'Visa Card',
                                                                'PAYPAL' => 'PayPal',
                                                                'MBWAY' => 'MB Way']" 
-                                                    :value="$paymentType ?? old('payment_type')"/>
+                                                    value="{{ $isCustomer ? $paymentType : old('payment_type') }}"/>
                                                     {{-- if not null, value is $customerPaymentType --}}
                                 <x-field.input name="payment_ref" label="Payment Reference" width="md"
                                                 :readonly="false"
-                                                value="{{ $paymentRef ?? old('payment_ref') }}"/>
+                                                value="{{ $isCustomer ? $paymentRef : old('payment_ref') }}"/>
                                 <x-field.check-box name="receipt_pdf_filename" label="Generate PDF with the receipt of the purchase" width="lg"
                                                     :checked="false"/>
                                 <x-button element="submit" type="dark" text="Confirm" class="mt-4"/>
