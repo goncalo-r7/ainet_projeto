@@ -14,6 +14,8 @@ use App\Http\Controllers\ScreeningController;
 use App\Http\Controllers\ReceiptController;
 use Illuminate\Support\Facades\Route;
 
+// teste
+
 /* ----- PUBLIC ROUTES ----- */
 
 Route::get('receipts/{purchase}', [ReceiptController::class, 'show'])->name('receipt.show');
