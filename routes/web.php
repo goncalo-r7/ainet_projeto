@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 
 /* ----- PUBLIC ROUTES ----- */
 
-Route::get('receipt/{purchase}', [ReceiptController::class, 'show'])->name('receipt.show');
+Route::get('receipts/{purchase}', [ReceiptController::class, 'show'])->name('receipt.show');
 
 Route::resource('seats', SeatController::class); //tem que estar em primeiro por causa de um conflito qualquer....
 

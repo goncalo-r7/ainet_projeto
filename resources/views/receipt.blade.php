@@ -6,20 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>CineMagic Cinemas</title>
-    @vite('resources/css/app.css')
+    <style>
+        <?=file_get_contents(public_path('build/assets/app-BpnQns1Z.css')); ?>
+    </style>
 </head>
 
-<body class="bg-gray-100">
-    <div class="mx-auto bg-white p-8 shadow-lg w-1/2">
-        <div class="flex justify-between">
-        <h2 class="text-2xl font-bold mb-6">CineMagic Cinemas Inc.</h2>
-        <div class="w-1/3 ">
-                <div class="h-32 bg-cover bg-[url('../img/CineMagic-black.png')] dark:bg-[url('../img/CineMagic-white.png')]">
-                </div>
-            </div>
+<body>
+    <div class="mx-auto bg-white p-28 shadow-lg px-auto">
+        <div class="">
+            <h2 class="text-2xl font-bold mb-6">CineMagic Cinemas Inc.</h2>
         </div>
-        <div class="flex justify-between mb-8">
-            <div>
+        <div class="my-8">
+            <div class="mt-8">
                 <h3 class="font-bold text-lg pb-3">ENTITY DETAILS</h3>
                 <p>P5MH+MJ Campus 2 - Morro do Lena, R. do Alto Vieiro Apt 4163</p>
                 <p>2411-901 Leiria</p>
@@ -33,49 +31,56 @@
                 <p><b>CLIENT NIF:</b> {{$purchase->nif}}</p>
             </div>
         </div>
-        <div class="mt-16 mb-28">
-            <table class="table-auto border-collapse w-full">
+        <div class="mt-16 mb-10">
+            <table style="width: 500px; border: 2px solid;">
                 <thead>
-                    <tr class="border-b-2 border-b-gray-400 dark:border-b-gray-500 bg-gray-100 dark:bg-gray-800">
-                        <th class="px-2 py-2 text-center hidden lg:table-cell">TICKET ID</th>
-                        <th class="px-2 py-2 text-center">THEATER</th>
-                        <th class="px-2 py-2 text-center hidden sm:table-cell">SEAT</th>
-                        <th class="px-2 py-2 text-center hidden sm:table-cell">MOVIE</th>
-                        <th class="px-2 py-2 text-center hidden sm:table-cell">DATE</th>
-                        <th class="px-2 py-2 text-center hidden sm:table-cell">PRICE</th>
+                    <tr class="">
+                        <th style="border: 2px solid;">TICKET ID</th>
+                        <th style="border: 2px solid;">THEATER</th>
+                        <th style="border: 2px solid;">SEAT</th>
+                        <th style="border: 2px solid;">MOVIE</th>
+                        <th style="border: 2px solid;">DATE</th>
+                        <th style="border: 2px solid;">PRICE</th>
                     </tr>
                 </thead>
                 <tbody>
-                @foreach($purchase->tickets as $ticket)
-                    <tr class="border-b border-b-gray-400 dark:border-b-gray-500">
-                        <td class="px-2 py-2 text-center hidden lg:table-cell">{{$ticket->id}}</td>
-                        <td class="px-2 py-2 text-center">{{$ticket->seat->theater->name}}</td>
-                        <td class="px-2 py-2 text-center">{{$ticket->seat->row}}{{$ticket->seat->seat_number}}</td>
-                        <td class="px-2 py-2 text-center hidden sm:table-cell">{{$ticket->screening->movie->title}}</td>
-                        <td class="px-2 py-2 text-center hidden sm:table-cell">{{$ticket->screening->date}}</td>
-                        <td class="px-2 py-2 text-center hidden sm:table-cell">{{$ticket->price}} €</td>
+                    @foreach($purchase->tickets as $ticket)
+                    <tr class="">
+                        <td style="border: 2px solid;">{{$ticket->id}}</td>
+                        <td style="border: 2px solid;">{{$ticket->seat->theater->name}}</td>
+                        <td style="border: 2px solid;">{{$ticket->seat->row}}{{$ticket->seat->seat_number}}</td>
+                        <td style="border: 2px solid;">{{$ticket->screening->movie->title}}</td>
+                        <td style="border: 2px solid;">{{$ticket->screening->date}}</td>
+                        <td style="border: 2px solid;">{{$ticket->price}} €</td>
                     </tr>
-                @endforeach
+                    @endforeach
                 </tbody>
             </table>
         </div>
-        <div class="flex justify-end mb-8">
-            <div class="w-1/2">
-                <div class="flex justify-between font-bold text-xl">
-                    <p>TOTAL</p>
-                    <p>{{$purchase->total_price}}€</p>
+        <div class="mb-8">
+        @foreach($qr_codes as $qr_code)
+            <div class="bg-white p-4 rounded shadow w-40 h-40">
+            <img src="data:image/png;base64, {!! base64_encode($qr_code) !!}" alt="QR Code">
+            </div>
+        @endforeach
+        </div>
+        <div class="mb-6">
+            <div class="w-1/4">
+                <div class=" font-bold text-xl">
+                    <p>TOTAL: {{$purchase->total_price}}€</p>
                 </div>
             </div>
         </div>
-        <div class="mb-8">
+        <div class="mb-8" style="width: 400px;">
             <hr>
             <h3 class="font-bold text-lg mb-3 mt-3">PAYMENT DETAILS</h3>
-            <div class="flex justify-between">
+            <div class="mb-8">
                 <p><b>PAYMENT METHOD:</b>&nbsp; {{$purchase->payment_type}}</p>
                 <p><b>ENTITY REFERENCE:</b>&nbsp; {{$purchase->payment_ref}}</p>
             </div>
+            <hr>
         </div>
-        <hr>
+        
     </div>
 </body>
 
