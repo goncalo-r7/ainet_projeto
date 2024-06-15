@@ -251,7 +251,6 @@ class CartController extends Controller
             ->with('alert-msg', 'Shopping Cart has been cleared');
     }
 
-    // TODO GONCALO AGORA ESTAMOS NO NOVO DB LOGO NAO HA ESTUDANTES
     public function confirm(CartConfirmationFormRequest $request): RedirectResponse
     {
         $cart = session('cart', null);
@@ -260,17 +259,38 @@ class CartController extends Controller
                 ->with('alert-type', 'danger')
                 ->with('alert-msg', "Cart was not confirmed, because cart is empty!");
         }
-        // TODO: check if any of the screenings has already started
-
+        // check if any of the screenings has already started
+        $screeningIds = [];
+        foreach ($cart as $ticket) {
+            // Check if the screening ID is already in the array
+            if (!in_array($ticket['screening_id'], $screeningIds)) {
+                $screeningIds[] = $ticket['screening_id'];
+            }
+        }
+        foreach ($screeningIds as $sId){
+            $screening = Screening::find($sId);
+            $dateTimeString = $screening->date . ' ' . $screening->start_time;
+            $movieStartTime = new DateTime($dateTimeString);
+            $now = new DateTime(); // Current time
+            $interval = $now->diff($movieStartTime);
+            if ($interval->invert == 1 && $interval->i >= 5) { // Invert indicates the interval is negative, meaning now is after start time
+                $alertType = 'warning';
+                $url = route('cart.show', ['screening' => $screening->id]);
+                $htmlMessage = "Purchase was not confirmed because screening <a href='$url'>#{$screening->id}</a> 
+                <strong>\"{$screening->movie->title}\"</strong> has already started!";
+                return back()
+                    ->with('alert-msg', $htmlMessage)
+                    ->with('alert-type', $alertType);
+            }
+        }
         $user = Auth::user();
         $customer = DB::table('customers')->where('id', $user->id)->first();
         $conf = DB::table('configuration')->first(); // to get the price
-        $price = $conf->ticket_price * count($cart);
         $pricePerTicket = $conf->ticket_price;
+        $price = $pricePerTicket * count($cart);
         $purchaseId = null;
-        // TODO: check received values
         if ($customer){ // is a registered customer
-            // $request will only receive payment_type and payment_ref
+            // in this case $request will only receive payment_type, payment_ref and pdf_filename
             $price = $price - ($conf->registered_customer_ticket_discount * count($cart));
             $pricePerTicket = $pricePerTicket - $conf->registered_customer_ticket_discount;
             $purchaseId = DB::table('purchases')->insertGetId([
@@ -284,13 +304,7 @@ class CartController extends Controller
                 'payment_ref' => $request['payment_ref'], 
                 'receipt_pdf_filename' => $request['receipt_pdf_filename']
             ]);
-        } else{ // is not a registered customer
-            // $request->validate([
-            //     'customer_nif' => 'optional|digits:9',
-            // ], [
-            //     'customer_nif.digits' => 'The NIF must be exactly 9 digits.',
-            // ]);
-
+        } else{ 
             $purchaseId = DB::table('purchases')->insertGetId([
                 'customer_id' => null,
                 'date' => now(),
@@ -303,7 +317,6 @@ class CartController extends Controller
                 'receipt_pdf_filename' => $request['receipt_pdf_filename']
             ]);
         }
-        $screeningIds = [];
         foreach ($cart as $ticket) {
             DB::table('tickets')->insert([
                 'screening_id' => $ticket['screening_id'],
@@ -313,11 +326,6 @@ class CartController extends Controller
                 'qrcode_url' => null,
                 'status' => 'valid',
             ]);
-
-            // Check if the screening ID is already in the array
-            if (!in_array($ticket['screening_id'], $screeningIds)) {
-                $screeningIds[] = $ticket['screening_id'];
-            }
         }
         $strAux = '';
         foreach ($screeningIds as $screen) {
