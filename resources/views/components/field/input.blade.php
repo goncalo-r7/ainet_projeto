@@ -33,7 +33,6 @@
         {{ $label }}
     </label>
     <input id="id_{{ $name }}" name="{{ $name }}" type="{{ $type }}" value="{{ $value }}"
-    {{ debug($type) }}
         class="appearance-none block
             mt-1 w-full
             bg-white dark:bg-gray-900

@@ -73,7 +73,7 @@
                             <x-menus.submenu selectable="0" uniqueName="submenu_user">
                                 <x-slot:content>
                                     <div class="pe-1">
-                                        <img src="{{ Auth::user()->photoFullUrl }}"
+                                        <img src="{{ Auth::user()->imageUrl }}"
                                             class="w-11 h-11 min-w-11 min-h-11 rounded-full">
                                     </div>
                                     {{-- ATENÇÃO - ALTERAR FORMULA DE CALCULO DAS LARGURAS MÁXIMAS QUANDO O MENU FOR ALTERADO --}}
