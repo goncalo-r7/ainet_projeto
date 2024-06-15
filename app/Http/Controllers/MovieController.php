@@ -56,7 +56,7 @@ class MovieController extends Controller
             ->select('movies.*')
             ->orderBy('movies.title');
         if ($filterByGenre !== null) {
-            $moviesQuery->where('genres.name', $filterByGenre);
+            $moviesQuery->where('genres.code', $filterByGenre);
         }
         if ($filterByTitle !== null) {
             $moviesQuery

@@ -58,6 +58,9 @@
                                 <x-menus.submenu-item content="Movies" selectable="0"
                                 href="{{ route('movies.index') }}" />
 
+                                <x-menus.submenu-item content="Genres" selectable="0"
+                                href="{{ route('genres.index') }}" />
+
                             </x-menus.submenu>
                         @endauth
 
