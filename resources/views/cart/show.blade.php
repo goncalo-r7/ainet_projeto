@@ -52,6 +52,7 @@
                                 {{-- attributes with readonly won't be sent --}}
                                 <x-field.input name="customer_name" label="Name" width="lg"
                                                 :readonly="$isCustomer"
+                                                type="hidden"
                                                 value="{{ $isCustomer ? $customerName : old('customer_name') }}"/>
                                 <x-field.input name="customer_email" label="E-Mail" width="lg"
                                                 :readonly="$isCustomer"

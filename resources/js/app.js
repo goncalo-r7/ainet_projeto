@@ -1,7 +1,7 @@
 import './bootstrap';
 
 import Alpine from 'alpinejs';
-import 'flowbite';
+
 /* Begin - our custom JavaScript code */
 import './menu'
 

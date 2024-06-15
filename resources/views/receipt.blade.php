@@ -1,117 +1,87 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>CineMagic Cinemas</title>
     <style>
-        table,
-        th,
-        td {
-            border: 1px solid black;
-            border-collapse: collapse;
-        }
-
-        html {
-            height: 100%;
-        }
-
-        body {
-            height: 100%;
-            display: flex;
-        }
-
-        body>nav {
-            min-width: 150px;
-            background-color: lightgray;
-            margin-right: 20px;
-        }
-
-        body>nav ul {
-            list-style-type: none;
-            padding-left: 15px;
-            margin-bottom: 10px;
-        }
-
-        body>nav li {
-            margin-bottom: 10px;
-        }
+        <?=file_get_contents(public_path('build/assets/app-BpnQns1Z.css')); ?>
     </style>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-gray-100">
-    <div class="mx-auto bg-white p-8 shadow-lg w-1/2">
-        <h2 class="text-2xl font-bold mb-6">CineMagic Cinemas Inc.</h2>
-        <div class="flex justify-between mb-8">
-            <div>
-                <p>1912 Harvest Lane</p>
-                <p>New York, NY 12210</p>
+
+<body>
+    <div class="mx-auto bg-white p-28 shadow-lg px-auto">
+        <div class="">
+            <h2 class="text-2xl font-bold mb-6">CineMagic Cinemas Inc.</h2>
+        </div>
+        <div class="my-8">
+            <div class="mt-8">
+                <h3 class="font-bold text-lg pb-3">ENTITY DETAILS</h3>
+                <p>P5MH+MJ Campus 2 - Morro do Lena, R. do Alto Vieiro Apt 4163</p>
+                <p>2411-901 Leiria</p>
             </div>
-            <div>
-                <h3 class="font-bold text-lg">RECEIPT</h3>
-                <p>Receipt # US-001</p>
-                <p>Receipt Date: 11/02/2019</p>
+            <div class="pt-24">
+                <h3 class="font-bold text-lg pb-3">RECEIPT</h3>
+                <p><b>EMISSION no:</b> #{{$purchase->id}}</p>
+                <p><b>EMISSION DATE:</b> {{$purchase->date}}</p>
+                <p><b>CLIENT NAME:</b> {{$purchase->customer_name}}</p>
+                <p><b>CLIENT EMAIL:</b> {{$purchase->customer_email}}</p>
+                <p><b>CLIENT NIF:</b> {{$purchase->nif}}</p>
             </div>
         </div>
-
-        <table class="w-full mb-8 border-gray-200">
-            <thead>
-                <tr class="bg-gray-100">
-                    <th class="border border-gray-200 px-4 py-2">QTY</th>
-                    <th class="border border-gray-200 px-4 py-2">DESCRIPTION</th>
-                    <th class="border border-gray-200 px-4 py-2 text-right">UNIT PRICE</th>
-                    <th class="border border-gray-200 px-4 py-2 text-right">AMOUNT</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="border border-gray-200 px-4 py-2 text-center">1</td>
-                    <td class="border border-gray-200 px-4 py-2">Front and rear brake cables</td>
-                    <td class="border border-gray-200 px-4 py-2 text-right">$100.00</td>
-                    <td class="border border-gray-200 px-4 py-2 text-right">$100.00</td>
-                </tr>
-                <tr>
-                    <td class="border border-gray-200 px-4 py-2 text-center">2</td>
-                    <td class="border border-gray-200 px-4 py-2">New set of pedal arms</td>
-                    <td class="border border-gray-200 px-4 py-2 text-right">$15.00</td>
-                    <td class="border border-gray-200 px-4 py-2 text-right">$30.00</td>
-                </tr>
-                <tr>
-                    <td class="border border-gray-200 px-4 py-2 text-center">3</td>
-                    <td class="border border-gray-200 px-4 py-2">Labor 3hrs</td>
-                    <td class="border border-gray-200 px-4 py-2 text-right">$5.00</td>
-                    <td class="border border-gray-200 px-4 py-2 text-right">$15.00</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <div class="flex justify-end mb-8">
-            <div class="w-1/2">
-                <div class="flex justify-between">
-                    <p>Subtotal</p>
-                    <p>$145.00</p>
-                </div>
-                <div class="flex justify-between">
-                    <p>Sales Tax 6.25%</p>
-                    <p>$9.06</p>
-                </div>
-                <div class="flex justify-between font-bold text-xl">
-                    <p>TOTAL</p>
-                    <p>$154.06</p>
-                </div>
-            </div>
+        <div class="mt-16 mb-10">
+            <table style="width: 500px; border: 2px solid;">
+                <thead>
+                    <tr class="">
+                        <th style="border: 2px solid;">TICKET ID</th>
+                        <th style="border: 2px solid;">THEATER</th>
+                        <th style="border: 2px solid;">SEAT</th>
+                        <th style="border: 2px solid;">MOVIE</th>
+                        <th style="border: 2px solid;">DATE</th>
+                        <th style="border: 2px solid;">PRICE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($purchase->tickets as $ticket)
+                    <tr class="">
+                        <td style="border: 2px solid;">{{$ticket->id}}</td>
+                        <td style="border: 2px solid;">{{$ticket->seat->theater->name}}</td>
+                        <td style="border: 2px solid;">{{$ticket->seat->row}}{{$ticket->seat->seat_number}}</td>
+                        <td style="border: 2px solid;">{{$ticket->screening->movie->title}}</td>
+                        <td style="border: 2px solid;">{{$ticket->screening->date}}</td>
+                        <td style="border: 2px solid;">{{$ticket->price}} €</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
         <div class="mb-8">
-            <p class="font-bold">Terms & Conditions</p>
-            <p>Payment is due within 15 days</p>
-            <p>Please make checks payable to: East Repair Inc.</p>
+        @foreach($qr_codes as $qr_code)
+            <div class="bg-white p-4 rounded shadow w-40 h-40">
+            <img src="data:image/png;base64, {!! base64_encode($qr_code) !!}" alt="QR Code">
+            </div>
+        @endforeach
         </div>
-        <div class="text-right">
-            <p class="font-bold">John Smith</p>
+        <div class="mb-6">
+            <div class="w-1/4">
+                <div class=" font-bold text-xl">
+                    <p>TOTAL: {{$purchase->total_price}}€</p>
+                </div>
+            </div>
         </div>
+        <div class="mb-8" style="width: 400px;">
+            <hr>
+            <h3 class="font-bold text-lg mb-3 mt-3">PAYMENT DETAILS</h3>
+            <div class="mb-8">
+                <p><b>PAYMENT METHOD:</b>&nbsp; {{$purchase->payment_type}}</p>
+                <p><b>ENTITY REFERENCE:</b>&nbsp; {{$purchase->payment_ref}}</p>
+            </div>
+            <hr>
+        </div>
+        
     </div>
 </body>
+
 </html>
