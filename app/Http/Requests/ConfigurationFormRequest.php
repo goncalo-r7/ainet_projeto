@@ -23,11 +23,8 @@ class MovieFormRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-
             'ticket_price' => 'required|integer|gte:0',
             'customer_ticket_discount' => 'required|integer|gte:0',
-
-
         ];
 
         return $rules;
