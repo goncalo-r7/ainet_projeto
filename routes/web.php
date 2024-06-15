@@ -8,9 +8,12 @@ use App\Http\Controllers\TheaterController;
 use App\Http\Controllers\SeatController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\ScreeningController;
+use App\Http\Controllers\ReceiptController;
 use Illuminate\Support\Facades\Route;
 
 /* ----- PUBLIC ROUTES ----- */
+
+Route::get('receipt/{purchase}', [ReceiptController::class, 'show'])->name('receipt.show');
 
 Route::resource('seats', SeatController::class); //tem que estar em primeiro por causa de um conflito qualquer....
 
@@ -18,6 +21,8 @@ Route::delete('theaters/{theater}/photo', [TheaterController::class, 'destroyIma
         ->name('theaters.photo.destroy');
 
 Route::view('/', 'home')->name('home');
+
+
 
 // Route::get('tickets/invalidate/{ticket}', [TicketController::class, 'invalidate'])->name('tickets.invalidate');
 Route::get('tickets/invalidate/{ticket}', [TicketController::class, 'invalidate'])->name('tickets.invalidate');
