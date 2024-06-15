@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('receipts/{purchase}', [ReceiptController::class, 'show'])->name('receipt.show');
 
 
-
+//luis
 
 Route::get('configuration/show', [ConfigurationController::class, 'show'])->name('configurations.show');
 Route::get('configuration/edit', [ConfigurationController::class, 'edit'])->name('configurations.edit');
