@@ -28,6 +28,7 @@
                                 @foreach ($seats as $seat)
                                     @php
                                         $isTaken = $screeningSession->tickets->where('seat_id', $seat->id)->isNotEmpty();
+                                        $isInCart = false;
                                         if ($cart){
                                             $isInCart = $cart->contains(function ($item) use ($seat, $screeningSession) {
                                                 return $item['screening_id'] == $screeningSession->id && $item['seat_id'] == $seat->id;
@@ -47,9 +48,9 @@
                                     <label for="{{ $seat->id }}" class="block w-full h-full p-3
                                         {{ $isTaken ? 'bg-red-400 border-red-500 hover:bg-red-500 cursor-not-allowed' : 'bg-white border-2 border-gray-200 hover:bg-gray-50 cursor-pointer' }}
                                         rounded-lg dark:hover:text-gray-300
-                                        peer-checked:border-blue-600 peer-checked:bg-blue-200  hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600
+                                        peer-checked:border-blue-600 peer-checked:bg-blue-200 dark:peer-checked:bg-blue-400  hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600
                                         dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700
-                                        {{ $isInCart ? 'bg-gray-300 border-gray-200 hover:bg-gray-400 dark:bg-gray-300 dark:border-gray-200 dark:hover:bg-gray-400' : '' }}">
+                                        {{ $isInCart ? 'bg-gray-400 border-gray-300 hover:bg-gray-500 dark:bg-gray-500 dark:border-gray-200 dark:hover:bg-red-400' : '' }}">
                                         {{ $seat->row . $seat->seat_number }}
                                     </label>
 
