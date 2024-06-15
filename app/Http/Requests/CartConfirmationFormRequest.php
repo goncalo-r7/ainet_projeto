@@ -50,15 +50,13 @@ class CartConfirmationFormRequest extends FormRequest
             'payment_type' => 'required|string|in:VISA,PAYPAL,MBWAY',
             
         ];
-        $ref = $rules['payment_ref'];
 
-        if ($this->payment_type === 'VISA'){
-            $card = null;
-            Payment::payWithVisa($this->card_number, $this->cvc_code);
-        } elseif ($this->payment_type === 'PAYPAL'){
-
-        } elseif ($this->payment_type === 'MBWAY'){
-
+        if ($this->payment_type === 'VISA') {
+            $rules['payment_ref'] = 'required|integer|digits:16';
+        } elseif ($this->payment_type === 'PAYPAL') {
+            $rules['payment_ref'] = 'required|email';
+        } elseif ($this->payment_type === 'MBWAY') {
+            $rules['payment_ref'] = 'required|integer|regex:/^9\d{8}$/'; // guarantee it starts with a 9 and 8 more digits
         }
 
         return $rules;

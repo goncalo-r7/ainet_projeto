@@ -52,7 +52,6 @@
                                 {{-- attributes with readonly won't be sent --}}
                                 <x-field.input name="customer_name" label="Name" width="lg"
                                                 :readonly="$isCustomer"
-                                                type="hidden"
                                                 value="{{ $isCustomer ? $customerName : old('customer_name') }}"/>
                                 <x-field.input name="customer_email" label="E-Mail" width="lg"
                                                 :readonly="$isCustomer"
@@ -71,8 +70,6 @@
                                 <x-field.input name="payment_ref" label="Payment Reference" width="md"
                                                 :readonly="false"
                                                 value="{{ $isCustomer ? $paymentRef : old('payment_ref') }}"/>
-                                <x-field.check-box name="receipt_pdf_filename" label="Generate PDF with the receipt of the purchase" width="lg"
-                                                    :checked="false"/>
                                 <x-button element="submit" type="dark" text="Confirm" class="mt-4"/>
                         </form>
                     </div>

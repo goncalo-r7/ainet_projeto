@@ -11,6 +11,7 @@ use App\Models\Discipline;
 use App\Models\Student;
 use App\Models\Screening;
 use App\Models\Ticket;
+use BaconQrCode\Encoder\QrCode;
 use Illuminate\Support\Facades\Auth;
 use DateTime;
 use Illuminate\Support\Facades\Log;
@@ -302,7 +303,7 @@ class CartController extends Controller
                 'nif' => $customer->nif ?? null,
                 'payment_type' => $request['payment_type'],
                 'payment_ref' => $request['payment_ref'], 
-                'receipt_pdf_filename' => $request['receipt_pdf_filename']
+                'receipt_pdf_filename' => null
             ]);
         } else{ 
             $purchaseId = DB::table('purchases')->insertGetId([
@@ -314,19 +315,24 @@ class CartController extends Controller
                 'nif' => $request['customer_nif'] ?? null,
                 'payment_type' => $request['payment_type'],
                 'payment_ref' => $request['payment_ref'], 
-                'receipt_pdf_filename' => $request['receipt_pdf_filename']
+                'receipt_pdf_filename' => null
             ]);
         }
+        $purchase = DB::table('purchases')->where('id', $purchaseId)->first();
+        $uniquePdfName = PdfController::generatePdf($purchase);
+        DB::table('purchases')->where('id', $purchaseId)->update(['receipt_pdf_filename' => $uniquePdfName]);
+
         foreach ($cart as $ticket) {
             DB::table('tickets')->insert([
                 'screening_id' => $ticket['screening_id'],
                 'seat_id' => $ticket['seat_id'],
                 'purchase_id' => $purchaseId,
                 'price' => $pricePerTicket,
-                'qrcode_url' => null,
+                'qrcode_url' => 'http://ainet_projeto.test/' . md5($ticket['screening_id'] . $ticket['seat_id'] . $purchaseId),
                 'status' => 'valid',
             ]);
         }
+        QrCodeController::generate($purchase); // generate qr codes with the given urls
         $strAux = '';
         foreach ($screeningIds as $screen) {
             $url = route('seats.index', ['screening' => $screen]);
