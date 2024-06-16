@@ -20,8 +20,6 @@ use Illuminate\Support\Facades\Route;
 
 /* ----- PUBLIC ROUTES ----- */
 
-Route::get('receipts/{purchase}', [ReceiptController::class, 'show'])->name('receipt.show');
-
 
 //luis
 
