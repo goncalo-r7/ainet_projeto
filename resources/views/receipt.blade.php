@@ -51,7 +51,7 @@
                         <td style="border: 2px solid;">{{$ticket->seat->row}}{{$ticket->seat->seat_number ?? "UNKOWN SEAT"}}</td>
                         <td style="border: 2px solid;">{{$ticket->screening->movie->title ?? "UNKOWN MOVIE"}}</td>
                         <td style="border: 2px solid;">{{$ticket->screening->date ?? "UNKOWN DATE"}}</td>
-                        <td style="border: 2px solid;">{{$ticket->price}} ?? "UNKNOWN PRICE"€</td>
+                        <td style="border: 2px solid;">{{$ticket->price ?? "UNKNOWN PRICE"}} €</td>
                     </tr>
                     @endforeach
                 </tbody>
