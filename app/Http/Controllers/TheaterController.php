@@ -100,6 +100,7 @@ class TheaterController extends Controller
                 [$theater->id]
             );
             if ($totalScreenings == 0 && $totalSeats == 0) {
+                Storage::delete("public/theaters/$theater->photo_filename");
                 $theater->delete();
                 $alertType = 'success';
                 $alertMsg = "Theater {$theater->name} has been deleted successfully!";
@@ -142,4 +143,5 @@ class TheaterController extends Controller
             ->with('alert-msg', "Image of theater {$theater->name} has been deleted.");
         return redirect()->back();
     }
+
 }

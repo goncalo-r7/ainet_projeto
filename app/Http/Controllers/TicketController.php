@@ -9,29 +9,18 @@ use Illuminate\Http\Request;
 
 class TicketController extends Controller
 {
-
-
-    // public function show(Ticket $ticket): View
-    // {
-    //     // $user = Genre::orderBy('name')->pluck('name', 'code')->toArray();
-    //     return view('tickets.show')->with('ticket', $ticket);
-    // }
-
     public function verify(Request $request, $screeningId)
     {
-        // Validate the request
         $request->validate([
             'qrcode_url' => 'required|string',
         ]);
 
-        // Find the screening by $screeningId
+
         $screening = Screening::find($screeningId);
 
         if (!$screening) {
             return back()->with('alert-type', 'danger')->with('alert-msg', 'Screening not found.');
         }
-
-        // Check if there is a ticket matching the provided QR code URL and screening ID
         $ticket = Ticket::where('qrcode_url', $request->qrcode_url)
             ->where('screening_id', $screeningId)
             ->where('status', 'valid')
@@ -39,7 +28,6 @@ class TicketController extends Controller
 
 
         if ($ticket) {
-            // Ticket found, return success
             $htmlMessage = "Ticket Valido";
             return redirect()->route('tickets.showinfo', ['ticket' => $ticket])
                 ->with('alert-type', 'success')
@@ -47,12 +35,32 @@ class TicketController extends Controller
 
 
         } else {
-            // Ticket not found, return error
             $htmlMessage = "Ticket Invalido";
             return back()
                 ->with('alert-type', 'danger')
                 ->with('alert-msg', $htmlMessage);
         }
+    }
+
+    public function download(Ticket $ticket){
+        PdfController::generatePdfTicket($ticket);
+    }
+
+    public function show(Ticket $ticket){
+        return view('tickets.show', ['ticket'=>$ticket]);
+    }
+
+    public function index(Request $request)
+    {
+        $ticketsQuery = Ticket::query();
+        $filterByName = $request->get('ticket');
+        if (!empty($filterByName)) {
+            $ticketsQuery->where('id','=', $filterByName);
+        }
+        $tickets = $ticketsQuery->orderBy('created_at')->paginate(20)->withQueryString();
+        return view(
+            'tickets.index'
+        )->with('tickets', $tickets)->with('filter', $filterByName);
     }
 
 

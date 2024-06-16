@@ -40,15 +40,16 @@ Route::delete('theaters/{theater}/photo', [TheaterController::class, 'destroyIma
 Route::view('/', 'home')->name('home');
 
 
-
 // Route::get('tickets/invalidate/{ticket}', [TicketController::class, 'invalidate'])->name('tickets.invalidate');
 Route::get('tickets/invalidate/{ticket}', [TicketController::class, 'invalidate'])->name('tickets.invalidate');
 Route::post('tickets/verify/{screening}', [TicketController::class, 'verify'])->name('tickets.verify.submit');
 Route::get('tickets/verify/{screening}', [TicketController::class, 'showVerificationForm'])->name('tickets.verify');
 Route::get('tickets/show/{ticket}', [TicketController::class, 'showTicketInfo'])->name('tickets.showinfo');
-
+Route::get('tickets/view/{ticket}', [TicketController::class, 'download'])->name('tickets.view');
+Route::get('tickets/download/{ticket}', [TicketController::class, 'download'])->name('tickets.download');
 //MOVIE
 Route::get('movies/showcase', [MovieController::class, 'showCase'])->name('movies.showcase');
+Route::get('tickets',[TicketController::class, 'index'])->name('tickets.index');
 
 
 

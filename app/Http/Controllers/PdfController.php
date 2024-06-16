@@ -4,41 +4,53 @@ namespace App\Http\Controllers;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Support\Facades\Storage;
-use App\Models\Purchase; 
+use App\Models\Purchase;
+use App\Models\Ticket;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ReceiptMail;
+
 class PdfController extends Controller
 {
-    public static function generatePdf(Purchase $purchase)
+    public static function generatePdfReceipt(Purchase $purchase)
     {
-        // Fetch the data and pass it to the view
         $data = [
             'purchase' => $purchase,
-            'qr_codes' => QrCodeController::generate($purchase), // Assuming QrCodeController has a generate method
+            'qr_codes' => QrCodeController::generateReceipt($purchase),
         ];
         $options = new Options();
-        $options->set('isPhpEnabled', true); // Enable PHP interpretation in HTML, if needed
-        // Create an instance of the Dompdf class
+        $options->set('isPhpEnabled', true);
         $dompdf = new Dompdf();
-
-        // Load HTML content from view
         $html = view('receipt', $data)->render();
-
-        // Load HTML to Dompdf
         $dompdf->loadHtml($html);
-
-        // (Optional) Setup the paper size and orientation
         $dompdf->setPaper('A4', 'portrait');
-
-        // Render PDF (important for saving)
         $dompdf->render();
-
-        // Generate a unique filename for the PDF
-        $fileName = 'document_' . md5(uniqid()) . '.pdf';
-
-        // Store PDF in storage/app/public/pdf_receipts directory
-        Storage::put('public/pdf_receipts/' . $fileName, $dompdf->output());
-
-        // Optionally, you can store the file path in your Purchase model
-        $purchase->receipt_pdf_filename = $fileName;
+        $purchase->receipt_pdf_filename = PdfController::storePDF($dompdf, 'public/pdf_receipts/');;
         $purchase->save();
+        Mail::to($purchase->customer_email)->send(new ReceiptMail($purchase));
+    }
+
+    public static function generatePdfTicket(Ticket $ticket)
+    {
+        $options = new Options();
+        $options->set('isPhpEnabled', true);
+        $dompdf = new Dompdf();
+        $html = view('tickets.show', ['ticket' => $ticket, 'qr_code' => QrCodeController::generateTicket($ticket)])->render();
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+        PdfController::loadPDF($dompdf);
+    }
+
+    public static function storePDF(Dompdf $pdf, string $path){
+                    $fileName = 'document_' . md5(uniqid()) . '.pdf';
+                    if(Storage::put($path . $fileName, $pdf->output())){
+                        return $fileName;
+                    }
+                    return null;
+    }
+
+    public static function loadPDF(Dompdf $pdf){
+        $fileName = 'document_' . md5(uniqid()) . '.pdf';
+        $pdf->stream($fileName, ["Attachment" => true]);
     }
 }
