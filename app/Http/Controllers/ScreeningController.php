@@ -60,71 +60,61 @@ class ScreeningController extends Controller
         $screeningsQuery = Screening::query();
         $screeningsQuery->select('screenings.*');
 
-        // Filter by ID
         $filterById = $request->query('id');
         if ($filterById !== null) {
             $screeningsQuery->where('screenings.id', $filterById);
         }
 
-        // Filter by Movie Title
         $filterByMovie = $request->query('movie');
         if ($filterByMovie !== null) {
-            $movie = Movie::where('title', 'like', "%$filterByMovie%")->first();
-            if ($movie) {
-                $movieId = $movie->id;
-                $screeningsQuery->where('screenings.movie_id', $movieId);
-            } else {
-                $screeningsQuery->where('screenings.movie_id', null);
-            }
+            $screeningsQuery->whereHas('movie', function ($query) use ($filterByMovie) {
+                $query->where('title', 'like', "%$filterByMovie%");
+            });
         }
-        // Filter by Theater Name
+
         $filterByTheater = $request->query('theater');
         if ($filterByTheater !== null) {
-            $theater = Theater::where('name', 'like', "%$filterByTheater%")->first();
-            if ($theater) {
-                $theaterId = $theater->id;
-                $screeningsQuery->where('screenings.theater_id', $theaterId);
-            } else {
-                $screeningsQuery->where('screenings.theater_id', null);
-            }
+            $screeningsQuery->whereHas('theater', function ($query) use ($filterByTheater) {
+                $query->where('name', 'like', "%$filterByTheater%");
+            });
         }
+
+        $screenings = $screeningsQuery->get();
         $today = date('Y-m-d');
         $screeningsQuery->where('screenings.date', '>=', $today);
-
-        // Paginate results
         $screenings = $screeningsQuery->paginate(10)->withQueryString();
-
         $screeningSoldOut = [];
 
         foreach ($screenings as $screening) {
-            // Calculate the total number of seats in the theater
             $totalSeats = $screening->theater->seats->count();
-
-            // Calculate the number of tickets sold for the screening
             $ticketsSold = $screening->tickets->count();
-
-            // Determine if the screening is sold out
             $isSoldOut = $ticketsSold >= $totalSeats;
-
-            // Store the sold out status
             $screeningSoldOut[$screening->id] = $isSoldOut;
         }
 
-        // Pass filters to the view
-        return view('screenings.index', compact('screenings','screeningSoldOut', 'filterById', 'filterByMovie', 'filterByTheater'));
+        return view('screenings.index', compact('screenings', 'screeningSoldOut', 'filterById', 'filterByMovie', 'filterByTheater'));
     }
+
 
     public function store(ScreeningFormRequest $request): RedirectResponse
     {
-        $newScreening = Screening::create($request->validated());
+        $startTimes = $request->input('start_time');
+        $createdScreeningIds = [];
+        foreach ($startTimes as $startTime) {
+            $validatedData = $request->validated();
+            $validatedData['start_time'] = $startTime;
+            $newScreening = Screening::create($validatedData);
+            $createdScreeningIds[] = $newScreening->id;
+        }
 
-
-        $url = route('screenings.show', ['screening' => $newScreening]);
-        $htmlMessage = "Screening <a href='$url'><u>{$newScreening->id}</u></a> has been created successfully!";
-        return redirect()->route('screenings.index')
+        $url = route('screenings.index');
+        $htmlMessage = "Screenings with IDs: " . implode(', ', $createdScreeningIds) . " have been created successfully!";
+        return redirect($url)
             ->with('alert-type', 'success')
             ->with('alert-msg', $htmlMessage);
     }
+
+
 
 
 

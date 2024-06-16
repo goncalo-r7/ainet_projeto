@@ -1,4 +1,5 @@
 {{-- o nome dos teatros ficaram repetidos uma vez que ao nao repetir o nome nao poderiamos manter a linha vermelha, ficando mais atrativo desta forma --}}
+
 <div {{ $attributes }}>
     <table class="table-auto border-collapse w-full">
         <thead>
