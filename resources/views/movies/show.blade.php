@@ -40,12 +40,13 @@
                 </h3>
                 <div class="font-base text-sm text-gray-700 dark:text-gray-300">
                     <x-screenings.table :screenings="$screenings"
-                        {{-- :showCourse="true" --}}
-                        :showView="true"
-                        :showEdit="true"
-                        :showDelete="true"
-                        :showAddToCart="true"
-                        />
+                    :screeningSoldOut="$screeningSoldOut"
+                    :showView="true"
+                    :showEdit="true"
+                    :showDelete="true"
+                    :showSeat="true"
+                    :showMovie="false"
+                    />
                 </div>
                     {{-- <div class="mt-4">
                         {{ $movie->screeningsRef->links() }}

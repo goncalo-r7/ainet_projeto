@@ -24,14 +24,10 @@ class ScreeningFormRequest extends FormRequest
     {
         $rules = [
 
-                'date' => 'required|date',
-                'start_time' => 'required|date_format:H:i',
+                'date.*' => 'required|date',
+                'start_time.*' => 'required|date_format:H:i',
                 'movie_id' => 'required|integer',
-                'theater_id' => 'required|integer',
-
-
-
-
+                'theater_id' => 'required|integer'
 
         ];
 
@@ -41,8 +37,7 @@ class ScreeningFormRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'year.required' => 'ECTS is required',
-            'year.integer' => 'ECTS must be an integer',
+
         ];
     }
 }

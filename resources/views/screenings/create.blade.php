@@ -15,8 +15,7 @@
                         Click on "Save" button to store the information.
                     </p>
                 </header>
-                <form method="POST" action="{{ route('screenings.store') }}"
-                    enctype="multipart/form-data">
+                <form method="POST" action="{{ route('screenings.store') }}" enctype="multipart/form-data">
                     @csrf
                     <div class="mt-6 space-y-4">
                         @include('screenings.shared.fields', ['mode' => 'create'])
