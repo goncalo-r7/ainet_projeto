@@ -7,6 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>CineMagic Cinemas</title>
     <style>
+       // <?=file_get_contents(public_path('build/assets/app-BpnQns1Z.css')); ?>
         <?=file_get_contents(public_path('build/assets/app-CAWSzT8F.css')); ?>
     </style>
 </head>
@@ -46,12 +47,12 @@
                 <tbody>
                     @foreach($purchase->tickets as $ticket)
                     <tr class="">
-                        <td style="border: 2px solid;">{{$ticket->id}}</td>
-                        <td style="border: 2px solid;">{{$ticket->seat->theater->name}}</td>
-                        <td style="border: 2px solid;">{{$ticket->seat->row}}{{$ticket->seat->seat_number}}</td>
-                        <td style="border: 2px solid;">{{$ticket->screening->movie->title}}</td>
-                        <td style="border: 2px solid;">{{$ticket->screening->date}}</td>
-                        <td style="border: 2px solid;">{{$ticket->price}} €</td>
+                        <td style="border: 2px solid;">{{$ticket->id ?? "UNKOWN ID"}}</td>
+                        <td style="border: 2px solid;">{{$ticket->seat->theater->name ?? "UNKOWN THEATER"}}</td>
+                        <td style="border: 2px solid;">{{$ticket->seat->row}}{{$ticket->seat->seat_number ?? "UNKOWN SEAT"}}</td>
+                        <td style="border: 2px solid;">{{$ticket->screening->movie->title ?? "UNKOWN MOVIE"}}</td>
+                        <td style="border: 2px solid;">{{$ticket->screening->date ?? "UNKOWN DATE"}}</td>
+                        <td style="border: 2px solid;">{{$ticket->price}} ?? "UNKNOWN PRICE"€</td>
                     </tr>
                     @endforeach
                 </tbody>

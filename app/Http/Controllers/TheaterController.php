@@ -29,23 +29,13 @@ class TheaterController extends Controller
         )->with('theaters', $theaters)->with('filter', $filterByName);
     }
 
-
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create(): View
     {
         $theater = new Theater();
-        // $theaters no longer required, because it is available through View::share
-        // Check AppServiceProvider
-        //$theaters = theater::all();
         return view('theaters.create')
             ->with('theater', $theater);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function  store(TheaterFormRequest $request): RedirectResponse
     {
         $theater = $request->validated();
@@ -65,29 +55,16 @@ class TheaterController extends Controller
             ->with('alert-msg', $htmlMessage);
     }
 
-
-    /**
-     * Display the specified resource.
-     */
     public function show(Theater $theater): View
     {
         return view('theaters.show')
             ->with('theater', $theater);
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Theater $theater): View
     {
         return view('theaters.edit')
             ->with('theater', $theater);
     }
-
-    /**
-     * Update the specified resource in storage.
-     */
-
 
     public function update(TheaterFormRequest $request, Theater $theater): RedirectResponse
     {
@@ -96,11 +73,9 @@ class TheaterController extends Controller
         $theater->update($request->validated());
         $url = route('theaters.show', ['theater' => $theater]);
         if ($request->hasFile('photo_filename')) {
-            // Deletar o arquivo anterior (se houver)
             if ($theater->photo_filename && Storage::exists('public/theaters/' . $theater->photo_filename)) {
                 Storage::delete('public/theaters/' . $theater->photo_filename);
             }
-            // Armazenar o novo arquivo
             $path = $request->file('photo_filename')->store('public/theaters');
             $theater->photo_filename = basename($path);
         }
@@ -112,10 +87,6 @@ class TheaterController extends Controller
             ->with('alert-msg', $htmlMessage);
     }
 
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Theater $theater): RedirectResponse
     {
         try {

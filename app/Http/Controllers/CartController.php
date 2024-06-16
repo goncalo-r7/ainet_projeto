@@ -8,9 +8,12 @@ use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use App\Models\Discipline;
+use App\Models\Purchase;
 use App\Models\Student;
 use App\Models\Screening;
 use App\Models\Ticket;
+use App\Services\Payment;
+use BaconQrCode\Encoder\QrCode;
 use Illuminate\Support\Facades\Auth;
 use DateTime;
 use Illuminate\Support\Facades\Log;
@@ -259,6 +262,7 @@ class CartController extends Controller
                 ->with('alert-type', 'danger')
                 ->with('alert-msg', "Cart was not confirmed, because cart is empty!");
         }
+
         // check if any of the screenings has already started
         $screeningIds = [];
         foreach ($cart as $ticket) {
@@ -283,12 +287,42 @@ class CartController extends Controller
                     ->with('alert-type', $alertType);
             }
         }
+
         $user = Auth::user();
         $customer = DB::table('customers')->where('id', $user->id)->first();
         $conf = DB::table('configuration')->first(); // to get the price
         $pricePerTicket = $conf->ticket_price;
         $price = $pricePerTicket * count($cart);
         $purchaseId = null;
+
+        $validatedData = $request->validated();
+
+        // Validate payment details
+        $paymentType = $validatedData['payment_type'];
+        $paymentRef = $validatedData['payment_ref'];
+        // validate payment
+        if ($paymentType == 'VISA'){
+            $card_number = substr($paymentRef, 0, 16);
+            $cvc_code = substr($paymentRef, 16, 3);
+            if (!Payment::payWithVisa($card_number, $cvc_code)){ // invalid payment
+                return back()
+                    ->with('alert-type', 'danger')
+                    ->with('alert-msg', "Payment was not successful! Invalid payment reference.");
+            }
+        } elseif ($paymentType == 'PAYPAL'){
+            if (!Payment::payWithPaypal($paymentRef)){ // invalid payment
+                return back()
+                    ->with('alert-type', 'danger')
+                    ->with('alert-msg', "Payment was not successful! Invalid payment reference.");
+            }
+        } else{
+            if (!Payment::payWithMBway($paymentRef)){ // invalid payment
+                return back()
+                    ->with('alert-type', 'danger')
+                    ->with('alert-msg', "Payment was not successful! Invalid payment reference.");
+            }
+        }
+
         if ($customer){ // is a registered customer
             // in this case $request will only receive payment_type, payment_ref and pdf_filename
             $price = $price - ($conf->registered_customer_ticket_discount * count($cart));
@@ -302,7 +336,7 @@ class CartController extends Controller
                 'nif' => $customer->nif ?? null,
                 'payment_type' => $request['payment_type'],
                 'payment_ref' => $request['payment_ref'], 
-                'receipt_pdf_filename' => $request['receipt_pdf_filename']
+                'receipt_pdf_filename' => null
             ]);
         } else{ 
             $purchaseId = DB::table('purchases')->insertGetId([
@@ -314,19 +348,27 @@ class CartController extends Controller
                 'nif' => $request['customer_nif'] ?? null,
                 'payment_type' => $request['payment_type'],
                 'payment_ref' => $request['payment_ref'], 
-                'receipt_pdf_filename' => $request['receipt_pdf_filename']
+                'receipt_pdf_filename' => null
             ]);
         }
+
         foreach ($cart as $ticket) {
             DB::table('tickets')->insert([
                 'screening_id' => $ticket['screening_id'],
                 'seat_id' => $ticket['seat_id'],
                 'purchase_id' => $purchaseId,
                 'price' => $pricePerTicket,
-                'qrcode_url' => null,
+                'qrcode_url' => 'http://ainet_projeto.test/' . md5($ticket['screening_id'] . $ticket['seat_id'] . $purchaseId),
                 'status' => 'valid',
             ]);
         }
+        // generate pdf
+        $purchase = Purchase::find($purchaseId);
+        PdfController::generatePdf($purchase);
+        $urlPdf = route('receipts.show', ['purchase' => $purchaseId]);
+        DB::table('purchases')->where('id', $purchaseId)->update(['receipt_pdf_filename' => $urlPdf]);
+
+        QrCodeController::generate($purchase); // generate qr codes with the given urls
         $strAux = '';
         foreach ($screeningIds as $screen) {
             $url = route('seats.index', ['screening' => $screen]);

@@ -9,6 +9,7 @@ class ReceiptController extends Controller
 {
     public function show(Purchase $purchase)
     {
+        
         if($purchase->receipt_pdf_filename == null || !(Storage::exists('public/pdf_receipts/' . $purchase->receipt_pdf_filename))){
         $this::storePDF($purchase);
         }
