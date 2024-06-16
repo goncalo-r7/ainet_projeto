@@ -29,24 +29,17 @@ class MovieFormRequest extends FormRequest
             'genre_code' => 'required|string',
             'trailer_url' => 'nullable|string|starts_with:https://www.youtube.com/watch?v=',
 
-          'image_file' => 'sometimes|image|mimes:png,jpg,jpeg|max:4096',// maxsize = 4Mb
-
+        //   'image_file' => 'sometimes|image|mimes:png,jpg,jpeg|max:4096',// maxsize = 4Mb
+            'photo_filename' => 'sometimes|image|mimes:png,jpg,jpeg|max:4096',// maxsize = 4Mb
         ];
-        // if (strtolower($this->getMethod()) == 'post') {
-        //     // This will merge 2 arrays:
-        //     // (adds the "abbreviation" rule to the $rules array)
-        //     $rules = array_merge($rules, [
-        //         'abbreviation' => 'required|string|max:20|unique:courses,abbreviation',
-        //     ]);
-        // } ATENCAO A ISTO
+
         return $rules;
     }
 
     public function messages(): array
     {
         return [
-            'year.required' => 'ECTS is required',
-            'year.integer' => 'ECTS must be an integer',
+
         ];
     }
 }

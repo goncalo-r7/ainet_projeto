@@ -28,7 +28,6 @@ class FilterCard extends Component
 
         $this->listGenres = array_merge([null => 'Any genre'], $filteredGenres);
 
-        // $this->listGenres = (array_merge([null => 'Any genre'], $genres));
     }
 
     /**

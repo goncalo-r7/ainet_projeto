@@ -19,20 +19,16 @@ class Movie extends Model
         'title',
         'genre_code',
         'year',
-        'poster_filename',
         'synopsis',
         'trailer_url',
+       'photo_filename',
     ];
 
     public $timestamps = true;
 
-    // nao esta corrigido em baixo
+    // nao esta corrigido em baixo LUIS
 
 
-    // public function getFileNameAttribute()
-    // {
-    //     return strtoupper(trim($this->poster_filename));
-    // }
 
     public function getImageExistsAttribute()
     {

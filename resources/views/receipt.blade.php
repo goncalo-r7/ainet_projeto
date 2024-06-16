@@ -7,7 +7,6 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>CineMagic Cinemas</title>
     <style>
-       // <?=file_get_contents(public_path('build/assets/app-BpnQns1Z.css')); ?>
         <?=file_get_contents(public_path('build/assets/app-CAWSzT8F.css')); ?>
     </style>
 </head>

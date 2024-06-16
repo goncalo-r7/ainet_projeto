@@ -49,7 +49,6 @@ class MovieController extends Controller
         $filterByTitle = $request->query('title');
         $filterBySynopsis = $request->query('synopsis');
         $allMoviesBool = $request->has('allMoviesBool') ? '1' : '0';
-        //$allMoviesBool = $request->input('allMoviesBool');
 
         $moviesQuery
             ->join('genres', 'movies.genre_code', '=', 'genres.code')
@@ -112,16 +111,9 @@ class MovieController extends Controller
         $screeningSoldOut = [];
 
         foreach ($screenings as $screening) {
-            // Calculate the total number of seats in the theater
             $totalSeats = $screening->theater->seats->count();
-
-            // Calculate the number of tickets sold for the screening
             $ticketsSold = $screening->tickets->count();
-
-            // Determine if the screening is sold out
             $isSoldOut = $ticketsSold >= $totalSeats;
-
-            // Store the sold out status
             $screeningSoldOut[$screening->id] = $isSoldOut;
         }
 
@@ -156,25 +148,20 @@ class MovieController extends Controller
 
         try {
             $url = route('movies.show', ['movie' => $movie]);
-
-            // Check if there are any active screening sessions for the movie
             $hasActiveScreenings = DB::table('screenings')
             ->where('movie_id', $movie->id)
             ->where('date', '>=', date('Y-m-d'))
             ->exists();
 
             if (!$hasActiveScreenings) {
-                // No active screenings, proceed with deletion
                 $movie->delete();
-                // // Optionally, delete associated image if it exists
-                // if ($movie->imageExists) {
-                //     Storage::delete("public/movies/{$movie->fileName}");
-                // }
+                if ($movie->imageExists) {
+                    Storage::delete("public/posters/$movie->poster_filename");
+                }
 
                 $alertType = 'success';
                 $alertMsg = "Movie {$movie->title} has been deleted successfully!";
             } else {
-                // There are active screenings, prevent deletion
                 $alertType = 'warning';
                 $alertMsg = "Movie <a href='$url'><u>{$movie->title}</u></a> cannot be deleted because there are active screening sessions associated with it.";
             }
@@ -192,24 +179,32 @@ class MovieController extends Controller
 
     public function destroyImage(Movie $movie): RedirectResponse
     {
-        if ($movie->imageExists) {
-            Storage::delete("public/posters/{$movie->fileName}");
+
+        if ($movie->poster_filename != null) {
+            Storage::delete("public/posters/$movie->poster_filename");
+            $movie->poster_filename = null;
+            $movie->save();
         }
+
         return redirect()->back()
             ->with('alert-type', 'success')
             ->with('alert-msg', "Image of movie {$movie->name} has been deleted.");
         return redirect()->back();
     }
 
+
     public function update(MovieFormRequest $request, Movie $movie): RedirectResponse
     {
         $movie->update($request->validated());
 
         if ($request->hasFile('poster_filename')) {
-            if ($movie->imageExists) {
-                Storage::delete("public/posters/{$movie->fileName}");
+            if ($movie->poster_filename && $movie->imageExists) {
+                Storage::delete("public/posters/{$movie->poster_filename}");
             }
-            $request->poster_filename->storeAs('public/posters', $movie->fileName);
+
+            $path = $request->file('poster_filename')->store('public/posters');
+            $movie->poster_filename = basename($path);
+            $movie->save();
         }
 
         $url = route('movies.show', ['movie' => $movie]);
@@ -222,10 +217,13 @@ class MovieController extends Controller
     public function store(MovieFormRequest $request): RedirectResponse
     {
         $newMovie = Movie::create($request->validated());
-
-        if ($request->hasFile('image_file')) {
-            $request->image_file->storeAs('public/posters', $newMovie->fileName);
+        if($request->file('poster_filename') != null && $request->file('poster_filename')->getClientOriginalName() != '_no_poster_1.png'){
+            $path = $request->file('poster_filename')->store('public/posters');
+            $path = explode('/', $path);
+            $path = $path[2];
+            $newMovie->poster_filename = $path;
         }
+        $newMovie->save();
 
         $url = route('movies.show', ['movie' => $newMovie]);
         $htmlMessage = "Movie <a href='$url'><u>{$newMovie->name}</u></a> has been created successfully!";

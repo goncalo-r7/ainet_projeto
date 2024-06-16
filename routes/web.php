@@ -10,6 +10,8 @@ use App\Http\Controllers\SeatController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\GenreController;
 
+use App\Http\Controllers\StatisticsController;
+
 use App\Http\Controllers\ScreeningController;
 use App\Http\Controllers\ReceiptController;
 use Illuminate\Support\Facades\Route;
@@ -29,6 +31,7 @@ Route::get('configuration/edit', [ConfigurationController::class, 'edit'])->name
 // Route::get('configuration/update', [ConfigurationController::class, 'update'])->name('configurations.update');
 Route::put('/configurations/{configuration}', [ConfigurationController::class, 'update'])->name('configurations.update');
 
+Route::get('statistics', [StatisticsController::class, 'show'])->name('statistics.show');
 
 
 
