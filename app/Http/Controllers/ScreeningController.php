@@ -8,6 +8,8 @@ use App\Models\Screening;
 use App\Models\Theater;
 
 use App\Models\Movie;
+use App\Models\Ticket;
+
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use App\Http\Requests\ScreeningFormRequest;
@@ -123,8 +125,8 @@ class ScreeningController extends Controller
         try {
             $url = route('screenings.show', ['screening' => $screening]);
 
-            $totalTicketsSold = DB::table('tickets')
-                ->where('screening_id', $screening->id)
+            $totalTicketsSold =Ticket::
+                where('screening_id', $screening->id)
                 ->count();
 
             if ($totalTicketsSold == 0) {

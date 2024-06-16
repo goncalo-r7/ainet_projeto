@@ -14,13 +14,13 @@ class ConfigurationController extends Controller
 {
     public function show(): View
     {
-        $configuration = DB::table('configuration')->first();
+        $configuration = Configuration::first();
         return view('configurations.show', compact('configuration'));
     }
 
     public function edit(): View
     {
-        $configuration = DB::table('configuration')->first();
+        $configuration = Configuration::first();
         return view('configurations.edit', compact('configuration'));
     }
 

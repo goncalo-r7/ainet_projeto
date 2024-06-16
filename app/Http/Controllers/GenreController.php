@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 use App\Models\Genre;
+use App\Models\Movie;
+
 use Illuminate\View\View;
 use App\Http\Requests\GenreFormRequest;
 use Illuminate\Support\Facades\DB;
@@ -57,11 +59,7 @@ class GenreController extends Controller
 
     public function destroy(Genre $genre): RedirectResponse
     {
-        // $activeScreenings = DB::table('screenings')
-        //     ->join('movies', 'screenings.movie_id', '=', 'movies.id')
-        //     ->where('movies.genre_code', $genre->code)
-        //     ->where('screenings.date', '>=', now())
-        //     ->exists();
+
 
             $activeScreenings = DB::scalar(
                 'select count(*)
@@ -77,8 +75,7 @@ class GenreController extends Controller
                 ->with('alert-msg', 'Cannot delete genre with active screening sessions.');
         }
 
-        DB::table('movies')
-        ->where('genre_code', $genre->code)
+        Movie::where('genre_code', $genre->code)
         ->update(['genre_code' => 'DEFAULT']);
 
         $genre->delete();

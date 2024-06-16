@@ -24,11 +24,11 @@
         <tbody>
             {{-- $tickets is the cart --}}
             @foreach ($tickets as $ticket)
-            
+
             @php
             $screening = DB::table('screenings')->where('id', $ticket['screening_id'])->first();
             $movieId = DB::table('screenings')->select('movie_id')->where('id', $ticket['screening_id'])->first();
-            $movieTitle = DB::table('movies')->select('title')->where('id', $movieId->movie_id)->first(); 
+            $movieTitle = DB::table('movies')->select('title')->where('id', $movieId->movie_id)->first();
             $theaterId = DB::table('screenings')->select('theater_id')->where('id', $ticket['screening_id'])->first();
             $theater = DB::table('theaters')->select('name')->where('id', $theaterId->theater_id)->first();
             $seatId = DB::table('seats')->select('row', 'seat_number')->where('id', $ticket['seat_id'])->first();

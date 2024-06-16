@@ -148,8 +148,8 @@ class MovieController extends Controller
 
         try {
             $url = route('movies.show', ['movie' => $movie]);
-            $hasActiveScreenings = DB::table('screenings')
-            ->where('movie_id', $movie->id)
+            $hasActiveScreenings =
+            Screening::where('movie_id', $movie->id)
             ->where('date', '>=', date('Y-m-d'))
             ->exists();
 
