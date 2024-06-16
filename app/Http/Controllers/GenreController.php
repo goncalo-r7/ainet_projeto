@@ -59,8 +59,7 @@ class GenreController extends Controller
 
     public function destroy(Genre $genre): RedirectResponse
     {
-
-
+        //será mais rapido assim uma vez que é mais "raiz"?
             $activeScreenings = DB::scalar(
                 'select count(*)
                  from screenings
