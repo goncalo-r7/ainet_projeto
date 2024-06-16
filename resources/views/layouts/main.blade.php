@@ -45,13 +45,10 @@
                             <!-- Menu Item: Configuration -->
                         <x-menus.menu-item content="Configuration" href="{{ route('configurations.show') }}"
                         selected="{{ Route::currentRouteName() == 'configurations.show' }}" />
-
-
-
-
                         @auth
 
-
+                        <x-menus.menu-item content="Tickets" href="{{ route('tickets.index') }}"
+                        selected="{{ Route::currentRouteName() == 'tickets.index' }}" />
                             <!-- Menu Item: Others -->
                             <x-menus.submenu selectable="0" uniqueName="submenu_others" content="More">
 
