@@ -17,7 +17,9 @@ class QrCodeController extends Controller
         // URL que você deseja converter em QR Code
         $qr_codes = array();
         foreach($purchase->tickets as $ticket){
+            if(!empty($ticket->qrcode_url)){
             $qr_codes[] = QrCode::format('png')->size(300)->generate($ticket->qrcode_url);
+            }
         }
         // Retorna a view com a imagem do QR Code
         return $qr_codes;
