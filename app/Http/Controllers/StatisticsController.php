@@ -10,8 +10,6 @@ use Illuminate\Http\Request;
 
 class StatisticsController extends Controller
 {
-    //AS QUERIES FORAM LIMITADAS POR SEMANA PORQUE POR EXEMPLO ACEDAR A TODOS OS SCREENINGS DE UM ANO DEMORA MUITO TEMPO.... COITADO DO UTILIZADOR QUE TIVESSE QUE ESPERAR 9 SEGUNDOS....
-    //PARA ALEM DISSO FORAM OTIMIZADAS AO MAXIMO
     public function show(): View
 {
     $dailyStats = $this->calculateDailyStatistics();
@@ -52,8 +50,6 @@ private function calculateDailyStatistics(): array
                 $ticketsSold += $screening->tickets->count();
             }
         }
-
-        // Calculate percentage if totalSeats is greater than 0
         if ($totalSeats > 0) {
             $stats['ticketsSold'] = $ticketsSold;
             $stats['percentage'] = number_format(($ticketsSold / $totalSeats) * 100, 2);
