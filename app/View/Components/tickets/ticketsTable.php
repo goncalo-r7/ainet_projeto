@@ -1,23 +1,18 @@
 <?php
 
-namespace App\View\Components;
+namespace App\View\Components\tickets;
 
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class SearchBar extends Component
+class ticketsTable extends Component
 {
     /**
      * Create a new component instance.
      */
     public function __construct(
-        //public array $theaters,
-        public string $filterAction,
-        public string $resetUrl,
-        public ?string $filter,
-        public string $name,
-        public string $label
+    public $tickets    
     )
     {
         //
@@ -28,6 +23,6 @@ class SearchBar extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.search-bar');
+        return view('components.tickets.tickets-table');
     }
 }

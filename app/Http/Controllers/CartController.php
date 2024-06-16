@@ -16,7 +16,9 @@ use App\Services\Payment;
 use BaconQrCode\Encoder\QrCode;
 use Illuminate\Support\Facades\Auth;
 use DateTime;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
+use App\Models\Customer;
 
 class CartController extends Controller
 {
@@ -25,8 +27,34 @@ class CartController extends Controller
     {
         $cart = session('cart', null);
 
-        // return view('cart.show', compact('cart'));
-        return view('cart.show', compact('cart'));
+        $user = Auth::user();
+        $isCustomer = false;
+        $customerData = [];
+        
+        if ($user) {
+            $customer = Customer::find($user->id);
+            if ($customer) {
+                $isCustomer = true;
+                $customerData = [
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'nif' => $customer->nif,
+                    'payment_type' => $customer->payment_type,
+                    'payment_ref' => $customer->payment_ref,
+                ];
+            }
+        }
+    
+        // Fetch configuration data
+        $conf = DB::table('configuration')->first();
+        $price = 0;
+        $discount = 0;
+        if ($cart){
+            $price = $conf->ticket_price * count($cart);
+            $discount = $isCustomer ? $conf->registered_customer_ticket_discount * count($cart) : 0;
+        }
+    
+        return view('cart.show', compact('cart', 'price', 'discount', 'isCustomer', 'customerData'));
     }
 
     public function index($screeningSessionId)
@@ -184,7 +212,7 @@ class CartController extends Controller
             $element = $cart->search(function ($item) use ($screeningId, $seatId) {
                 return $item['screening_id'] == $screeningId && $item['seat_id'] == $seatId;
             });
-            if ($element) {
+            if ($element !== false) {
                 $cart->forget($element);
                 if ($cart->count() == 0) {
                     $request->session()->forget('cart');
@@ -294,7 +322,6 @@ class CartController extends Controller
         $pricePerTicket = $conf->ticket_price;
         $price = $pricePerTicket * count($cart);
         $purchaseId = null;
-
         $validatedData = $request->validated();
 
         // Validate payment details
@@ -305,70 +332,77 @@ class CartController extends Controller
             $card_number = substr($paymentRef, 0, 16);
             $cvc_code = substr($paymentRef, 16, 3);
             if (!Payment::payWithVisa($card_number, $cvc_code)){ // invalid payment
-                return back()
-                    ->with('alert-type', 'danger')
-                    ->with('alert-msg', "Payment was not successful! Invalid payment reference.");
+                $validator = Validator::make([], []);
+                $validator->errors()->add('payment_ref', 'Payment reference should consist in 16 digits + 3-digit CVC code.');
+                throw new ValidationException($validator);
             }
         } elseif ($paymentType == 'PAYPAL'){
             if (!Payment::payWithPaypal($paymentRef)){ // invalid payment
-                return back()
-                    ->with('alert-type', 'danger')
-                    ->with('alert-msg', "Payment was not successful! Invalid payment reference.");
+                $validator = Validator::make([], []);
+                $validator->errors()->add('payment_ref', 'Invalid payment reference. Please provide a valid email address.');
+                throw new ValidationException($validator);
             }
         } else{
             if (!Payment::payWithMBway($paymentRef)){ // invalid payment
-                return back()
-                    ->with('alert-type', 'danger')
-                    ->with('alert-msg', "Payment was not successful! Invalid payment reference.");
+                $validator = Validator::make([], []);
+                $validator->errors()->add('payment_ref', 'Invalid payment reference. Please provide a valid phone number.');
+                throw new ValidationException($validator);
             }
         }
+        
+        DB::beginTransaction();
+        try{
+            if ($customer){ // is a registered customer
+                // in this case $request will only receive payment_type, payment_ref and pdf_filename
+                $price = $price - ($conf->registered_customer_ticket_discount * count($cart));
+                $pricePerTicket = $pricePerTicket - $conf->registered_customer_ticket_discount;
+                $purchaseId = DB::table('purchases')->insertGetId([
+                    'customer_id' => $customer->id,
+                    'date' => now(),
+                    'total_price' => $price,
+                    'customer_name' => $user->name,
+                    'customer_email' => $user->email,
+                    'nif' => $customer->nif ?? null,
+                    'payment_type' => $request['payment_type'],
+                    'payment_ref' => $request['payment_ref'], 
+                    'receipt_pdf_filename' => null
+                ]);
+            } else{ 
+                $purchaseId = DB::table('purchases')->insertGetId([
+                    'customer_id' => null,
+                    'date' => now(),
+                    'total_price' => $price,
+                    'customer_name' => $request['customer_name'],
+                    'customer_email' => $request['customer_email'],
+                    'nif' => $request['customer_nif'] ?? null,
+                    'payment_type' => $request['payment_type'],
+                    'payment_ref' => $request['payment_ref'], 
+                    'receipt_pdf_filename' => null
+                ]);
+            }
 
-        if ($customer){ // is a registered customer
-            // in this case $request will only receive payment_type, payment_ref and pdf_filename
-            $price = $price - ($conf->registered_customer_ticket_discount * count($cart));
-            $pricePerTicket = $pricePerTicket - $conf->registered_customer_ticket_discount;
-            $purchaseId = DB::table('purchases')->insertGetId([
-                'customer_id' => $customer->id,
-                'date' => now(),
-                'total_price' => $price,
-                'customer_name' => $user->name,
-                'customer_email' => $user->email,
-                'nif' => $customer->nif ?? null,
-                'payment_type' => $request['payment_type'],
-                'payment_ref' => $request['payment_ref'], 
-                'receipt_pdf_filename' => null
-            ]);
-        } else{ 
-            $purchaseId = DB::table('purchases')->insertGetId([
-                'customer_id' => null,
-                'date' => now(),
-                'total_price' => $price,
-                'customer_name' => $request['customer_name'],
-                'customer_email' => $request['customer_email'],
-                'nif' => $request['customer_nif'] ?? null,
-                'payment_type' => $request['payment_type'],
-                'payment_ref' => $request['payment_ref'], 
-                'receipt_pdf_filename' => null
-            ]);
+            foreach ($cart as $ticket) {
+                DB::table('tickets')->insert([
+                    'screening_id' => $ticket['screening_id'],
+                    'seat_id' => $ticket['seat_id'],
+                    'purchase_id' => $purchaseId,
+                    'price' => $pricePerTicket,
+                    'qrcode_url' => 'http://ainet_projeto.test/' . md5($ticket['screening_id'] . $ticket['seat_id'] . $purchaseId),
+                    'status' => 'valid',
+                ]);
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()
+                ->with('alert-type', 'danger')
+                ->with('alert-msg', 'There was an error processing your purchase. Please try again.');
         }
-
-        foreach ($cart as $ticket) {
-            DB::table('tickets')->insert([
-                'screening_id' => $ticket['screening_id'],
-                'seat_id' => $ticket['seat_id'],
-                'purchase_id' => $purchaseId,
-                'price' => $pricePerTicket,
-                'qrcode_url' => 'http://ainet_projeto.test/' . md5($ticket['screening_id'] . $ticket['seat_id'] . $purchaseId),
-                'status' => 'valid',
-            ]);
-        }
-        // generate pdf
+        // generate pdf and qr codes
         $purchase = Purchase::find($purchaseId);
         PdfController::generatePdf($purchase);
         $urlPdf = route('receipts.show', ['purchase' => $purchaseId]);
         DB::table('purchases')->where('id', $purchaseId)->update(['receipt_pdf_filename' => $urlPdf]);
 
-        QrCodeController::generate($purchase); // generate qr codes with the given urls
         $strAux = '';
         foreach ($screeningIds as $screen) {
             $url = route('seats.index', ['screening' => $screen]);

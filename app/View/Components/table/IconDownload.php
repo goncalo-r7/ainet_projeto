@@ -1,25 +1,19 @@
 <?php
 
-namespace App\View\Components;
+namespace App\View\Components\table;
 
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class SearchBar extends Component
+class IconDownload extends Component
 {
     /**
      * Create a new component instance.
      */
     public function __construct(
-        //public array $theaters,
-        public string $filterAction,
-        public string $resetUrl,
-        public ?string $filter,
-        public string $name,
-        public string $label
-    )
-    {
+        public $href = "#"
+    ){
         //
     }
 
@@ -28,6 +22,6 @@ class SearchBar extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.search-bar');
+        return view('components.table.icon-download');
     }
 }

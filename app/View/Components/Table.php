@@ -13,11 +13,7 @@ class Table extends Component
      */
     public function __construct(
         public object $tickets,
-        public bool $showCourse = true,
         public bool $showView = true,
-        public bool $showEdit = true,
-        public bool $showDelete = true,
-        public bool $showAddToCart = false,
         public bool $showRemoveFromCart = false,
     )
     {

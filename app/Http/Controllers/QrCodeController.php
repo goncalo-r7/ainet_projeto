@@ -12,17 +12,18 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class QrCodeController extends Controller
 {
-    public static function generate(Purchase $purchase)
+    public static function generateReceipt(Purchase $purchase)
     {
-        // URL que você deseja converter em QR Code
         $qr_codes = array();
         foreach($purchase->tickets as $ticket){
-            if(!empty($ticket->qrcode_url)){
             $qr_codes[] = QrCode::format('png')->size(300)->generate($ticket->qrcode_url);
-            }
         }
-        // Retorna a view com a imagem do QR Code
         return $qr_codes;
+    }
+
+    public static function generateTicket(Ticket $ticket)
+    {
+        return QrCode::format('png')->size(300)->generate($ticket->qrcode_url);
     }
 }
 

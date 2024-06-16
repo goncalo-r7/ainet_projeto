@@ -8,6 +8,7 @@
     <title>CineMagic Cinemas</title>
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
     <!-- Scripts AND CSS Fileds -->
@@ -44,13 +45,10 @@
                             <!-- Menu Item: Configuration -->
                         <x-menus.menu-item content="Configuration" href="{{ route('configurations.show') }}"
                         selected="{{ Route::currentRouteName() == 'configurations.show' }}" />
-
-
-
-
                         @auth
 
-
+                        <x-menus.menu-item content="Tickets" href="{{ route('tickets.index') }}"
+                        selected="{{ Route::currentRouteName() == 'tickets.index' }}" />
                             <!-- Menu Item: Others -->
                             <x-menus.submenu selectable="0" uniqueName="submenu_others" content="More">
 
