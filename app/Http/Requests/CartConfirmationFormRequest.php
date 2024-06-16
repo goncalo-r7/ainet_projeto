@@ -52,7 +52,7 @@ class CartConfirmationFormRequest extends FormRequest
         ];
 
         if ($this->payment_type === 'VISA') {
-            $rules['payment_ref'] = 'required|integer|digits:16';
+            $rules['payment_ref'] = 'required|integer|digits:19'; // 16 digits + 3 CVC
         } elseif ($this->payment_type === 'PAYPAL') {
             $rules['payment_ref'] = 'required|email';
         } elseif ($this->payment_type === 'MBWAY') {
