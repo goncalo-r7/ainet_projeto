@@ -11,10 +11,8 @@ class GenreController extends Controller
 {
     public function index(): View
     {
-
         return view('genres.index')
         ->with('genres', Genre::orderBy('name')->paginate(20));
-
     }
 
 

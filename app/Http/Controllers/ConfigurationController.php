@@ -16,16 +16,12 @@ class ConfigurationController extends Controller
     {
         $configuration = DB::table('configuration')->first();
         return view('configurations.show', compact('configuration'));
-
-        // return view('configurations.show')->with('configuration', $configuration);
     }
 
     public function edit(): View
     {
         $configuration = DB::table('configuration')->first();
         return view('configurations.edit', compact('configuration'));
-
-        // return view('configurations.edit')->with('configuration', $configuration);
     }
 
     public function update(ConfigurationFormRequest $request, Configuration $configuration): RedirectResponse

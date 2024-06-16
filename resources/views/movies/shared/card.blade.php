@@ -15,7 +15,6 @@
                 <figcaption class="font-medium">
                     <div class="flex justify-center md:justify-start font-base text-base space-x-6 text-gray-700 dark:text-gray-300">
                         <div>{{ $movie->genre->name }}</div>
-                        {{-- genre-->name --}}
                         <div>Year: {{ $movie->year }} </div>
                     </div>
                 </figcaption>
@@ -32,7 +31,7 @@
                         Next Sessions
                     </div>
                 </figcaption>
-                <div class="overflow-y-auto w-full md:w-48 h-full "> <!-- Add this div here -->
+                <div class="overflow-y-auto w-full md:w-48 h-full ">
                     <figcaption class="font-">
 
                         @php

@@ -71,6 +71,7 @@ class TheaterController extends Controller
 
         $validated_data = $request->validated();
         $theater->update($request->validated());
+
         $url = route('theaters.show', ['theater' => $theater]);
         if ($request->hasFile('photo_filename')) {
             if ($theater->photo_filename && Storage::exists('public/theaters/' . $theater->photo_filename)) {
