@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\Screening;
-
+use App\Models\Seat;
 use Illuminate\Http\Request;
 
 class SeatController extends Controller
