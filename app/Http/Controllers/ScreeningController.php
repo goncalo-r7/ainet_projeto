@@ -94,8 +94,24 @@ class ScreeningController extends Controller
         // Paginate results
         $screenings = $screeningsQuery->paginate(10)->withQueryString();
 
+        $screeningSoldOut = [];
+
+        foreach ($screenings as $screening) {
+            // Calculate the total number of seats in the theater
+            $totalSeats = $screening->theater->seats->count();
+
+            // Calculate the number of tickets sold for the screening
+            $ticketsSold = $screening->tickets->count();
+
+            // Determine if the screening is sold out
+            $isSoldOut = $ticketsSold >= $totalSeats;
+
+            // Store the sold out status
+            $screeningSoldOut[$screening->id] = $isSoldOut;
+        }
+
         // Pass filters to the view
-        return view('screenings.index', compact('screenings', 'filterById', 'filterByMovie', 'filterByTheater'));
+        return view('screenings.index', compact('screenings','screeningSoldOut', 'filterById', 'filterByMovie', 'filterByTheater'));
     }
 
     public function store(ScreeningFormRequest $request): RedirectResponse

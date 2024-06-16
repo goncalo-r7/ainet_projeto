@@ -103,13 +103,32 @@ class MovieController extends Controller
     public function show(Movie $movie): View
     {
         $genres = Genre::orderBy('name')->pluck('name', 'code')->toArray();
-        $screenings = $movie->screeningsRef()->whereBetween('date', [now(), now()->addWeeks(2)])->get();
-        // $screenings = $movie->screeningsRef()->get(); luis ver se é admin?
+        $screenings = $movie->screeningsRef()
+        ->whereBetween('date', [now(), now()->addWeeks(2)])
+        ->orderBy('theater_id')
+        ->orderBy('date')
+        ->orderBy('start_time')
+        ->get();
+        $screeningSoldOut = [];
 
+        foreach ($screenings as $screening) {
+            // Calculate the total number of seats in the theater
+            $totalSeats = $screening->theater->seats->count();
+
+            // Calculate the number of tickets sold for the screening
+            $ticketsSold = $screening->tickets->count();
+
+            // Determine if the screening is sold out
+            $isSoldOut = $ticketsSold >= $totalSeats;
+
+            // Store the sold out status
+            $screeningSoldOut[$screening->id] = $isSoldOut;
+        }
 
         return view('movies.show')
             ->with('genres', $genres)
             ->with('movie', $movie)
+            ->with('screeningSoldOut', $screeningSoldOut)
             ->with('screenings', $screenings);
     }
 
