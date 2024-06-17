@@ -14,7 +14,7 @@ class AdministrativeController extends Controller
 {
     public function index(Request $request): View
     {
-        $administrativesQuery = User::where('type', 'A')
+        $administrativesQuery = User::where('type','!=', 'C')
             ->orderBy('name');
         $filterByName = $request->query('name');
         if ($filterByName) {
