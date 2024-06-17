@@ -18,7 +18,6 @@
                 </div>
                 <div class="overflow-auto">
                     <table class="table-auto border-collapse w-full">
-                        @php $cart = session('cart', null); @endphp
                         @foreach ($seatsByRow as $row => $seats)
                             <tr class="items-center space-x-1">
                                 @foreach ($seats as $seat)

@@ -26,15 +26,8 @@ class AppServiceProvider extends ServiceProvider
     {
         Gate::define('admin', function (User $user) {
             // Only "administrator" users can "admin"
-            return $user->admin;
+            return ($user->admin == 'A');
         });
-        try {
-            // View::share adds data (variables) that are shared through all views (like global data)
-            //View::share('movies', Movie::orderBy('title')->get()); //provavelmente não é necessario
-        } catch (\Exception $e) {
-            // If no Database exists, or Course table does not exist yet, an error will occour
-            // This will ignore this error to avoid problems before migration is correctly executed
-            // (When executing "composer update", when executing "php artisan migrate", etc)
-        }
+
     }
 }

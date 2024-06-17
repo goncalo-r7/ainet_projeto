@@ -20,8 +20,7 @@ use Illuminate\Support\Facades\Route;
 
 /* ----- PUBLIC ROUTES ----- */
 
-Route::get('receipts/{purchase}', [ReceiptController::class, 'show'])->name('receipt.show');
-
+Route::post('theaters/{theater}/insert-seats', [TheaterController::class, 'insertSeats'])->name('theaters.insertSeats');
 
 //luis
 
@@ -35,7 +34,7 @@ Route::get('statistics', [StatisticsController::class, 'show'])->name('statistic
 
 
 
-Route::resource('seats', SeatController::class); //tem que estar em primeiro por causa de um conflito qualquer....
+Route::resource('seats', SeatController::class); 
 
 Route::delete('theaters/{theater}/photo', [TheaterController::class, 'destroyImage'])
         ->name('theaters.photo.destroy');

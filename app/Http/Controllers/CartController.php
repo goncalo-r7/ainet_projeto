@@ -19,6 +19,10 @@ use DateTime;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use App\Models\Customer;
+use Illuminate\Support\Facades\Route;
+use PSpell\Config;
+use App\Models\Configuration;
+use App\Models\Seat;
 
 class CartController extends Controller
 {
@@ -45,16 +49,29 @@ class CartController extends Controller
             }
         }
     
-        // Fetch configuration data
-        $conf = DB::table('configuration')->first();
+        $conf = Configuration::first();
         $price = 0;
         $discount = 0;
         if ($cart){
             $price = $conf->ticket_price * count($cart);
             $discount = $isCustomer ? $conf->registered_customer_ticket_discount * count($cart) : 0;
         }
+    //
+        $ticketdata = collect($cart)->map(function($ticket) {
+            $screening = Screening::with('movie', 'theater')->find($ticket['screening_id']);
+            $seat = Seat::find($ticket['seat_id']);
     
-        return view('cart.show', compact('cart', 'price', 'discount', 'isCustomer', 'customerData'));
+            return [
+                'screening' => $screening,
+                'movieTitle' => $screening->movie->title,
+                'theaterName' => $screening->theater->name,
+                'seat' => $seat->row . $seat->seat_number,
+                'seat_id' => $seat->id,
+                'url' => route('seats.index', ['screening' => $screening->id]),
+            ];
+        });
+
+        return view('cart.show', compact('cart', 'ticketdata', 'price', 'discount', 'isCustomer', 'customerData'));
     }
 
     public function index($screeningSessionId)
@@ -133,7 +150,7 @@ class CartController extends Controller
             }
             if ($isRepeated) {
                 // Get the seats that are already in the cart
-                $seatsCart = DB::table('seats')->select('row', 'seat_number')->whereIn('id', $seatsAlreadyInCart)->get();
+                $seatsCart = Seat::select('row', 'seat_number')->whereIn('id', $seatsAlreadyInCart)->get();
                 $strAux = '';
                 foreach ($seatsCart as $seat) {
                     $strAux .= $seat->row . $seat->seat_number . ', ';
@@ -147,7 +164,10 @@ class CartController extends Controller
             //DB::table('purchases')->where('id', $purchaseId)->increment('total_price', $total);
             session(['cart' => $cart]);
         }
-        $newSeats = DB::table('seats')->select('row', 'seat_number')->whereIn('id', $seatsIds)->whereNotIn('id', $seatsAlreadyInCart)->get();
+        $newSeats = Seat::select('row', 'seat_number')
+                ->whereIn('id', $seatsIds)
+                ->whereNotIn('id', $seatsAlreadyInCart)
+                ->get();
         $seatStr = '';
         foreach ($newSeats as $seat) {
             $seatStr .= $seat->row . $seat->seat_number . ', ';
@@ -198,7 +218,7 @@ class CartController extends Controller
         
         $cart = session('cart', null);
         $movieTitle = Screening::find($screeningId)->movie->title;
-        $seat = DB::table('seats')->select('row', 'seat_number')->where('id', $seatId)->first();
+        $seat = Seat::find($seatId);
         $screeningTime = DB::table('screenings')->select('start_time', 'date')->where('id', $screeningId)->first();
         $screeningT = date('H:i', strtotime($screeningTime->start_time)) . ', ' . date('d-m-Y', strtotime($screeningTime->date));
         
@@ -233,43 +253,6 @@ class CartController extends Controller
             }
         }
     }
-
-    /*
-    public function removeFromCart(Request $request, Discipline $discipline): RedirectResponse
-    {
-        // TODO: Alterar para movies
-        $url = route('disciplines.show', ['discipline' => $discipline]);
-        $cart = session('cart', null);
-        if (!$cart) {
-            $alertType = 'warning';
-            $htmlMessage = "Movie <a href='$url'>#{$discipline->id}</a>
-                <strong>\"{$discipline->name}\"</strong> was not removed from the cart because cart is empty!";
-            return back()
-                ->with('alert-msg', $htmlMessage)
-                ->with('alert-type', $alertType);
-        } else {
-            $element = $cart->firstWhere('id', $discipline->id);
-            if ($element) {
-                $cart->forget($cart->search($element));
-                if ($cart->count() == 0) {
-                    $request->session()->forget('cart');
-                }
-                $alertType = 'success';
-                $htmlMessage = "Movie <a href='$url'>#{$discipline->id}</a>
-                <strong>\"{$discipline->name}\"</strong> was removed from the cart.";
-                return back()
-                    ->with('alert-msg', $htmlMessage)
-                    ->with('alert-type', $alertType);
-            } else {
-                $alertType = 'warning';
-                $htmlMessage = "Movie <a href='$url'>#{$discipline->id}</a>
-                <strong>\"{$discipline->name}\"</strong> was not removed from the cart because cart does not include it!";
-                return back()
-                    ->with('alert-msg', $htmlMessage)
-                    ->with('alert-type', $alertType);
-            }
-        }
-    }*/
 
     public function destroy(Request $request): RedirectResponse
     {
@@ -315,10 +298,9 @@ class CartController extends Controller
                     ->with('alert-type', $alertType);
             }
         }
-
         $user = Auth::user();
-        $customer = DB::table('customers')->where('id', $user->id)->first();
-        $conf = DB::table('configuration')->first(); // to get the price
+        $customer = Customer::find($user->id);
+        $conf = Configuration::first(); // to get the price
         $pricePerTicket = $conf->ticket_price;
         $price = $pricePerTicket * count($cart);
         $purchaseId = null;
@@ -349,7 +331,7 @@ class CartController extends Controller
                 throw new ValidationException($validator);
             }
         }
-        
+        $strAux = '';
         DB::beginTransaction();
         try{
             if ($customer){ // is a registered customer
@@ -391,25 +373,27 @@ class CartController extends Controller
                     'status' => 'valid',
                 ]);
             }
+            // generate pdf and qr codes
+            $purchase = Purchase::find($purchaseId);
+            PdfController::generatePdfReceipt($purchase);
+            $urlPdf = route('receipt.show', ['purchase' => $purchaseId]);
+            $purchase->receipt_pdf_filename = $urlPdf;
+
+            foreach ($screeningIds as $screen) {
+                $url = route('seats.index', ['screening' => $screen]);
+                $strAux .= '<a href="' . $url . '">#' . $screen . '</a>, ';
+            }
+            $strAux = rtrim($strAux, ', '); // remove last comma
+            $request->session()->forget('cart');
+            DB::commit();
         } catch (\Exception $e) {
+            dd($e);
             DB::rollBack();
             return redirect()->back()
                 ->with('alert-type', 'danger')
                 ->with('alert-msg', 'There was an error processing your purchase. Please try again.');
         }
-        // generate pdf and qr codes
-        $purchase = Purchase::find($purchaseId);
-        PdfController::generatePdf($purchase);
-        $urlPdf = route('receipts.show', ['purchase' => $purchaseId]);
-        DB::table('purchases')->where('id', $purchaseId)->update(['receipt_pdf_filename' => $urlPdf]);
-
-        $strAux = '';
-        foreach ($screeningIds as $screen) {
-            $url = route('seats.index', ['screening' => $screen]);
-            $strAux .= '<a href="' . $url . '">#' . $screen . '</a>, ';
-        }
-        $strAux = rtrim($strAux, ', '); // remove last comma
-        $request->session()->forget('cart');
+        
         return redirect()->route('home')
             ->with('alert-type', 'success')
             ->with('alert-msg', "Purchase for screening {$strAux} was successfully completed!");
