@@ -47,11 +47,11 @@ class StatisticsController extends Controller
         $jsonDataGenrePerc = json_encode($dataGenrePerc);
 
         //
-        
+
         $topMovies = $this->getTopMovies();
 
         //
-        
+
         $monthlyRevenue = $this->calculateStatistics();
 
         $months = [];
@@ -89,7 +89,6 @@ class StatisticsController extends Controller
     function calculateStatistics()
     {
         $currentYear = Carbon::now()->year;
-
         $monthlyRevenue = Ticket::join('purchases', 'tickets.purchase_id', '=', 'purchases.id')
             ->selectRaw('DATE_FORMAT(purchases.date, "%m") AS month, SUM(tickets.price) AS revenue, COUNT(*) AS tickets_sold')
             ->whereYear('purchases.date', $currentYear)
@@ -114,7 +113,6 @@ class StatisticsController extends Controller
     function getGenrePercentages()
     {
         $last30Days = date('Y-m-d H:i:s', strtotime('-30 days'));
-
         $genreCounts = Screening::join('movies', 'screenings.movie_id', '=', 'movies.id')
             ->where('screenings.date', '>=', $last30Days)
             ->where('movies.genre_code', '!=', 'DEFAULT')

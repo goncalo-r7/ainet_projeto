@@ -40,8 +40,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    
-    Route::get('movies/{movie}', [MovieController::class, 'show'])->name('movies.show')->can('view', Movie::class);
+
+    Route::get('movies/{movie}', [MovieController::class, 'show'])->name('movies.show')->can('view','movie');
     Route::get('tickets',[TicketController::class, 'index'])->name('tickets.index');
     Route::get('tickets/download/{ticket}', [TicketController::class, 'download'])->name('tickets.download')->can('download','ticket');
     Route::get('tickets/invalidate/{ticket}', [TicketController::class, 'invalidate'])->name('tickets.invalidate')->can('invalidate',Ticket::class);

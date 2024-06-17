@@ -18,7 +18,6 @@ class MovieController extends Controller
 {
 
     use AuthorizesRequests;
-    
 
     public function index(Request $request): View
     {

@@ -16,7 +16,7 @@
                         text="New"
                         type="success"/>
                     @endcan
-                    @can('view',$movie)
+                    @can('edit',$movie)
                     <x-button
                         href="{{ route('movies.edit', ['movie' => $movie]) }}"
                         text="Edit"
