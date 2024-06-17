@@ -11,65 +11,129 @@ use Illuminate\Http\Request;
 class StatisticsController extends Controller
 {
     public function show(): View
-{
-    $dailyStats = $this->calculateDailyStatistics();
+    {
+        $dailyStats = $this->calculateDailyStatistics();
+        $genresPercentages = $this->getGenrePercentages();
+        //compras anonimas vs compras logadas
+        //ganhos anual
 
-    return view('statistics.show', compact('dailyStats'));
-}
 
-private function calculateDailyStatistics(): array
-{
-    $dates = [];
-    for ($i = 0; $i < 7; $i++) {
-        $date = date('Y-m-d', strtotime("-$i days"));
-        $dayOfWeek = date('l', strtotime($date));
-        $dates[$date] = $dayOfWeek;
+        //tratar para receber nos graphs
+        $dataTicketsCount = [];
+        foreach ($dailyStats as $day => $stats) {
+            $dataTicketsCount[] = $stats['ticketsSold'];
+        }
+        $dataCombined = [];
+        foreach ($dailyStats as $day => $stats) {
+            $dataCombined[] = $day . ' (' . $stats['percentage'] . '%)';
+        }
+        $jsonDataTicketsCount = json_encode($dataTicketsCount);
+        $jsonDataCombined = json_encode($dataCombined);
+
+
+        $dataGenreLabel = [];
+        foreach ($genresPercentages as $genre => $stats) {
+            $dataGenreLabel[] = $stats['genre'];
+        }
+
+        $dataGenrePerc = [];
+        foreach ($genresPercentages as $genre => $stats) {
+            $dataGenrePerc[] = $stats['percentage'];
+        }
+        $jsonDataGenreLabel = json_encode($dataGenreLabel);
+        $jsonDataGenrePerc = json_encode($dataGenrePerc);
+
+        return view('statistics.show', compact('jsonDataTicketsCount','jsonDataCombined','jsonDataGenreLabel','jsonDataGenrePerc'));
     }
 
-    $screenings = Screening::whereIn('date', array_keys($dates))
-        ->with('theater.seats', 'tickets')
-        ->get();
+    function getGenrePercentages()
+    {
+        $last30Days = date('Y-m-d H:i:s', strtotime('-30 days'));
 
-    $dailyStats = [];
+        $genreCounts = Screening::join('movies', 'screenings.movie_id', '=', 'movies.id')
+            ->where('screenings.date', '>=', $last30Days)
+            ->where('movies.genre_code', '!=', 'DEFAULT')
+            ->select('movies.genre_code')
+            ->selectRaw('count(*) as count')
+            ->groupBy('movies.genre_code')
+            ->orderByDesc('count')
+            ->get();
+        //usei genre_code para nao ocupar tanto espaco na pie
+        $totalScreenings = $genreCounts->sum('count');
 
-    foreach ($dates as $date => $dayOfWeek) {
-        $dailyStats[$dayOfWeek] = [
-            'ticketsSold' => 0,
-            'percentage' => 0,
-        ];
-    }
-
-    foreach ($dailyStats as $dayOfWeek => &$stats) {
-        $totalSeats = 0;
-        $ticketsSold = 0;
-
-        foreach ($screenings as $screening) {
-            $screeningDayOfWeek = date('l', strtotime($screening->date));
-            if ($screeningDayOfWeek === $dayOfWeek) {
-                $totalSeats += $screening->theater->seats->count();
-                $ticketsSold += $screening->tickets->count();
+        $result = [];
+        $i = 0;
+        foreach ($genreCounts as $genreCount) {
+            if ($i < 5) {
+                $percentage = ($genreCount->count / $totalScreenings) * 100;
+                $result[] = [
+                    'genre' => $genreCount->genre_code,
+                    'percentage' => (float)sprintf('%0.2f', $percentage),
+                ];
+                $i++;
             }
         }
-        if ($totalSeats > 0) {
-            $stats['ticketsSold'] = $ticketsSold;
-            $stats['percentage'] = number_format(($ticketsSold / $totalSeats) * 100, 2);
-        } else {
-            $stats['ticketsSold'] = 0;
-            $stats['percentage'] = 0;
+
+        $otherGenresCount = 0;
+        foreach ($genreCounts->slice(5) as $genreCount) {
+            $otherGenresCount += $genreCount->count;
         }
+        $percentageO = ($otherGenresCount / $totalScreenings) * 100;
+        $result[] = [
+            'genre' => 'others',
+            'percentage' => (float)sprintf('%0.2f', $percentageO),
+        ];
+
+        return $result;
     }
+    private function calculateDailyStatistics(): array // devolve um array
+    {
+        $dates = [];
+        for ($i = 0; $i < 7; $i++) {
+            $date = date('Y-m-d', strtotime("-$i days"));
+            $dayOfWeek = date('l', strtotime($date));
+            $dates[$date] = $dayOfWeek;
+        }
 
-    $dailyStats = array_reverse($dailyStats, true);
-    end($dailyStats);
-    $lastKey = key($dailyStats);
-    $dailyStats['Today'] = $dailyStats[$lastKey];
-    unset($dailyStats[$lastKey]);
+        $screenings = Screening::whereIn('date', array_keys($dates))
+            ->with('theater.seats', 'tickets')
+            ->get();
 
-    return $dailyStats;
-}
+        $dailyStats = [];
 
+        foreach ($dates as $date => $dayOfWeek) {
+            $dailyStats[$dayOfWeek] = [
+                'ticketsSold' => 0,
+                'percentage' => 0,
+            ];
+        }
 
+        foreach ($dailyStats as $dayOfWeek => &$stats) {
+            $totalSeats = 0;
+            $ticketsSold = 0;
 
+            foreach ($screenings as $screening) {
+                $screeningDayOfWeek = date('l', strtotime($screening->date));
+                if ($screeningDayOfWeek === $dayOfWeek) {
+                    $totalSeats += $screening->theater->seats->count();
+                    $ticketsSold += $screening->tickets->count();
+                }
+            }
+            if ($totalSeats > 0) {
+                $stats['ticketsSold'] = $ticketsSold;
+                $stats['percentage'] = number_format(($ticketsSold / $totalSeats) * 100, 2);
+            } else {
+                $stats['ticketsSold'] = 0;
+                $stats['percentage'] = 0;
+            }
+        }
 
+        $dailyStats = array_reverse($dailyStats, true);
+        end($dailyStats);
+        $lastKey = key($dailyStats);
+        $dailyStats['Today'] = $dailyStats[$lastKey];
+        unset($dailyStats[$lastKey]);
 
+        return $dailyStats;
+    }
 }
