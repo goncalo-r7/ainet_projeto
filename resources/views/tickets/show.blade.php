@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ticket Information</title>
     <style>
-      <?=file_get_contents(public_path('build/assets/app-BPpGcTh_.css')); ?>
+      <?=file_get_contents(public_path('build/assets/app-Bj4pT88W.css')); ?>
     </style>
 </head>
 <body>
@@ -45,17 +45,24 @@
         
         <div class="mb-4">
             <label for="date" class="block text-sm font-medium text-gray-700">Client Name</label>
-            <input type="text" id="date" name="date" value='{{$ticket->purchase->customer->name}}'  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            <input type="text" id="date" name="date" value='{{$ticket->purchase->customer_name}}'  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
         </div>
 
         <div class="mb-4">
             <label for="date" class="block text-sm font-medium text-gray-700">Client Email</label>
-            <input type="text" id="date" name="date" value='{{$ticket->purchase->customer->name}}'  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            <input type="text" id="date" name="date" value='{{$ticket->purchase->customer_email}}'  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
         </div>
+        @php
+        $url = $ticket->purchase?->customer?->photo_filename;
+        if($url != null){
+        $url = url('storage/photos/'. $url);
+        
+        }
+        @endphp
         @if($ticket->purchase?->customer?->id != null)
         <div class="mb-4">
             <label for="date" class="block text-sm font-medium text-gray-700">Client Photo</label>
-            <img src='{{$ticket->purchase->customer->photo}}'  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            <img src='{{$ticket->purchase->customer->photo_filename}}'  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
         </div>
         @endif
         <div class="mb-4">
