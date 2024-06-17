@@ -47,7 +47,15 @@
                 </div>
             @endif
         </div>
-        {{debug($user->customer)}}
+
+        @if ($user->type === 'C')
+        <div>
+        <x-input-label for="nif" :value="__('Nif')" />
+        <x-text-input id="nif" name="nif" type="text" class="mt-1 block w-full" :value="old('nif', $user->customer->nif)" required />
+        <x-input-error class="mt-2" :messages="$errors->get('nif')" />
+        <div>
+
+        @endif
 
         <div class="mt-2 flex items-center gap-4">
             <x-primary-button>{{ __('Save') }}</x-primary-button>
