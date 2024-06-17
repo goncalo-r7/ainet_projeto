@@ -9,7 +9,7 @@ class MoviePolicy
 {
     public function before(?User $user, string $ability): bool|null
     {
-        if ($user->type == 'A') {
+        if ($user?->type == 'A') {
             return true;
         }
         // When "Before" returns null, other methods (eg. viewAny, view, etc...) will be
@@ -32,21 +32,21 @@ class MoviePolicy
 
     public function create(User $user): bool
     {
-        return $user->type == 'A';
+        return $user?->type == 'A';
     }
 
     public function update(User $user, Movie $movie): bool
     {
-        return $user->type == 'A';
+        return $user?->type == 'A';
     }
 
     public function delete(User $user, Movie $movie): bool
     {
-        return $user->type == 'A';
+        return $user?->type == 'A';
     }
 
     public function filter(User $user){
-        return($user->type == 'A');
+        return($user?->type == 'A');
     }
 
 
