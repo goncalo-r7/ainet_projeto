@@ -11,7 +11,6 @@ use App\Http\Controllers\TicketController;
 use App\Http\Controllers\GenreController;
 
 use App\Http\Controllers\StatisticsController;
-
 use App\Http\Controllers\ScreeningController;
 use App\Http\Controllers\ReceiptController;
 use Illuminate\Support\Facades\Route;
@@ -34,7 +33,7 @@ Route::get('statistics', [StatisticsController::class, 'show'])->name('statistic
 
 
 
-Route::resource('seats', SeatController::class); 
+Route::resource('seats', SeatController::class);
 
 Route::delete('theaters/{theater}/photo', [TheaterController::class, 'destroyImage'])
         ->name('theaters.photo.destroy');
