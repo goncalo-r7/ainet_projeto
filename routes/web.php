@@ -51,29 +51,33 @@ Route::middleware('auth')->group(function () {
 });
 
 
+    // --------- ADMIN ONLY ROUTES ------------
 
-
-
-
-
-
-// --------- ADMIN ONLY ROUTES ------------
-
-Route::middleware('can:admin')->group(function(){
-    Route::post('theaters/{theater}/insert-seats', [TheaterController::class, 'insertSeats'])->name('theaters.insertSeats');
-    Route::get('configuration/show', [ConfigurationController::class, 'show'])->name('configurations.show');
-    Route::get('configuration/edit', [ConfigurationController::class, 'edit'])->name('configurations.edit');
-    Route::put('/configurations/{configuration}', [ConfigurationController::class, 'update'])->name('configurations.update');
-    Route::get('statistics', [StatisticsController::class, 'show'])->name('statistics.show');
-    Route::delete('theaters/{theater}/photo', [TheaterController::class, 'destroyImage'])->name('theaters.photo.destroy');
-    Route::delete('movies/{movie}/image', [MovieController::class, 'destroyImage'])->name('movies.image.destroy');
-    Route::resource('movies', MovieController::class)->except('show');
-    Route::resource('theaters', TheaterController::class);
-    Route::resource('screenings', ScreeningController::class);
-    Route::resource('genres', GenreController::class);
-    Route::delete('administratives/{administrative}/photo', [AdministrativeController::class, 'destroyPhoto'])->name('administratives.photo.destroy');
-    Route::resource('administratives', AdministrativeController::class);
+    Route::middleware('can:admin')->group(function(){
+        Route::post('theaters/{theater}/insert-seats', [TheaterController::class, 'insertSeats'])->name('theaters.insertSeats');
+        Route::get('configuration/show', [ConfigurationController::class, 'show'])->name('configurations.show');
+        Route::get('configuration/edit', [ConfigurationController::class, 'edit'])->name('configurations.edit');
+        Route::put('/configurations/{configuration}', [ConfigurationController::class, 'update'])->name('configurations.update');
+        Route::get('statistics', [StatisticsController::class, 'show'])->name('statistics.show');
+        Route::delete('theaters/{theater}/photo', [TheaterController::class, 'destroyImage'])->name('theaters.photo.destroy');
+        Route::delete('movies/{movie}/image', [MovieController::class, 'destroyImage'])->name('movies.image.destroy');
+        Route::resource('movies', MovieController::class)->except('show');
+        Route::resource('theaters', TheaterController::class);
+        Route::resource('genres', GenreController::class);
+        Route::delete('administratives/{administrative}/photo', [AdministrativeController::class, 'destroyPhoto'])->name('administratives.photo.destroy');
+        Route::resource('administratives', AdministrativeController::class);
+        Route::resource('screenings', ScreeningController::class);
 });
+
+});
+
+
+
+
+
+
+
+
 
 
 

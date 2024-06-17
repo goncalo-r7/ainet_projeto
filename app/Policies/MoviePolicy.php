@@ -18,5 +18,9 @@ class MoviePolicy
         return true;
     }
 
+    public function admin(User $user){
+        return($user->type == 'A');
+    }
+
 
 }
