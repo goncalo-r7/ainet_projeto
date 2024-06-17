@@ -41,6 +41,9 @@ class TicketPolicy
 
     public function download(User $user, Ticket $ticket)
     {
-        return ($user->type == 'A' || ($user->type == 'C' && $user->customer->id == $ticket->purchase->custumer->id));
+        if($ticket->purchase?->customer?->id == null || $user->type == 'A'){
+            return true;
+        }
+        return ($user->type == 'C' && $user->customer->id == $ticket->purchase->customer?->id);
     }
 }
