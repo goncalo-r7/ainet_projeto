@@ -23,7 +23,7 @@ class MoviePolicy
 
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user?->type == 'A';
     }
     public function view(User $user, Movie $movie): bool
     {

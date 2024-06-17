@@ -16,6 +16,7 @@ use App\Models\Purchase;
 use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\ScreeningController;
 use App\Http\Controllers\ReceiptController;
+use App\Models\Screening;
 use Illuminate\Support\Facades\Route;
 
 
@@ -39,6 +40,7 @@ Route::get('receipts/{purchase}', [ReceiptController::class, 'show'])->name('rec
 /* ----- AUTHENTICATED USERS  ----- */
 // Route::middleware('auth', 'verified')->group(function () {
 Route::middleware('auth')->group(function () {
+    Route::resource('screenings', ScreeningController::class)->only(['index']);
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -65,7 +67,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('genres', GenreController::class);
         Route::delete('administratives/{administrative}/photo', [AdministrativeController::class, 'destroyPhoto'])->name('administratives.photo.destroy');
         Route::resource('administratives', AdministrativeController::class);
-        Route::resource('screenings', ScreeningController::class);
+        Route::resource('screenings', ScreeningController::class)->except(['index']);
 });
 
 });
