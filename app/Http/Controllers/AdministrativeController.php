@@ -17,6 +17,7 @@ class AdministrativeController extends Controller
         $administrativesQuery = User::where('type','!=', 'C')
             ->orderBy('name');
         $filterByName = $request->query('name');
+        $user = $request->user();
         if ($filterByName) {
             $administrativesQuery->where('name', 'like', "%$filterByName%");
         }
@@ -26,14 +27,15 @@ class AdministrativeController extends Controller
 
         return view(
             'administratives.index',
-            compact('administratives', 'filterByName')
+            compact('administratives', 'filterByName', 'user')
         );
     }
 
 
-    public function show(User $administrative): View
+    public function show(Request $request, User $administrative): View
     {
-        return view('administratives.show')->with('administrative', $administrative);
+        $user = $request->user()->id;
+        return view('administratives.show')->with(['administrative'=> $administrative, 'user' => $user]);
     }
 
     public function create(): View
@@ -51,9 +53,7 @@ class AdministrativeController extends Controller
         $newAdministrative->type = 'A';
         $newAdministrative->name = $validatedData['name'];
         $newAdministrative->email = $validatedData['email'];
-        $newAdministrative->admin = $validatedData['admin'];
-        $newAdministrative->gender = $validatedData['gender'];
-        // Initial password is always 123
+        $newAdministrative->type = $validatedData['type'];
         $newAdministrative->password = bcrypt('123');
         $newAdministrative->save();
         if ($request->hasFile('photo_file')) {
@@ -80,8 +80,7 @@ class AdministrativeController extends Controller
         $administrative->type = 'A';
         $administrative->name = $validatedData['name'];
         $administrative->email = $validatedData['email'];
-        $administrative->admin = $validatedData['admin'];
-        $administrative->gender = $validatedData['gender'];
+        $administrative->type = $validatedData['type'];
         $administrative->save();
         if ($request->hasFile('photo_file')) {
             // Delete previous file (if any)
@@ -96,7 +95,7 @@ class AdministrativeController extends Controller
             $administrative->save();
         }
         $url = route('administratives.show', ['administrative' => $administrative]);
-        $htmlMessage = "Administrative <a href='$url'><u>{$administrative->name}</u></a> has been updated successfully!";
+        $htmlMessage = "Associate <a href='$url'><u>{$administrative->name}</u></a> has been updated successfully!";
         return redirect()->route('administratives.index')
             ->with('alert-type', 'success')
             ->with('alert-msg', $htmlMessage);
@@ -114,7 +113,7 @@ class AdministrativeController extends Controller
                 }
             }
             $alertType = 'success';
-            $alertMsg = "Administrative {$administrative->name} has been deleted successfully!";
+            $alertMsg = "Associate {$administrative->name} has been deleted successfully!";
         } catch (\Exception $error) {
             $alertType = 'danger';
             $alertMsg = "It was not possible to delete the administrative
@@ -136,7 +135,7 @@ class AdministrativeController extends Controller
             $administrative->save();
             return redirect()->back()
                 ->with('alert-type', 'success')
-                ->with('alert-msg', "Photo of administrative {$administrative->name} has been deleted.");
+                ->with('alert-msg', "Photo of associate {$administrative->name} has been deleted.");
         }
         return redirect()->back();
     }
