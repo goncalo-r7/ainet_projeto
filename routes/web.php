@@ -10,8 +10,8 @@ use App\Http\Controllers\SeatController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\GenreController;
 use App\Http\Controllers\UserController;
-
-
+use App\Models\Ticket;
+use App\Models\Movie;
 use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\ScreeningController;
 use App\Http\Controllers\ReceiptController;
@@ -40,14 +40,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::resource('movies', MovieController::class)->only('show');
+    
+    Route::get('movies/{movie}', [MovieController::class, 'show'])->name('movies.show')->can('view', Movie::class);
     Route::get('tickets',[TicketController::class, 'index'])->name('tickets.index');
-    Route::get('tickets/download/{ticket}', [TicketController::class, 'download'])->name('tickets.download');
-    Route::get('tickets/invalidate/{ticket}', [TicketController::class, 'invalidate'])->name('tickets.invalidate');
-    Route::post('tickets/verify/{screening}', [TicketController::class, 'verify'])->name('tickets.verify.submit');
-    Route::get('tickets/verify/{screening}', [TicketController::class, 'showVerificationForm'])->name('tickets.verify');
-    Route::get('tickets/show/{ticket}', [TicketController::class, 'showTicketInfo'])->name('tickets.showinfo');
-    Route::get('tickets/view/{ticket}', [TicketController::class, 'download'])->name('tickets.view');
+    Route::get('tickets/download/{ticket}', [TicketController::class, 'download'])->name('tickets.download')->can('download','ticket');
+    Route::get('tickets/invalidate/{ticket}', [TicketController::class, 'invalidate'])->name('tickets.invalidate')->can('invalidate',Ticket::class);
+    Route::post('tickets/verify/{screening}', [TicketController::class, 'verify'])->name('tickets.verify.submit')->can('invalidate',Ticket::class);
+    Route::get('tickets/verify/{screening}', [TicketController::class, 'showVerificationForm'])->name('tickets.verify')->can('invalidate',Ticket::class);
+    Route::get('tickets/show/{ticket}', [TicketController::class, 'showTicketInfo'])->name('tickets.showinfo')->can('invalidate',Ticket::class);
 
 
     // --------- ADMIN ONLY ROUTES ------------
