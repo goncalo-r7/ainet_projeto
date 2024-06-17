@@ -176,6 +176,7 @@ class TheaterController extends Controller
             } else {
                 $alertType = 'warning';
                 $screeningsStr = match (true) {
+                    $totalScreenings == 0 => "",
                     $totalScreenings == 1 => "there is 1 screening in this theater",
                     $totalScreenings > 1 => "there are $totalScreenings screening in this theater",
                 };
