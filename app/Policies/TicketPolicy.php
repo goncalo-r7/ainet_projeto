@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Models\Customer;
+use App\Models\Ticket;
 use App\Models\User;
 
 class TicketPolicy
@@ -13,9 +14,9 @@ class TicketPolicy
         return ($user->type == 'A');
     }
 
-    public function view_my(User $user, Customer $customer)
+    public function view_my(User $user)
     {
-        return ($user->type == 'C' && $user->customer->id == $customer->id);
+        return ($user->type == 'C');
     }
 
     public function invalidate(User $user)
@@ -38,8 +39,8 @@ class TicketPolicy
         return ($user->type == 'A');
     }
 
-    public function download(User $user, Customer $customer)
+    public function download(User $user, Ticket $ticket)
     {
-        return ($user->type == 'A' || ($user->type == 'C' && $user->customer->id == $customer->id));
+        return ($user->type == 'A' || ($user->type == 'C' && $user->customer->id == $ticket->purchase->custumer->id));
     }
 }

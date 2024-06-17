@@ -10,18 +10,18 @@ use App\Models\Screening;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\MovieFormRequest;
-
-
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class MovieController extends Controller
 {
 
+    use AuthorizesRequests;
+    
+
     public function index(Request $request): View
     {
-
-
         $moviesQuery = Movie::query();
         $moviesQuery
             ->select('movies.*')

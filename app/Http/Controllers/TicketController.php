@@ -59,7 +59,9 @@ class TicketController extends Controller
         if (!empty($filterByName)) {
             $ticketsQuery->where('id','=', $filterByName);
         }
-        if(User::class->type == '')
+        if(Gate::allows('view_my')){
+            $ticketsQuery->join('purchases')->join('customers')->where('id','=', $filterByName);
+        }
         $tickets = $ticketsQuery->orderBy('created_at')->paginate(20)->withQueryString();
         return view(
             'tickets.index'

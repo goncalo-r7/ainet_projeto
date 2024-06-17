@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Policies;
+use App\Models\Movies;
 use App\Models\User;
 use App\Models\Movie;
 
