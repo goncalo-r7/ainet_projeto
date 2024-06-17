@@ -27,10 +27,7 @@ class MoviePolicy
     }
     public function view(User $user, Movie $movie): bool
     {
-        if ($user->type == 'A') {
-            return true;
-        }
-        return false;
+        return true;
     }
 
     public function create(User $user): bool

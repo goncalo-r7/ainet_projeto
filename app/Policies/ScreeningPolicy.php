@@ -10,12 +10,12 @@ class ScreeningPolicy
 
     public function viewAny(User $user)
     {
-        return ($user->type == 'A' || $user->type == 'E');
+        return true;
     }
 
     public function view(User $user)
     {
-        return ($user->type == 'A' || $user->type == 'E');
+        return $user->type;
     }
 
 }

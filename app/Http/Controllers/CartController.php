@@ -168,7 +168,7 @@ class CartController extends Controller
         $cart = session('cart', null);
         $movieTitle = Screening::find($screeningId)->movie->title;
         $seat = Seat::find($seatId);
-        $screeningTime = DB::table('screenings')->select('start_time', 'date')->where('id', $screeningId)->first();
+        $screeningTime = Screening::select('start_time', 'date')->where('id', $screeningId)->first();
         $screeningT = date('H:i', strtotime($screeningTime->start_time)) . ', ' . date('d-m-Y', strtotime($screeningTime->date));
         
         $url = route('seats.index', ['screening' => $screeningId]);

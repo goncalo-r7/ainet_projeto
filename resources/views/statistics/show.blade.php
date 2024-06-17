@@ -48,10 +48,6 @@
                 </section>
             </div>
         </div>
-    </div>
-
-    <br>
-    <div class="flex flex-row space-x-6 w-full">
         <div class="flex-1 flex flex-col p-4 sm:p-8 bg-white dark:bg-gray-900 shadow sm:rounded-lg w-full">
             <header>
                 <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 pb-3">
@@ -87,7 +83,7 @@
                     @endforeach
                 </tbody>
             </table>
-            <x-button id="exportBtn" text="Export top 3 most sold out movies to Excel" type="primary" class="pt-5"/>
+            <x-button id="exportBtn" text="Export top 3 most sold out movies to Excel" type="primary" class="pt-5 text-center"/>
         </div>
     </div>
     <br>
@@ -96,10 +92,9 @@
             <div class="relative mx-4 mt-4 flex flex-col gap-4 overflow-hidden rounded-none bg-transparent bg-clip-border text-gray-700 shadow-none md:flex-row md:items-center">
                 
                 <div>
-                    <h6 class="block font-sans text-base font-semibold leading-relaxed tracking-normal text-blue-gray-900 antialiased px-4 py-2">
+                    <h2 class="block font-sans text-lg font-semibold leading-relaxed tracking-normal text-blue-gray-900 antialiased px-4 py-2">
                         Ticket Revenues Over This Year (€)
-                    </h6>
-                    
+                    </h2>
                 </div>
             </div>
             <div class="pt-6 px-2 pb-0">
