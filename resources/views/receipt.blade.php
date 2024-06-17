@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>CineMagic Cinemas</title>
     <style>
-      <?=file_get_contents(public_path('build/assets/app-Bj4pT88W.css')); ?>
+      <?=file_get_contents(public_path('build/assets/app-BPpGcTh_.css')); ?>
     </style>
 </head>
 
@@ -51,6 +51,7 @@
                         <td class="border border-stone-950">{{$ticket->seat->row}}{{$ticket->seat->seat_number ?? "UNKOWN SEAT"}}</td>
                         <td class="border border-stone-950">{{$ticket->screening->movie->title ?? "UNKOWN MOVIE"}}</td>
                         <td class="border border-stone-950">{{$ticket->screening->date ?? "UNKOWN DATE"}}</td>
+                        <td class="border border-stone-950">{{$ticket->screening->start_time ?? "UNKOWN TIME"}}</td>
                         <td class="border border-stone-950">{{$ticket->price ?? "UNKNOWN PRICE"}} €</td>
                     </tr>
                     @endforeach

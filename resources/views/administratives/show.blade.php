@@ -16,7 +16,6 @@
                         href="{{ route('administratives.edit', ['administrative' => $administrative]) }}"
                         text="Edit"
                         type="primary"/>
-                        @dd($user);
                     @if($administrative->id != $user)
                     <form method="POST" action="{{ route('administratives.destroy', ['administrative' => $administrative]) }}">
                         @csrf
