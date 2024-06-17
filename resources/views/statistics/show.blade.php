@@ -3,8 +3,7 @@
 @section('header-title', 'Statistics')
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 @section('main')
-    {{ debug($jsonDataGenreLabel) }}
-    {{ debug($jsonDataGenrePerc) }}
+
 
     <div class="flex flex-row space-x-6">
         <div class="flex-1 flex flex-col p-4 sm:p-8 bg-white dark:bg-gray-900 shadow sm:rounded-lg">
@@ -52,7 +51,7 @@
             </div>
         </div>
     </div>
-        
+
     <br>
     <div class="relative overflow-x-auto">
         Top 3 most sold out movies
@@ -93,10 +92,10 @@
     <script>
     document.getElementById('exportBtn').addEventListener('click', function() {
         const movies = @json($topMovies);
-        
+
         const worksheet = XLSX.utils.json_to_sheet(movies);
         console.log(movies, worksheet);
-        
+
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Top 3 Movies");
 

@@ -9,6 +9,8 @@ use App\Http\Controllers\TheaterController;
 use App\Http\Controllers\SeatController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\GenreController;
+use App\Http\Controllers\UserController;
+
 
 use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\ScreeningController;

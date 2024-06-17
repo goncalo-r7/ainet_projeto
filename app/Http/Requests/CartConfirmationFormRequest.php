@@ -26,7 +26,7 @@ class CartConfirmationFormRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            //'var' => 'required|exists:students,number' 
+            //'var' => 'required|exists:students,number'
             // exists:students,number means that var must match a value in the number column of the students table in the database.
             'customer_name' => [
                 Rule::requiredIf(function () {
@@ -48,7 +48,7 @@ class CartConfirmationFormRequest extends FormRequest
             ],
             'customer_nif' => 'nullable|digits:9',
             'payment_type' => 'required|string|in:VISA,PAYPAL,MBWAY',
-            
+
         ];
 
         if ($this->payment_type === 'VISA') {

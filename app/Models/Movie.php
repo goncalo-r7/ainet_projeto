@@ -26,7 +26,6 @@ class Movie extends Model
 
     public $timestamps = true;
 
-    // nao esta corrigido em baixo LUIS
 
 
 
