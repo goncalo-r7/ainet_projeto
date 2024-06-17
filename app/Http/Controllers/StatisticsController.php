@@ -9,6 +9,7 @@ use Illuminate\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Ticket;
+use Carbon\Carbon;
 
 class StatisticsController extends Controller
 {
@@ -50,7 +51,7 @@ class StatisticsController extends Controller
         $topMovies = $this->getTopMovies();
 
         //
-        // sales over the year
+        
         $monthlyRevenue = $this->calculateStatistics();
 
         $months = [];
@@ -87,27 +88,26 @@ class StatisticsController extends Controller
 
     function calculateStatistics()
     {
-        $query = 'SELECT DATE_FORMAT(s.date, "%m") AS month, SUM(t.price) AS revenue, COUNT(*) AS tickets_sold
-                    FROM tickets t
-                    JOIN screenings s ON t.screening_id = s.id
-                    where YEAR(s.date) = YEAR(CURDATE()) 
-                    GROUP BY month
-                    ORDER BY month;';
-        $monthlyRevenue = DB::select($query);
+        $currentYear = Carbon::now()->year;
+
+        $monthlyRevenue = Ticket::join('purchases', 'tickets.purchase_id', '=', 'purchases.id')
+            ->selectRaw('DATE_FORMAT(purchases.date, "%m") AS month, SUM(tickets.price) AS revenue, COUNT(*) AS tickets_sold')
+            ->whereYear('purchases.date', $currentYear)
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
         return $monthlyRevenue;
     }
 
     function getTopMovies()
     {
-        $query = 'SELECT m.id AS movie_id, m.title AS movie_title, COUNT(*) AS tickets_sold
-                    FROM tickets t
-                    JOIN screenings s ON t.screening_id = s.id
-                    JOIN movies m ON s.movie_id = m.id
-                    GROUP BY m.id, m.title
-                    ORDER BY tickets_sold DESC
-                    LIMIT 3;';
-
-        $topMovies = DB::select($query);
+        $topMovies = Ticket::join('screenings', 'tickets.screening_id', '=', 'screenings.id')
+            ->join('movies', 'screenings.movie_id', '=', 'movies.id')
+            ->selectRaw('movies.id AS movie_id, movies.title AS movie_title, COUNT(*) AS tickets_sold')
+            ->groupBy('movies.id', 'movies.title')
+            ->orderByDesc('tickets_sold')
+            ->limit(3)
+            ->get();
         return $topMovies;
     }
 
