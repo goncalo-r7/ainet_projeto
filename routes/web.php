@@ -10,6 +10,7 @@ use App\Http\Controllers\SeatController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\GenreController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\CustomerController;
 use App\Models\Ticket;
 use App\Models\Movie;
 use App\Models\Purchase;
@@ -68,6 +69,9 @@ Route::middleware('auth')->group(function () {
         Route::delete('administratives/{administrative}/photo', [AdministrativeController::class, 'destroyPhoto'])->name('administratives.photo.destroy');
         Route::resource('administratives', AdministrativeController::class);
         Route::resource('screenings', ScreeningController::class)->except(['index']);
+
+        Route::resource('customers', CustomerController::class);
+
 });
 
 });
