@@ -9,7 +9,7 @@ class MoviePolicy
 {
     public function before(?User $user, string $ability): bool|null
     {
-        if ($user->type == 'A') {
+        if ($user?->type == 'A') {
             return true;
         }
         // When "Before" returns null, other methods (eg. viewAny, view, etc...) will be
