@@ -3,16 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
+use Illuminate\View\View;
 
 class UserController extends Controller
 {
-    // public function show(User $user): View
-    // {
-
-
-    //     $user = Movie::orderBy('title')->pluck('title', 'id')->toArray();
-    //     $theaters = Theater::orderBy('name')->pluck('name', 'id')->toArray();
-
-    //     return view('screenings.show')->with('screening', $screening)->with('movies', $movies)->with('theaters', $theaters);
-    // }
+    public function show(User $user): View
+    {
+        return view('users.show')->with('user', $user);
+    }
 }

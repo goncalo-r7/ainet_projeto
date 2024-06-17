@@ -6,7 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Gate;
 use App\Models\Movie;
-
+use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 
 class AppServiceProvider extends ServiceProvider
@@ -25,9 +25,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::define('admin', function (User $user) {
-            // Only "administrator" users can "admin"
-            return ($user->admin == 'A');
+            return ($user->type == 'A');
         });
-
     }
 }

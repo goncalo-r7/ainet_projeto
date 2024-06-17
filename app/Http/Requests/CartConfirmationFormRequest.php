@@ -44,7 +44,7 @@ class CartConfirmationFormRequest extends FormRequest
             ],
             'customer_nif' => 'nullable|digits:9',
             'payment_type' => 'required|string|in:VISA,PAYPAL,MBWAY',
-            
+
         ];
 
         if ($this->payment_type === 'VISA') {

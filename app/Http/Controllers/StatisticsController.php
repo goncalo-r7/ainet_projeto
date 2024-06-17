@@ -105,8 +105,8 @@ class StatisticsController extends Controller
                     JOIN movies m ON s.movie_id = m.id
                     GROUP BY m.id, m.title
                     ORDER BY tickets_sold DESC
-                    LIMIT 3;';  
-        
+                    LIMIT 3;';
+
         $topMovies = DB::select($query);
         return $topMovies;
     }

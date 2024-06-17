@@ -9,128 +9,88 @@ use App\Http\Controllers\TheaterController;
 use App\Http\Controllers\SeatController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\GenreController;
+use App\Http\Controllers\UserController;
+
 
 use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\ScreeningController;
 use App\Http\Controllers\ReceiptController;
 use Illuminate\Support\Facades\Route;
 
-// teste
 
 /* ----- PUBLIC ROUTES ----- */
 
-Route::get('receipts/{purchase}', [ReceiptController::class, 'show'])->name('receipt.show');
-
-Route::post('theaters/{theater}/insert-seats', [TheaterController::class, 'insertSeats'])->name('theaters.insertSeats');
-
-//luis
-
-Route::get('configuration/show', [ConfigurationController::class, 'show'])->name('configurations.show');
-Route::get('configuration/edit', [ConfigurationController::class, 'edit'])->name('configurations.edit');
-// Route::put('configuration/update', [ConfigurationController::class, 'update'])->name('configurations.update');
-// Route::get('configuration/update', [ConfigurationController::class, 'update'])->name('configurations.update');
-Route::put('/configurations/{configuration}', [ConfigurationController::class, 'update'])->name('configurations.update');
-
-Route::get('statistics', [StatisticsController::class, 'show'])->name('statistics.show');
-
-
-
-Route::resource('seats', SeatController::class);
-
-Route::delete('theaters/{theater}/photo', [TheaterController::class, 'destroyImage'])
-        ->name('theaters.photo.destroy');
-
 Route::view('/', 'home')->name('home');
-
-
-// Route::get('tickets/invalidate/{ticket}', [TicketController::class, 'invalidate'])->name('tickets.invalidate');
-Route::get('tickets/invalidate/{ticket}', [TicketController::class, 'invalidate'])->name('tickets.invalidate');
-Route::post('tickets/verify/{screening}', [TicketController::class, 'verify'])->name('tickets.verify.submit');
-Route::get('tickets/verify/{screening}', [TicketController::class, 'showVerificationForm'])->name('tickets.verify');
-Route::get('tickets/show/{ticket}', [TicketController::class, 'showTicketInfo'])->name('tickets.showinfo');
-Route::get('tickets/view/{ticket}', [TicketController::class, 'download'])->name('tickets.view');
-Route::get('tickets/download/{ticket}', [TicketController::class, 'download'])->name('tickets.download');
-//MOVIE
 Route::get('movies/showcase', [MovieController::class, 'showCase'])->name('movies.showcase');
-Route::get('tickets',[TicketController::class, 'index'])->name('tickets.index');
-
-
-
-
-// ex: /screenings/1, 1 will be passed as the $screeningSessionId parameter to the index method of the SeatController
 Route::get('/screenings/{screening}/seats', [SeatController::class, 'index'])->name('seats.index');
-// Route::get('screenings/{screeningSessionId}', [SeatController::class, 'index'])->name('seats.index');
+Route::get('cart', [CartController::class, 'show'])->name('cart.show');
+Route::post('cart', [CartController::class, 'confirm'])->name('cart.confirm');
+Route::delete('cart', [CartController::class, 'destroy'])->name('cart.destroy');
+Route::post('cart/screenings/{screening}', [CartController::class, 'addToCart'])->name('cart.add');
+Route::delete('cart/remove/{screeningId}/{seatId}', [CartController::class, 'removeFromCart'])->name('cart.remove');
+Route::get('receipts/{purchase}', [ReceiptController::class, 'show'])->name('receipt.show');
+//Route::resource('seats', SeatController::class);
 
-/* ----- Non-Verified users ----- */
+
+
+
+/* ----- AUTHENTICATED USERS  ----- */
+// Route::middleware('auth', 'verified')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::resource('movies', MovieController::class)->only('show');
+    Route::get('tickets',[TicketController::class, 'index'])->name('tickets.index');
+    Route::get('tickets/download/{ticket}', [TicketController::class, 'download'])->name('tickets.download');
+    Route::get('tickets/invalidate/{ticket}', [TicketController::class, 'invalidate'])->name('tickets.invalidate');
+    Route::post('tickets/verify/{screening}', [TicketController::class, 'verify'])->name('tickets.verify.submit');
+    Route::get('tickets/verify/{screening}', [TicketController::class, 'showVerificationForm'])->name('tickets.verify');
+    Route::get('tickets/show/{ticket}', [TicketController::class, 'showTicketInfo'])->name('tickets.showinfo');
+    Route::get('tickets/view/{ticket}', [TicketController::class, 'download'])->name('tickets.view');
+
+
+    // --------- ADMIN ONLY ROUTES ------------
+
+    Route::middleware('can:admin')->group(function(){
+        Route::post('theaters/{theater}/insert-seats', [TheaterController::class, 'insertSeats'])->name('theaters.insertSeats');
+        Route::get('configuration/show', [ConfigurationController::class, 'show'])->name('configurations.show');
+        Route::get('configuration/edit', [ConfigurationController::class, 'edit'])->name('configurations.edit');
+        Route::put('/configurations/{configuration}', [ConfigurationController::class, 'update'])->name('configurations.update');
+        Route::get('statistics', [StatisticsController::class, 'show'])->name('statistics.show');
+        Route::delete('theaters/{theater}/photo', [TheaterController::class, 'destroyImage'])->name('theaters.photo.destroy');
+        Route::delete('movies/{movie}/image', [MovieController::class, 'destroyImage'])->name('movies.image.destroy');
+        Route::resource('movies', MovieController::class)->except('show');
+        Route::resource('theaters', TheaterController::class);
+        Route::resource('genres', GenreController::class);
+        Route::delete('administratives/{administrative}/photo', [AdministrativeController::class, 'destroyPhoto'])->name('administratives.photo.destroy');
+        Route::resource('administratives', AdministrativeController::class);
+        Route::resource('screenings', ScreeningController::class);
 });
-
-/* ----- Verified users ----- */
-Route::middleware('auth', 'verified')->group(function () {
-
-    // Route::view('/dashboard', 'dashboard')->name('dashboard');
-    Route::view('/', 'home')->name('home');
-
-
-
-    Route::delete('movies/{movie}/image', [MovieController::class, 'destroyImage'])
-        ->name('movies.image.destroy');
-
-
-    Route::resource('movies', MovieController::class); // TIRAR ISTO!!! QUANDO LOGS TIVEREM FEITOS
-
-    Route::resource('theaters', TheaterController::class);
-
-    Route::resource('screenings', ScreeningController::class);
-
-    Route::resource('genres', GenreController::class);
-
-
-
-
-
-
-
-
-
-
-
-    Route::delete('administratives/{administrative}/photo', [AdministrativeController::class, 'destroyPhoto'])
-        ->name('administratives.photo.destroy');
-    Route::resource('administratives', AdministrativeController::class);
-
-    // Add movie to cart
-    Route::post('cart/screenings/{screening}', [CartController::class, 'addToCart'])
-        ->name('cart.add');
-    // Remove a ticket from the cart:
-    // When the route /cart/remove/{ticket} is hit with a DELETE request, Laravel will automatically find the Ticket model with the provided ID
-    Route::delete('cart/remove/{screeningId}/{seatId}', [CartController::class, 'removeFromCart'])
-        ->name('cart.remove');
-
-//route movie post to seat
-    // Route::post('/screenings/{screeningID}', [Screening::class, 'selectSeats'])
-    // ->name('seats.index');
-
-    // Add a discipline to the cart:
-    /*Route::post('cart/{discipline}', [CartController::class, 'addToCart'])
-        ->name('cart.add');
-    // Remove a discipline from the cart:
-    Route::delete('cart/{discipline}', [CartController::class, 'removeFromCart'])
-        ->name('cart.remove'); */
-    // Show the cart:
-    Route::get('cart', [CartController::class, 'show'])->name('cart.show');
-    // Confirm (store) the cart and save disciplines registration on the database:
-    Route::post('cart', [CartController::class, 'confirm'])->name('cart.confirm');
-    // Clear the cart:
-    Route::delete('cart', [CartController::class, 'destroy'])->name('cart.destroy');
 
 });
 
-/* ----- OTHER PUBLIC ROUTES ----- */
 
-Route::resource('movies', MovieController::class)->only(['show']);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 require __DIR__ . '/auth.php';
