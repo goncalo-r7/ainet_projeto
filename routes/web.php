@@ -19,6 +19,8 @@ use Illuminate\Support\Facades\Route;
 
 /* ----- PUBLIC ROUTES ----- */
 
+Route::get('receipts/{purchase}', [ReceiptController::class, 'show'])->name('receipt.show');
+
 Route::post('theaters/{theater}/insert-seats', [TheaterController::class, 'insertSeats'])->name('theaters.insertSeats');
 
 //luis
