@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Screening;
 use App\Models\Ticket;
-
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class TicketController extends Controller
 {
@@ -57,6 +59,7 @@ class TicketController extends Controller
         if (!empty($filterByName)) {
             $ticketsQuery->where('id','=', $filterByName);
         }
+        if(User::class->type == '')
         $tickets = $ticketsQuery->orderBy('created_at')->paginate(20)->withQueryString();
         return view(
             'tickets.index'
@@ -81,8 +84,6 @@ class TicketController extends Controller
         $ticket->status = 'invalid';
         $ticket->save();
 
-        // Redirect back to the verify page with a message
-        $screening = Screening::find($ticket->screening_id);
         return redirect()->route('tickets.verify', ['screening' => $ticket->screening_id])
         ->with('alert-type', 'danger')
         ->with('alert-msg', "Ticket {$ticket->id} was invalidated");
