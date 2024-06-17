@@ -110,6 +110,7 @@
     
         <script>
             const revenues = <?php echo $jsonDataRevenues; ?>;
+            const ticketsSold = <?php echo $jsonDataTicketsSold; ?>;
             const chartConfig = {
                 series: [
                     {
@@ -184,6 +185,11 @@
                 },
                 tooltip: {
                     theme: "dark",
+                    y: {
+                        formatter: function(value) {
+                            return "Revenue: " + value + "€";
+                        }
+                    }
                 },
             };
     

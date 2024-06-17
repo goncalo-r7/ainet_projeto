@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ticket Information</title>
     <style>
-      <?=file_get_contents(public_path('build/assets/app-BhmLxc3O.css')); ?>
+      <?=file_get_contents(public_path('build/assets/app-BPpGcTh_.css')); ?>
     </style>
 </head>
 <body>
