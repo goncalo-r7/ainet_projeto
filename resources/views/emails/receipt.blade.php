@@ -4,7 +4,7 @@
 <head>
     <title>Receipt - Ticket(s) Purchase</title>
     <style>
-      <?=file_get_contents(public_path('build/assets/app-CbN36Q6r.css')); ?>
+      <?=file_get_contents(public_path('build/assets/app-BhmLxc3O.css')); ?>
     </style>
 </head>
 

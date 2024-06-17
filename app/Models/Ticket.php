@@ -35,20 +35,6 @@ class Ticket extends Model
     {
         return $this->belongsTo(Purchase::class);
     }
-    /* # talvez ??
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    } */
 
 
-
-    public function getQrcodeFullUrlAttribute()
-    {
-        if ($this->qrcode_url && Storage::exists("public/photos/{$this->qrcode_url}")) {
-            return asset("storage/photos/{$this->photo_url}");
-        } else {
-            return asset("storage/photos/blankTrailer.png"); //cuidado com este nome!!
-        }
-    }
 }

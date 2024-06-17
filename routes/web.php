@@ -11,7 +11,6 @@ use App\Http\Controllers\TicketController;
 use App\Http\Controllers\GenreController;
 
 use App\Http\Controllers\StatisticsController;
-
 use App\Http\Controllers\ScreeningController;
 use App\Http\Controllers\ReceiptController;
 use Illuminate\Support\Facades\Route;
@@ -19,6 +18,8 @@ use Illuminate\Support\Facades\Route;
 // teste
 
 /* ----- PUBLIC ROUTES ----- */
+
+Route::get('receipts/{purchase}', [ReceiptController::class, 'show'])->name('receipt.show');
 
 Route::post('theaters/{theater}/insert-seats', [TheaterController::class, 'insertSeats'])->name('theaters.insertSeats');
 
@@ -34,7 +35,7 @@ Route::get('statistics', [StatisticsController::class, 'show'])->name('statistic
 
 
 
-Route::resource('seats', SeatController::class); 
+Route::resource('seats', SeatController::class);
 
 Route::delete('theaters/{theater}/photo', [TheaterController::class, 'destroyImage'])
         ->name('theaters.photo.destroy');
