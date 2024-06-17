@@ -2,8 +2,9 @@
     $mode = $mode ?? 'edit';
     $readonly = $mode == 'show';
     $url = $administrative->photo_filename;
+    
     if($url == null){
-        url('storage/photos/anonymous.jpg');
+        $url = url('storage/photos/anonymous.jpg');
     }else{
         $url = url('storage/photos/'.$url);
     }

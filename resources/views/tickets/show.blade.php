@@ -36,7 +36,28 @@
             <label for="date" class="block text-sm font-medium text-gray-700">Date</label>
             <input type="text" id="date" name="date" value='{{$ticket->screening->date ?? "UNKOWN DATE"}}'  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
         </div>
+
+        <div class="mb-4">
+            <label for="date" class="block text-sm font-medium text-gray-700">Start Time</label>
+            <input type="text" id="date" name="date" value='{{$ticket->screening->start_time ?? "UNKOWN START TIME"}}'  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+        </div>
         
+        
+        <div class="mb-4">
+            <label for="date" class="block text-sm font-medium text-gray-700">Client Name</label>
+            <input type="text" id="date" name="date" value='{{$ticket->purchase->customer->name}}'  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+        </div>
+
+        <div class="mb-4">
+            <label for="date" class="block text-sm font-medium text-gray-700">Client Email</label>
+            <input type="text" id="date" name="date" value='{{$ticket->purchase->customer->name}}'  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+        </div>
+        @if($ticket->purchase?->customer?->id != null)
+        <div class="mb-4">
+            <label for="date" class="block text-sm font-medium text-gray-700">Client Photo</label>
+            <img src='{{$ticket->purchase->customer->photo}}'  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+        </div>
+        @endif
         <div class="mb-4">
             <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
             <input type="text" id="price" name="price" value='{{$ticket->price ?? "UNKNOWN PRICE"}} €'  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
