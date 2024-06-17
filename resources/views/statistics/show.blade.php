@@ -26,7 +26,7 @@
                 </section>
             </div>
         </div>
-        
+
 
         <div class="flex-initial flex flex-col p-4 sm:p-8 bg-white dark:bg-gray-900 shadow sm:rounded-lg">
             <div class="flex-initial">
@@ -90,7 +90,7 @@
     <div>
         <div class="relative flex flex-col rounded-xl bg-white bg-clip-border text-gray-700 shadow-md">
             <div class="relative mx-4 mt-4 flex flex-col gap-4 overflow-hidden rounded-none bg-transparent bg-clip-border text-gray-700 shadow-none md:flex-row md:items-center">
-                
+
                 <div>
                     <h2 class="block font-sans text-lg font-semibold leading-relaxed tracking-normal text-blue-gray-900 antialiased px-4 py-2">
                         Ticket Revenues Over This Year (€)
@@ -102,7 +102,7 @@
             </div>
         </div>
     </div>
-    
+
         <script>
             const revenues = <?php echo $jsonDataRevenues; ?>;
             const ticketsSold = <?php echo $jsonDataTicketsSold; ?>;
@@ -187,12 +187,12 @@
                     }
                 },
             };
-    
+
             const chart3 = new ApexCharts(document.querySelector("#line-chart"), chartConfig);
             chart3.render();
         </script>
-    
-    
+
+
 
 
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>

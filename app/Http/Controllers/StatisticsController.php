@@ -17,8 +17,7 @@ class StatisticsController extends Controller
     {
         $dailyStats = $this->calculateDailyStatistics();
         $genresPercentages = $this->getGenrePercentages();
-        //compras anonimas vs compras logadas
-        //ganhos anual
+
 
 
         //tratar para receber nos graphs

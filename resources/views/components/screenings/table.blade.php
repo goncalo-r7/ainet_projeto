@@ -36,22 +36,32 @@
                         <x-table.icon-seat class="px-0.5"
                             href="{{ route('seats.index', ['screening' => $screening->id]) }}" />
                         @endif
+                        @can('validate',$screening)
                         <x-table.icon-qrcode class="px-0.5 "
                             href="{{ route('tickets.verify', ['screening' => $screening->id]) }}" />
+                        @endcan
                         @if ($showView)
+                        @can('view',$screening)
                         <td>
                             <x-table.icon-show class="ps-3 px-0.5" href="{{ route('screenings.show', ['screening' => $screening]) }}" />
                         </td>
+                        @endcan
+
                         @endif
                         @if ($showEdit)
+                        @can('update',$screening)
+
                             <td>
                                 <x-table.icon-edit class="px-0.5" href="{{ route('screenings.edit', ['screening' => $screening]) }}" />
                             </td>
+                        @endcan
                         @endif
                         @if ($showDelete)
+                        @can('delete',$screening)
                             <td>
                                 <x-table.icon-delete class="px-0.5" action="{{ route('screenings.destroy', ['screening' => $screening]) }}" />
                             </td>
+                        @endcan
                         @endif
                     </td>
 

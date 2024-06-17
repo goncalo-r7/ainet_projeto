@@ -15,7 +15,28 @@ class ScreeningPolicy
 
     public function view(User $user)
     {
-        return $user->type;
+        return $user->type == 'A';
     }
+
+    public function create(User $user): bool
+    {
+        return $user->type == 'A';
+    }
+
+    public function update(User $user, Screening $screening): bool
+    {
+        return $user->type == 'A';
+    }
+
+    public function delete(User $user, Screening $screening): bool
+    {
+        return $user->type == 'A';
+    }
+
+    public function validate(User $user, Screening $screening): bool
+    {
+        return $user->type == 'E';
+    }
+
 
 }
