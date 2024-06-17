@@ -51,11 +51,61 @@
                 </section>
             </div>
         </div>
-
-
     </div>
+        
+    <br>
+    <div class="relative overflow-x-auto">
+        Top 3 most sold out movies
+        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                    <th scope="col" class="px-6 py-3">
+                        Movie ID
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Movie Name
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Tickets sold
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($topMovies as $movie)
+                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                        <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                            {{ $movie->movie_id }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ $movie->movie_title }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ $movie->tickets_sold }}
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+    <x-button id="exportBtn" text="Export top 3 most sold out movies to Excel" type="primary"/>
 
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <script>
+    document.getElementById('exportBtn').addEventListener('click', function() {
+        const movies = @json($topMovies);
+        
+        const worksheet = XLSX.utils.json_to_sheet(movies);
+        console.log(movies, worksheet);
+        
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Top 3 Movies");
 
+        const filename = "Top_3_Movies.xlsx";
+
+        // Write the workbook and trigger the download
+        XLSX.writeFile(workbook, filename);
+    });
+    </script>
     <script>
         const jsonDataTicketsCount = <?php echo $jsonDataTicketsCount; ?>;
         const jsonDataCombined = <?php echo $jsonDataCombined; ?>;

@@ -7,6 +7,8 @@ use App\Models\Movie;
 use App\Models\Screening;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Models\Ticket;
 
 class StatisticsController extends Controller
 {
@@ -43,7 +45,20 @@ class StatisticsController extends Controller
         $jsonDataGenreLabel = json_encode($dataGenreLabel);
         $jsonDataGenrePerc = json_encode($dataGenrePerc);
 
-        return view('statistics.show', compact('jsonDataTicketsCount','jsonDataCombined','jsonDataGenreLabel','jsonDataGenrePerc'));
+        //
+
+        // Convert top movies data to JSON
+        $query = 'SELECT m.id AS movie_id, m.title AS movie_title, COUNT(*) AS tickets_sold
+                    FROM tickets t
+                    JOIN screenings s ON t.screening_id = s.id
+                    JOIN movies m ON s.movie_id = m.id
+                    GROUP BY m.id, m.title
+                    ORDER BY tickets_sold DESC
+                    LIMIT 3;';  
+        
+        $topMovies = DB::select($query);
+
+        return view('statistics.show', compact('jsonDataTicketsCount','jsonDataCombined','jsonDataGenreLabel','jsonDataGenrePerc', 'topMovies'));
     }
 
     function getGenrePercentages()
@@ -136,4 +151,18 @@ class StatisticsController extends Controller
 
         return $dailyStats;
     }
+
+    public function getTopMovies()
+    {
+        $topMovies = Ticket::select('screenings.movie_id', DB::raw('count(*) as total_tickets'))
+            ->join('screenings', 'tickets.screening_id', '=', 'screenings.id')
+            ->join('movies', 'screenings.movie_id', '=', 'movies.id')
+            ->groupBy('screenings.movie_id', 'movies.title')
+            ->orderBy('total_tickets', 'desc')
+            ->limit(3)
+            ->get(['movies.title', 'total_tickets']);
+
+        return view('statistics.show', compact('topMovies'));
+    }
+
 }
