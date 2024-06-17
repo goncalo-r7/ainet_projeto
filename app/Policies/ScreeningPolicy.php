@@ -1,5 +1,6 @@
 <?php
 namespace App\Policies;
+use App\Models\Screening;
 use App\Models\User;
 
 
