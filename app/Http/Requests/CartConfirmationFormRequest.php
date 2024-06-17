@@ -26,11 +26,8 @@ class CartConfirmationFormRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            //'var' => 'required|exists:students,number' 
-            // exists:students,number means that var must match a value in the number column of the students table in the database.
             'customer_name' => [
                 Rule::requiredIf(function () {
-                    // if user is a customer, then it is not required
                     $isCustomer = DB::table('customers')->where('id', Auth::id())->first();
                     return !$isCustomer;
                 }),
@@ -39,7 +36,6 @@ class CartConfirmationFormRequest extends FormRequest
             ],
             'customer_email' => [
                 Rule::requiredIf(function () {
-                    // if user is a customer, then it is not required
                     $isCustomer = DB::table('customers')->where('id', Auth::id())->first();
                     return !$isCustomer;
                 }),

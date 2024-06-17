@@ -9,7 +9,6 @@
         <div class="my-4 p-6 bg-white dark:bg-gray-900 overflow-hidden
                     shadow-sm sm:rounded-lg text-gray-900 dark:text-gray-50">
             @csrf
-            <!-- Ao submeter, adicionar ao carrinho-->
             {{-- when the form is submitted, the IDs of the selected seats will be sent as an array with the name "selectedSeats" --}}
             <form method="POST" action="{{ route('cart.add', ['screening' => $screeningSession]) }}">
                 @csrf
