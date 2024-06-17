@@ -11,7 +11,7 @@ class TicketPolicy
 
     public function viewAny(User $user)
     {
-        return ($user->type == 'A');
+        return true;
     }
 
     public function view_my(User $user)

@@ -54,9 +54,7 @@
                     :showMovie="false"
                     />
                 </div>
-                    {{-- <div class="mt-4">
-                        {{ $movie->screeningsRef->links() }}
-                    </div> --}}
+
 
             </section>
         </div>

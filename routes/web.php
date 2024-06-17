@@ -16,6 +16,7 @@ use App\Models\Purchase;
 use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\ScreeningController;
 use App\Http\Controllers\ReceiptController;
+use App\Models\Screening;
 use Illuminate\Support\Facades\Route;
 
 
@@ -23,6 +24,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'home')->name('home');
 Route::get('movies/showcase', [MovieController::class, 'showCase'])->name('movies.showcase');
+Route::get('movies/{movie}', [MovieController::class, 'show'])->name('movies.show');
 Route::get('/screenings/{screening}/seats', [SeatController::class, 'index'])->name('seats.index');
 Route::get('cart', [CartController::class, 'show'])->name('cart.show');
 Route::post('cart', [CartController::class, 'confirm'])->name('cart.confirm');
@@ -38,10 +40,10 @@ Route::get('receipts/{purchase}', [ReceiptController::class, 'show'])->name('rec
 /* ----- AUTHENTICATED USERS  ----- */
 // Route::middleware('auth', 'verified')->group(function () {
 Route::middleware('auth')->group(function () {
+    Route::resource('screenings', ScreeningController::class)->only(['index']);
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::get('movies/{movie}', [MovieController::class, 'show'])->name('movies.show')->can('view', 'movie');
     Route::get('tickets',[TicketController::class, 'index'])->name('tickets.index')->can('viewAny', Ticket::class);
     Route::get('tickets/download/{ticket}', [TicketController::class, 'download'])->name('tickets.download')->can('download','ticket');
     Route::get('tickets/invalidate/{ticket}', [TicketController::class, 'invalidate'])->name('tickets.invalidate')->can('invalidate',Ticket::class);
@@ -65,7 +67,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('genres', GenreController::class);
         Route::delete('administratives/{administrative}/photo', [AdministrativeController::class, 'destroyPhoto'])->name('administratives.photo.destroy');
         Route::resource('administratives', AdministrativeController::class);
-        Route::resource('screenings', ScreeningController::class);
+        Route::resource('screenings', ScreeningController::class)->except(['index']);
 });
 
 });
