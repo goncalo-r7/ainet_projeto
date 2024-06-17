@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Customer;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
@@ -28,7 +29,7 @@ class CartConfirmationFormRequest extends FormRequest
         $rules = [
             'customer_name' => [
                 Rule::requiredIf(function () {
-                    $isCustomer = DB::table('customers')->where('id', Auth::id())->first();
+                    $isCustomer = Customer::find(Auth::id());
                     return !$isCustomer;
                 }),
                 'string',
@@ -36,6 +37,7 @@ class CartConfirmationFormRequest extends FormRequest
             ],
             'customer_email' => [
                 Rule::requiredIf(function () {
+                    $isCustomer = Customer::find(Auth::id());
                     $isCustomer = DB::table('customers')->where('id', Auth::id())->first();
                     return !$isCustomer;
                 }),

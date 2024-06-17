@@ -10,4 +10,8 @@ class ReceiptController extends Controller
     public static function storePDFReceipt(Purchase $purchase){
         PdfController::generatePdfReceipt($purchase);
     }
+
+    public function show(Purchase $purchase){
+        return view('receipt')->with('purchase', $purchase);
+    }
 }

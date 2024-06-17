@@ -57,12 +57,14 @@ class TicketController extends Controller
         $ticketsQuery = Ticket::query();
         $filterByName = $request->get('ticket');
         if (!empty($filterByName)) {
-            $ticketsQuery->where('id','=', $filterByName);
+            $ticketsQuery->where('tickets.id','=', $filterByName);
         }
-        if(Gate::allows('view_my')){
-            $ticketsQuery->join('purchases')->join('customers')->where('id','=', $filterByName);
+        if(Gate::allows('view_my', Ticket::class)){
+            $ticketsQuery
+            ->join('purchases', 'tickets.purchase_id', '=', 'purchases.id')
+            ->join('customers', 'purchases.customer_id', '=', 'customers.id')->where('customers.id','=', $request->user()->customer->id);
         }
-        $tickets = $ticketsQuery->orderBy('created_at')->paginate(20)->withQueryString();
+        $tickets = $ticketsQuery->orderBy('tickets.created_at')->paginate(20)->withQueryString();
         return view(
             'tickets.index'
         )->with('tickets', $tickets)->with('filter', $filterByName);
