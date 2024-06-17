@@ -18,5 +18,10 @@ class MoviePolicy
         return true;
     }
 
+    public function filter(?User $user)
+    {
+        return $user->type == 'A';
+    }
+
 
 }
