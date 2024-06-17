@@ -6,7 +6,6 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Gate;
 use App\Models\Movie;
-
 use App\Models\User;
 
 class AppServiceProvider extends ServiceProvider

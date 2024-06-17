@@ -60,10 +60,10 @@
 
                                 <x-menus.submenu-item content="Screenings" selectable="0"
                                 href="{{ route('screenings.index') }}" />
-
+                                @can('viewAny', App\Models\Movie::class)
                                 <x-menus.submenu-item content="Movies" selectable="0"
                                 href="{{ route('movies.index') }}" />
-
+                                @endcan
                                 <x-menus.submenu-item content="Genres" selectable="0"
                                 href="{{ route('genres.index') }}" />
 
