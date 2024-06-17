@@ -254,43 +254,6 @@ class CartController extends Controller
         }
     }
 
-    /*
-    public function removeFromCart(Request $request, Discipline $discipline): RedirectResponse
-    {
-        // TODO: Alterar para movies
-        $url = route('disciplines.show', ['discipline' => $discipline]);
-        $cart = session('cart', null);
-        if (!$cart) {
-            $alertType = 'warning';
-            $htmlMessage = "Movie <a href='$url'>#{$discipline->id}</a>
-                <strong>\"{$discipline->name}\"</strong> was not removed from the cart because cart is empty!";
-            return back()
-                ->with('alert-msg', $htmlMessage)
-                ->with('alert-type', $alertType);
-        } else {
-            $element = $cart->firstWhere('id', $discipline->id);
-            if ($element) {
-                $cart->forget($cart->search($element));
-                if ($cart->count() == 0) {
-                    $request->session()->forget('cart');
-                }
-                $alertType = 'success';
-                $htmlMessage = "Movie <a href='$url'>#{$discipline->id}</a>
-                <strong>\"{$discipline->name}\"</strong> was removed from the cart.";
-                return back()
-                    ->with('alert-msg', $htmlMessage)
-                    ->with('alert-type', $alertType);
-            } else {
-                $alertType = 'warning';
-                $htmlMessage = "Movie <a href='$url'>#{$discipline->id}</a>
-                <strong>\"{$discipline->name}\"</strong> was not removed from the cart because cart does not include it!";
-                return back()
-                    ->with('alert-msg', $htmlMessage)
-                    ->with('alert-type', $alertType);
-            }
-        }
-    }*/
-
     public function destroy(Request $request): RedirectResponse
     {
         $cart = session('cart', null);

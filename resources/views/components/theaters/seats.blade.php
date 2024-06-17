@@ -6,17 +6,10 @@
                             <tr class="items-center space-x-1">
                                 @foreach ($seats as $seat)
                                     <td class="px-1 py-1 text-center">
-                                    <input
-                                        id="{{ $seat['id'] }}"
-                                        type="checkbox"
-                                        name="selectedSeats[{{ $seat['id'] }}]"
-                                        value="{{ $seat['id'] }}"
-                                        class="hidden peer" disabled
-                                    >
-                                    <label for="{{ $seat['id'] }}" class="block w-full h-full p-5
-                                        rounded-lg dark:hover:text-gray-300
-                                        peer-checked:border-blue-600 peer-checked:bg-blue-200  hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600
-                                        dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
+                                    
+                                    <label class="block h-full p-2
+                                        bg-white border-2 border-gray-200 rounded-lg
+                                        dark:text-gray-400 dark:bg-gray-800">
                                         {{ $seat['row'] . $seat['seat_number'] }}
                                     </label>
                                     </td>
