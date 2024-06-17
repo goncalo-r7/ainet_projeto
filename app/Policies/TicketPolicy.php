@@ -4,17 +4,10 @@ namespace App\Policies;
 
 use App\Models\Customer;
 use App\Models\User;
-use App\Models\Ticket;
 
 class TicketPolicy
 {
-    /**
-     * Determine if any user can purchase tickets.
-     */
-    public function purchase(User $user = null)
-    {
-        return true;
-    }
+
     public function viewAny(User $user)
     {
         return ($user->type == 'A');
@@ -22,14 +15,31 @@ class TicketPolicy
 
     public function view_my(User $user, Customer $customer)
     {
-        return ($user->type == 'C' || $user->customer-> == 'E');
+        return ($user->type == 'C' && $user->customer->id == $customer->id);
     }
 
-    /**
-     * Determine if the user can invalidate tickets.
-     */
-    public function invalidate(User $user, Ticket $ticket)
+    public function invalidate(User $user)
     {
-        return $user->isEmployee();
+        return ($user->type == 'E');
+    }
+
+    public function delete(User $user)
+    {
+        return ($user->type == 'A');
+    }
+
+    public function update(User $user)
+    {
+        return ($user->type == 'A');
+    }
+
+    public function create(User $user)
+    {
+        return ($user->type == 'A');
+    }
+
+    public function download(User $user, Customer $customer)
+    {
+        return ($user->type == 'A' || ($user->type == 'C' && $user->customer->id == $customer->id));
     }
 }
