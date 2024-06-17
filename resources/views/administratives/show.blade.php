@@ -1,7 +1,6 @@
 @extends('layouts.main')
 
-@section('header-title', 'Associate "' . $administrative->name . '"')
-
+@section('header-title', 'Associated "' . $administrative->name . '"')
 @section('main')
 <div class="flex flex-col space-y-6">
     <div class="p-4 sm:p-8 bg-white dark:bg-gray-900 shadow sm:rounded-lg">
@@ -29,7 +28,7 @@
                 </div>
                 <header>
                     <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                        Associate "{{ $administrative->name }}"
+                        Associated "{{ $administrative->name }}"
                     </h2>
                 </header>
                 @include('administratives.shared.fields', ['mode' => 'show'])

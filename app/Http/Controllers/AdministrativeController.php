@@ -58,20 +58,21 @@ class AdministrativeController extends Controller
         $newAdministrative->save();
         if ($request->hasFile('photo_file')) {
             $path = $request->photo_file->store('public/photos');
-            $newAdministrative->photo_url = basename($path);
+            $newAdministrative->photo_filename = basename($path);
             $newAdministrative->save();
         }
         $url = route('administratives.show', ['administrative' => $newAdministrative]);
-        $htmlMessage = "Administrative <a href='$url'><u>{$newAdministrative->name}</u></a> has been created successfully!";
+        $htmlMessage = "Associated <a href='$url'><u>{$newAdministrative->name}</u></a> has been created successfully!";
         return redirect()->route('administratives.index')
             ->with('alert-type', 'success')
             ->with('alert-msg', $htmlMessage);
     }
 
-    public function edit(User $administrative): View
+    public function edit(Request $request, User $administrative): View
     {
+        $user = $request->user()->id;
         return view('administratives.edit')
-            ->with('administrative', $administrative);
+        ->with(['administrative'=> $administrative, 'user' => $user]);
     }
 
     public function update(AdministrativeFormRequest $request, User $administrative): RedirectResponse
@@ -85,17 +86,17 @@ class AdministrativeController extends Controller
         if ($request->hasFile('photo_file')) {
             // Delete previous file (if any)
             if (
-                $administrative->photo_url &&
-                Storage::fileExists('public/photos/' . $administrative->photo_url)
+                $administrative->photo_filename &&
+                Storage::fileExists('public/photos/' . $administrative->photo_filename)
             ) {
-                Storage::delete('public/photos/' . $administrative->photo_url);
+                Storage::delete('public/photos/' . $administrative->photo_filename);
             }
             $path = $request->photo_file->store('public/photos');
-            $administrative->photo_url = basename($path);
+            $administrative->photo_filename = basename($path);
             $administrative->save();
         }
         $url = route('administratives.show', ['administrative' => $administrative]);
-        $htmlMessage = "Associate <a href='$url'><u>{$administrative->name}</u></a> has been updated successfully!";
+        $htmlMessage = "Associated <a href='$url'><u>{$administrative->name}</u></a> has been updated successfully!";
         return redirect()->route('administratives.index')
             ->with('alert-type', 'success')
             ->with('alert-msg', $htmlMessage);
@@ -105,7 +106,7 @@ class AdministrativeController extends Controller
     {
         try {
             $url = route('administratives.show', ['administrative' => $administrative]);
-            $fileToDelete = $administrative->photo_url;
+            $fileToDelete = $administrative->photo_filename;
             $administrative->delete();
             if ($fileToDelete) {
                 if (Storage::fileExists('public/photos/' . $fileToDelete)) {
@@ -113,10 +114,10 @@ class AdministrativeController extends Controller
                 }
             }
             $alertType = 'success';
-            $alertMsg = "Associate {$administrative->name} has been deleted successfully!";
+            $alertMsg = "Associated {$administrative->name} has been deleted successfully!";
         } catch (\Exception $error) {
             $alertType = 'danger';
-            $alertMsg = "It was not possible to delete the administrative
+            $alertMsg = "It was not possible to delete the associated
                             <a href='$url'><u>{$administrative->name}</u></a>
                             because there was an error with the operation!";
         }
@@ -127,15 +128,15 @@ class AdministrativeController extends Controller
 
     public function destroyPhoto(User $administrative): RedirectResponse
     {
-        if ($administrative->photo_url) {
-            if (Storage::fileExists('public/photos/' . $administrative->photo_url)) {
-                Storage::delete('public/photos/' . $administrative->photo_url);
+        if ($administrative->photo_filename) {
+            if (Storage::fileExists('public/photos/' . $administrative->photo_filename)) {
+                Storage::delete('public/photos/' . $administrative->photo_filename);
             }
-            $administrative->photo_url = null;
+            $administrative->photo_filename = null;
             $administrative->save();
             return redirect()->back()
                 ->with('alert-type', 'success')
-                ->with('alert-msg', "Photo of associate {$administrative->name} has been deleted.");
+                ->with('alert-msg', "Photo of associated {$administrative->name} has been deleted.");
         }
         return redirect()->back();
     }
