@@ -66,6 +66,8 @@
                                 href="{{ route('movies.index') }}" />
                                 <x-menus.submenu-item content="Associates" selectable="0"
                                 href="{{ route('administratives.index') }}" />
+                                <x-menus.submenu-item content="Customers" selectable="0"
+                                href="{{ route('customers.index') }}" />
                             @endcan
                                 <x-menus.submenu-item content="Screenings" selectable="0"
                                 href="{{ route('screenings.index') }}" />
