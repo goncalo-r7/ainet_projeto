@@ -56,7 +56,6 @@ class CartController extends Controller
             $price = $conf->ticket_price * count($cart);
             $discount = $isCustomer ? $conf->registered_customer_ticket_discount * count($cart) : 0;
         }
-    //
         $ticketdata = collect($cart)->map(function($ticket) {
             $screening = Screening::with('movie', 'theater')->find($ticket['screening_id']);
             $seat = Seat::find($ticket['seat_id']);
@@ -82,10 +81,8 @@ class CartController extends Controller
         return view('seats.index', compact('screeningSession'));
     }
 
-    // funcao chamada em seats.index (no form)
     public function addToCart(Request $request, Screening $screening): RedirectResponse
     {
-        // request tem vetor com os ids dos lugares selecionados
         $cart = session('cart', null);
         $message = '';
 
@@ -93,11 +90,10 @@ class CartController extends Controller
             $cart = collect([]);
             $request->session()->put('cart', $cart);
         }
-        # $screenings to receive in parameter
         $seatsIds = $request->input('selectedSeats');
         if (!$seatsIds) {
             $alertType = 'warning';
-            $url = route('seats.index', ['screening' => $screening]); // volta para pagina da sessao
+            $url = route('seats.index', ['screening' => $screening]);
             $htmlMessage = "Tickets <a href='$url'> for
             <strong>\"{$screening->movie->title}\"</strong></a> were not added to the cart because there were no seats selected!";
             return back()
@@ -106,9 +102,9 @@ class CartController extends Controller
         }
         $dateTimeString = $screening->date . ' ' . $screening->start_time;
         $movieStartTime = new DateTime($dateTimeString);
-        $now = new DateTime(); // Current time
+        $now = new DateTime();
         $interval = $now->diff($movieStartTime);
-        if ($interval->invert == 1 && $interval->i >= 5) { // Invert indicates the interval is negative, meaning now is after start time
+        if ($interval->invert == 1 && $interval->i >= 5) { 
             $alertType = 'warning';
             $url = route('seats.index', ['screening' => $screening->id]);
             $htmlMessage = "Tickets for <a href='$url'>#{$screening->id}</a> 
@@ -122,14 +118,6 @@ class CartController extends Controller
             $seatsAlreadyInCart = [];
             $isRepeated = false;
             foreach ($seatsIds as $seatId){
-                // $ticketId = DB::table('tickets')->insertGetId([
-                //     'screening_id' => $screening->id,
-                //     'seat_id' => $seatId,
-                //     'price' => 5.0, // TODO: alterar para o preço do seat
-                //     'created_at' => now(),
-                //     'updated_at' => now()
-                // ]);
-                // Check if the seat is already in the cart
                 $isSeatInCart = $cart->contains(function ($item) use ($seatId, $screening) {
                     return $item['screening_id'] == $screening->id && $item['seat_id'] == $seatId;
                 });
@@ -143,13 +131,11 @@ class CartController extends Controller
                         'screening_id' => $screening->id,
                         'seat_id' => $seatId,
                     ];
-                    // Push the ticket details to the cart
                     $cart->push($ticketDetails);
                 }
                 
             }
             if ($isRepeated) {
-                // Get the seats that are already in the cart
                 $seatsCart = Seat::select('row', 'seat_number')->whereIn('id', $seatsAlreadyInCart)->get();
                 $strAux = '';
                 foreach ($seatsCart as $seat) {
@@ -158,10 +144,6 @@ class CartController extends Controller
                 $strAux = rtrim($strAux, ', '); // remove last comma
                 $message = "Seats {$strAux} were already in the cart.<br>";
             }
-            // atualizar purchase
-            //$purchase = DB::table('purchases')->where('id', $purchaseId)->first();
-            //dd($purchase);
-            //DB::table('purchases')->where('id', $purchaseId)->increment('total_price', $total);
             session(['cart' => $cart]);
         }
         $newSeats = Seat::select('row', 'seat_number')
@@ -177,45 +159,12 @@ class CartController extends Controller
         $htmlMessage = $newSeats->isEmpty() 
                             ? $message
                             : $message . "Seats $seatStr for the movie <strong>\"{$screening->movie->title}\"</strong> were successfully added to the cart." ;
-        //$htmlMessage = $message . "Seats $seatStr for the movie <strong>\"{$screening->movie->title}\"</strong> were successfully added to the cart.";
         return back()
             ->with('alert-msg', $htmlMessage)
             ->with('alert-type', $alertType);
     }
-
-    /*public function addToCart(Request $request, Discipline $discipline): RedirectResponse
-    {
-        $cart = session('cart', null);
-        if (!$cart) {
-            $cart = collect([$discipline]);
-            $request->session()->put('cart', $cart);
-        } else {
-            if ($cart->firstWhere('id', $discipline->id)) {
-                $alertType = 'warning';
-                $url = route('disciplines.show', ['discipline' => $discipline]);
-                $htmlMessage = "Discipline <a href='$url'>#{$discipline->id}</a>
-                <strong>\"{$discipline->name}\"</strong> was not added to the cart because it is already there!";
-                return back()
-                    ->with('alert-msg', $htmlMessage)
-                    ->with('alert-type', $alertType);
-            } else {
-                $cart->push($discipline);
-            }
-        }
-        $alertType = 'success';
-        $url = route('disciplines.show', ['discipline' => $discipline]);
-        $htmlMessage = "Discipline <a href='$url'>#{$discipline->id}</a>
-                <strong>\"{$discipline->name}\"</strong> was added to the cart.";
-        return back()
-            ->with('alert-msg', $htmlMessage)
-            ->with('alert-type', $alertType);
-    }*/
-
     public function removeFromCart(Request $request, $screeningId, $seatId): RedirectResponse
     {
-        // this function is not checked !!
-        // $cart has screening_id and seat_id
-        
         $cart = session('cart', null);
         $movieTitle = Screening::find($screeningId)->movie->title;
         $seat = Seat::find($seatId);
@@ -299,7 +248,10 @@ class CartController extends Controller
             }
         }
         $user = Auth::user();
-        $customer = Customer::find($user->id);
+        $customer = null;
+        if ($user){
+            $customer = Customer::find($user->id);
+        }
         $conf = Configuration::first(); // to get the price
         $pricePerTicket = $conf->ticket_price;
         $price = $pricePerTicket * count($cart);

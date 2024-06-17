@@ -46,7 +46,6 @@
                                                                'PAYPAL' => 'PayPal',
                                                                'MBWAY' => 'MB Way']" 
                                                     value="{{ $isCustomer ? $customerData['payment_type'] : old('payment_type') }}"/>
-                                                    {{-- if not null, value is $customerPaymentType --}}
                                 <x-field.input name="payment_ref" label="Payment Reference" width="md"
                                                 :readonly="false"
                                                 value="{{ $isCustomer ? $customerData['payment_ref'] : old('payment_ref') }}"/>

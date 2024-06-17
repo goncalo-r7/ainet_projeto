@@ -45,8 +45,60 @@ class StatisticsController extends Controller
         $jsonDataGenreLabel = json_encode($dataGenreLabel);
         $jsonDataGenrePerc = json_encode($dataGenrePerc);
 
+        //
+        
+        $topMovies = $this->getTopMovies();
 
-        // Convert top movies data to JSON
+        //
+        // sales over the year
+        $monthlyRevenue = $this->calculateStatistics();
+
+        $months = [];
+        $revenues = [];
+        $ticketsSold = [];
+        $i=1;
+        foreach ($monthlyRevenue as $stats) {
+            while ($i < $stats->month){
+                $months[] = $i;
+                $revenues[] = 0;
+                $ticketsSold[] = 0;
+                $i++;
+            }
+            $months[] = $stats->month;
+            $revenues[] = $stats->revenue;
+            $ticketsSold[] = $stats->tickets_sold;
+            $i++;
+        }
+        $currentMonth = date('n');
+        while ($i <= $currentMonth) {
+            $months[] = $i;
+            $revenues[] = 0;
+            $ticketsSold[] = 0;
+            $i++;
+        }
+
+        $jsonDataDates = json_encode($months);
+        $jsonDataRevenues = json_encode($revenues);
+        $jsonDataTicketsSold = json_encode($ticketsSold);
+
+
+        return view('statistics.show', compact('jsonDataTicketsCount','jsonDataCombined','jsonDataGenreLabel','jsonDataGenrePerc', 'topMovies', 'jsonDataDates', 'jsonDataRevenues', 'jsonDataTicketsSold'));
+    }
+
+    function calculateStatistics()
+    {
+        $query = 'SELECT DATE_FORMAT(s.date, "%m") AS month, SUM(t.price) AS revenue, COUNT(*) AS tickets_sold
+                    FROM tickets t
+                    JOIN screenings s ON t.screening_id = s.id
+                    where YEAR(s.date) = YEAR(CURDATE()) 
+                    GROUP BY month
+                    ORDER BY month;';
+        $monthlyRevenue = DB::select($query);
+        return $monthlyRevenue;
+    }
+
+    function getTopMovies()
+    {
         $query = 'SELECT m.id AS movie_id, m.title AS movie_title, COUNT(*) AS tickets_sold
                     FROM tickets t
                     JOIN screenings s ON t.screening_id = s.id
@@ -56,8 +108,7 @@ class StatisticsController extends Controller
                     LIMIT 3;';
 
         $topMovies = DB::select($query);
-
-        return view('statistics.show', compact('jsonDataTicketsCount','jsonDataCombined','jsonDataGenreLabel','jsonDataGenrePerc', 'topMovies'));
+        return $topMovies;
     }
 
     function getGenrePercentages()
@@ -149,19 +200,6 @@ class StatisticsController extends Controller
         unset($dailyStats[$lastKey]);
 
         return $dailyStats;
-    }
-
-    public function getTopMovies()
-    {
-        $topMovies = Ticket::select('screenings.movie_id', DB::raw('count(*) as total_tickets'))
-            ->join('screenings', 'tickets.screening_id', '=', 'screenings.id')
-            ->join('movies', 'screenings.movie_id', '=', 'movies.id')
-            ->groupBy('screenings.movie_id', 'movies.title')
-            ->orderBy('total_tickets', 'desc')
-            ->limit(3)
-            ->get(['movies.title', 'total_tickets']);
-
-        return view('statistics.show', compact('topMovies'));
     }
 
 }
