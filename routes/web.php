@@ -12,6 +12,7 @@ use App\Http\Controllers\GenreController;
 use App\Http\Controllers\UserController;
 use App\Models\Ticket;
 use App\Models\Movie;
+use App\Models\Purchase;
 use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\ScreeningController;
 use App\Http\Controllers\ReceiptController;
@@ -41,7 +42,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('movies/{movie}', [MovieController::class, 'show'])->name('movies.show')->can('view', 'movie');
-    Route::get('tickets',[TicketController::class, 'index'])->name('tickets.index');
+    Route::get('tickets',[TicketController::class, 'index'])->name('tickets.index')->can('viewAny', Ticket::class);
     Route::get('tickets/download/{ticket}', [TicketController::class, 'download'])->name('tickets.download')->can('download','ticket');
     Route::get('tickets/invalidate/{ticket}', [TicketController::class, 'invalidate'])->name('tickets.invalidate')->can('invalidate',Ticket::class);
     Route::post('tickets/verify/{screening}', [TicketController::class, 'verify'])->name('tickets.verify.submit')->can('invalidate',Ticket::class);
