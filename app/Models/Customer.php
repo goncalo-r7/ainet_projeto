@@ -12,6 +12,7 @@ class Customer extends Model
     use HasFactory;
 
     protected $fillable = [
+        'id',
         'nif',
         'payment_type',
         'payment_ref'
