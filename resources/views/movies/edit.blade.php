@@ -8,14 +8,19 @@
         <div class="max-full">
             <section>
                 <div class="flex flex-wrap justify-end items-center gap-4 mb-4">
+                    @can('create',App\Models\Movie::class)
                     <x-button
                         href="{{ route('movies.create', ['movie' => $movie]) }}"
                         text="New"
                         type="success"/>
+                    @endcan
+                    @can('view',$movie)
                     <x-button
                         href="{{ route('movies.show', ['movie' => $movie]) }}"
                         text="View"
                         type="info"/>
+                    @endcan
+                    @can('delete',$movie)
                     <form method="POST" action="{{ route('movies.destroy', ['movie' => $movie]) }}">
                         @csrf
                         @method('DELETE')
@@ -24,6 +29,7 @@
                             text="Delete"
                             type="danger"/>
                     </form>
+                    @endcan
                 </div>
                 <header>
                     <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
