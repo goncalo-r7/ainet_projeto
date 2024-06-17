@@ -45,7 +45,6 @@ class StatisticsController extends Controller
         $jsonDataGenreLabel = json_encode($dataGenreLabel);
         $jsonDataGenrePerc = json_encode($dataGenrePerc);
 
-        //
 
         // Convert top movies data to JSON
         $query = 'SELECT m.id AS movie_id, m.title AS movie_title, COUNT(*) AS tickets_sold
@@ -54,8 +53,8 @@ class StatisticsController extends Controller
                     JOIN movies m ON s.movie_id = m.id
                     GROUP BY m.id, m.title
                     ORDER BY tickets_sold DESC
-                    LIMIT 3;';  
-        
+                    LIMIT 3;';
+
         $topMovies = DB::select($query);
 
         return view('statistics.show', compact('jsonDataTicketsCount','jsonDataCombined','jsonDataGenreLabel','jsonDataGenrePerc', 'topMovies'));

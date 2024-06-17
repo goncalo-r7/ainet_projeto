@@ -17,7 +17,6 @@ use App\Http\Controllers\ScreeningController;
 use App\Http\Controllers\ReceiptController;
 use Illuminate\Support\Facades\Route;
 
-// teste
 
 /* ----- PUBLIC ROUTES ----- */
 
@@ -25,7 +24,6 @@ Route::get('receipts/{purchase}', [ReceiptController::class, 'show'])->name('rec
 
 Route::post('theaters/{theater}/insert-seats', [TheaterController::class, 'insertSeats'])->name('theaters.insertSeats');
 
-//luis
 
 Route::get('configuration/show', [ConfigurationController::class, 'show'])->name('configurations.show');
 Route::get('configuration/edit', [ConfigurationController::class, 'edit'])->name('configurations.edit');

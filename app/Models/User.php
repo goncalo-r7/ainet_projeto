@@ -50,7 +50,6 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
-    // acho que isto nao e preciso luis
     public function getFileNameAttribute()
     {
         return strtoupper(trim($this->photo_filename));
