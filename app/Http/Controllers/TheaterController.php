@@ -72,93 +72,48 @@ class TheaterController extends Controller
         $rows = $theater->seats->unique('row')->count();
         $columns = $theater->seats->where('row', 'A')->count();
         $rowLetter = $theater->seats->max('row');
-        dd($request->all(), $theater);
 
         // add a row
-        if ($request->input('row_insert') && $rowLetter != 'Z') { 
-            $newRowLetter = chr(ord($rowLetter) + 1); // new row letter
+        if ($request->input('row_insert')) { 
+            if ($rowLetter == 'Z') {
+                return redirect()->route('theaters.index', $theater->id)
+                    ->with('error', 'Cannot insert more rows!');
+            }
+            $rowLetter = chr(ord($rowLetter) + 1); // new row letter
             $newSeats = [];
 
             for ($seatNumber = 1; $seatNumber <= $columns; $seatNumber++) {
                 $newSeats[] = [
                     'theater_id' => $theater->id,
-                    'row' => $newRowLetter,
+                    'row' => $rowLetter,
                     'seat_number' => $seatNumber,
-                    'created_at' => now(),
-                    'updated_at' => now(),
                 ];
             }
-            dd($newSeats);
 
             Seat::insert($newSeats); // Bulk insert the new seats
             $rows++; // Increment row count
+        } 
+
+        if ($request->input('col_insert') && $columns < 100) {
+            if ($columns >= 100) {
+                return redirect()->route('theaters.index', $theater->id)
+                    ->with('error', 'Cannot insert more columns!');
+            }
+
+            $newColumnNumber = $columns + 1;
+            $newSeats = [];
+
+            foreach (range('A', $rowLetter) as $row) {
+                $newSeats[] = [
+                    'theater_id' => $theater->id,
+                    'row' => $row,
+                    'seat_number' => $newColumnNumber,
+                ];
+            }
+            
+            Seat::insert($newSeats);
+            $columns++;
         }
-        if ($request->input('column_insert')) { //TODO
-            // add a column
-        }
-        // $numRows = $request->input('rows_insert');
-        // $numCols = $request->input('columns_insert');
-        // dd($numRows, $numCols, $rows, $columns, $rowLetter);
-        
-
-        // $lastSeat = Seat::where('theater_id', $theater->id)
-        //                 ->orderByDesc('row')
-        //                 ->orderByDesc('seat_number')
-        //                 ->first();
-
-        // $startRow = $lastSeat ? $lastSeat->row : 'A';
-        // $startSeatNumber = $lastSeat ? $lastSeat->seat_number + 1 : 1;
-
-        // $seats = [];
-        // if ($startRow == 'Z') {
-        //     return redirect()->route('theaters.show', $theater->id)
-        //         ->with('error', 'Cannot insert more seats!');
-        // }
-        // $i=0;
-        // while ($i < $numRows) { // primeiro adiciona as linhas
-        //     $newRow = chr(ord($startRow) + 1);
-        //     for ($j = 0; $j < $columns; $j++) {
-        //         $seats[] = [
-        //             'theater_id' => $theater->id,
-        //             'row' => $newRow,
-        //             'seat_number' => $startSeatNumber++,
-        //             'created_at' => now(),
-        //             'updated_at' => now(),
-        //         ];
-        //     }
-        // }
-        // dd($seats);
-        // for ($r = 0; $r < $numRows; $r++) {
-        //     $row = chr(ord($startRow) + $r); // Convert letter to ASCII and increment
-        //     for ($s = 0; $s < $numCols; $s++) {
-        //         $seatNumber = $startSeatNumber + $s;
-        //         $seats[] = [
-        //             'theater_id' => $theater->id,
-        //             'row' => $row,
-        //             'seat_number' => $seatNumber,
-        //             'created_at' => now(),
-        //             'updated_at' => now(),
-        //         ];
-        //     }
-        // }
-        // dd($seats);
-
-        // Seat::insert($seats);
-        // $seats = [];
-        // for ($r = 1; $r <= $rowsToInsert; $r++) {
-        //     for ($s = 1; $s <= $columnsToInsert; $s++) {
-        //         $seats[] = [
-        //             'theater_id' => $theater->id,
-        //             'row' => strval($r), // Convert number to letter (1 -> A, 2 -> B, etc.)
-        //             'seat_number' => $s,
-        //             'created_at' => now(),
-        //             'updated_at' => now(),
-        //         ];
-        //     }
-        // }
-
-        // Bulk insert seats
-        Seat::insert($seats);
 
         return redirect()->route('theaters.show', $theater->id)
             ->with('success', 'Seats successfully generated!');
@@ -167,8 +122,7 @@ class TheaterController extends Controller
     public function update(TheaterFormRequest $request, Theater $theater): RedirectResponse
     {
         $validated_data = $request->validated();
-        if ($request->input('row_insert') == 'row_insert' || $request->input('col_insert') == 'col_insert') {
-            dd($request->all(), $theater);
+        if ($request->input('row_insert') || $request->input('col_insert')) {
             $this->insertSeats($request, $theater);
         }
 
