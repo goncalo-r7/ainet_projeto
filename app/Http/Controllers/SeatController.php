@@ -12,9 +12,8 @@ class SeatController extends Controller
         $screeningSession = Screening::with(['theater.seats', 'tickets'])->findOrFail($screeningSessionId);
 
         $seatsByRow = $screeningSession->theater->seats->groupBy('row');
-        return view('seats.index', compact('screeningSession', 'seatsByRow'));
+        $cart = session('cart', null);
+        return view('seats.index', compact('screeningSession', 'seatsByRow', 'cart'));
     }
-
-
 
 }
