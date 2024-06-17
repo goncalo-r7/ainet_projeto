@@ -10,7 +10,7 @@ class ScreeningPolicy
 
     public function viewAny(User $user)
     {
-        return true;
+        return $user?->type == 'A';
     }
 
     public function view(User $user)

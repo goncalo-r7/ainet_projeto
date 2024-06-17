@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('header-title', 'List of Administratives')
+@section('header-title', 'List of Associates')
 
 @section('main')
     <div class="flex justify-center">
@@ -15,7 +15,7 @@
             <div class="flex items-center gap-4 mb-4">
                 <x-button
                     href="{{ route('administratives.create') }}"
-                    text="Create a new administrative"
+                    text="Create a new associate"
                     type="success"/>
             </div>
             <div class="font-base text-sm text-gray-700 dark:text-gray-300">

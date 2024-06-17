@@ -43,30 +43,30 @@
                         <x-menus.menu-item content="Movies" href="{{ route('movies.showcase') }}"
                             selected="{{ Route::currentRouteName() == 'movies.showcase' }}" />
                             <!-- Menu Item: Configuration -->
+                        @can('admin')
                         <x-menus.menu-item content="Configuration" href="{{ route('configurations.show') }}"
                         selected="{{ Route::currentRouteName() == 'configurations.show' }}" />
                         <!-- Menu Item: Statistics -->
                         <x-menus.menu-item content="Statistics" href="{{ route('statistics.show') }}"
                         selected="{{ Route::currentRouteName() == 'statistics.show' }}" />
+                        @endcan
                         @auth
 
                         <x-menus.menu-item content="Tickets" href="{{ route('tickets.index') }}"
                         selected="{{ Route::currentRouteName() == 'tickets.index' }}" />
                             <!-- Menu Item: Others -->
-                            <x-menus.submenu selectable="0" uniqueName="submenu_others" content="More">
 
+                            <x-menus.submenu selectable="0" uniqueName="submenu_others" content="More">
+                            @can('admin')
                                 <x-menus.submenu-item content="Theaters" selectable="0"
                                     href="{{ route('theaters.index') }}" />
-
-                                <x-menus.submenu-item content="Screenings" selectable="0"
-                                href="{{ route('screenings.index') }}" />
-                                @can('viewAny', App\Models\Movie::class)
-                                <x-menus.submenu-item content="Movies" selectable="0"
-                                href="{{ route('movies.index') }}" />
-                                @endcan
                                 <x-menus.submenu-item content="Genres" selectable="0"
                                 href="{{ route('genres.index') }}" />
-
+                                <x-menus.submenu-item content="Movies" selectable="0"
+                                href="{{ route('movies.index') }}" />
+                            @endcan
+                                <x-menus.submenu-item content="Screenings" selectable="0"
+                                href="{{ route('screenings.index') }}" />
                             </x-menus.submenu>
                         @endauth
 

@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('header-title', 'Administrative "' . $administrative->name . '"')
+@section('header-title', 'Associate "' . $administrative->name . '"')
 
 @section('main')
 <div class="flex flex-col space-y-6">
@@ -16,6 +16,7 @@
                         href="{{ route('administratives.edit', ['administrative' => $administrative]) }}"
                         text="Edit"
                         type="primary"/>
+                    @if($administrative->id != $user)
                     <form method="POST" action="{{ route('administratives.destroy', ['administrative' => $administrative]) }}">
                         @csrf
                         @method('DELETE')
@@ -24,10 +25,11 @@
                             text="Delete"
                             type="danger"/>
                     </form>
+                    @endif
                 </div>
                 <header>
                     <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                        Administrative "{{ $administrative->name }}"
+                        Associate "{{ $administrative->name }}"
                     </h2>
                 </header>
                 @include('administratives.shared.fields', ['mode' => 'show'])
