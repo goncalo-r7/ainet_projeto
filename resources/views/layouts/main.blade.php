@@ -85,7 +85,6 @@
                                         <img src="{{ Auth::user()->imageUrl }}"
                                             class="w-11 h-11 min-w-11 min-h-11 rounded-full">
                                     </div>
-                                    {{-- ATENÇÃO - ALTERAR FORMULA DE CALCULO DAS LARGURAS MÁXIMAS QUANDO O MENU FOR ALTERADO --}}
                                     <div
                                         class="ps-1 sm:max-w-[calc(100vw-39rem)] md:max-w-[calc(100vw-41rem)] lg:max-w-[calc(100vw-46rem)] xl:max-w-[34rem] truncate">
                                         {{ Auth::user()->name }}

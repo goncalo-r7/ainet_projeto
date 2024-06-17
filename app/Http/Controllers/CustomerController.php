@@ -12,15 +12,15 @@ class CustomerController extends Controller
 {
     public function index(Request $request): View
     {
-        $administrativesQuery = User::where('type','==', 'C')
+        $customersQuery = User::where('type','=', 'C')
             ->orderBy('name');
         $filterByName = $request->query('name');
         $user = $request->user();
         if ($filterByName) {
-            $administrativesQuery->where('name', 'like', "%$filterByName%");
+            $customersQuery->where('name', 'like', "%$filterByName%");
         }
-        $administratives = $administrativesQuery
-            ->paginate(20)
+        $customers = $customersQuery
+            ->paginate(10)
             ->withQueryString();
 
         return view(

@@ -17,7 +17,7 @@
                     :showView="false"
                     :showEdit="false"
                     :showDelete="false"
-                    />
+                />
             </div>
             <div class="mt-4">
                 {{ $customers->links() }}
